@@ -33,4 +33,4 @@ Over potential mechanisms
 Includes:
     -SimplerMod_May17_splines.m  ---- Computes decision rules
     -SimplerMod_May17_sim.m   ----- Simulates model generated data
-    -Bunch of functions.
+    -Bunch of functions..
