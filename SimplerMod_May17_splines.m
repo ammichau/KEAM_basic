@@ -30,18 +30,18 @@ global beta crra eta mu r xi z_h tau_wf alpha_e delta_e psi phi_c gam_e ybar_h  
  eta = 1.2;        % curvature of leisure
  mu = 0.4 ;        % utility weight leisure
  r = 0.0000;        % interest rate
- alpha_e = 0.07;    %Weight on hours in returns to experience
- delta_e = 0.06;   % depreciation human capital
- psi = 0.8;        % parameter on hours
+ alpha_e = 0.03;    %Weight on hours in returns to experience
+ delta_e = 0.01;   % depreciation human capital
+ psi = 0.8;        % curvature on hours in building experience
  %Together should satisfy: (delta_h/alpha_h)^1/psi = 0.25
  lhome = 0.1;       %Time cost when at home.
- z_h = 0.65;        % homeproduction productivity
- ybar_h = 0.25;     %home production constant 0.2
+ z_h = 0.45;        % homeproduction productivity
+ ybar_h = 0.2;     %home production constant 0.2
  alpha_h = 0.5;     %curvature on fixed type productivity in home production
  nu = 0.5;         % parameter on search 
- nu_h = 0.8;         % curvature on hours in home production
+ nu_h = 0.5;         % curvature on hours in home production
  ym_pi = 0.8 ;     % prob. husband income
- xi = 0.5;         % curvature of experience in wage
+ xi = 0.8;         % curvature of experience in wage
  gam_e = 1.5;      %weight on experience in wage
  tau_wf =0.6;       %wage gap
  phi_c = 0.6;   %scale in utility fun
@@ -60,7 +60,7 @@ global beta crra eta mu r xi z_h tau_wf alpha_e delta_e psi phi_c gam_e ybar_h  
  %Husband and wife job find rate
  findW = [0.92 ; 0.85 ].*1;
  %Husband Wage by age
- wageH = [0.8; 0.8; 0];
+ wageH = [0.8; 0.8; 0.6];
  BCwage = [1;0.85]; %wage penalty during recession?
  ym = [1;0.75;0]; %dude is either employed, recently unemployed or unemployed
  %Aging Probabilities- 18-24; 25-39; 40-54; 55-64; 65-80
@@ -68,7 +68,7 @@ global beta crra eta mu r xi z_h tau_wf alpha_e delta_e psi phi_c gam_e ybar_h  
     %piT = [1/(9^12); 1/(14^12); 1/(14^12); 1/(9^12); 1/(14^12)];
     %For the simple model: 25-39, 41-55, 56-64
     tsize = 4; %quarterly
-    piT = [1-1/(14^tsize), 1/(14^tsize), 0, 0 ; 0, 1-1/(14^tsize), 1/(14^tsize), 0; 0,0 1-1/(8^tsize) , 1/(8^tsize); ];
+    piT = [1-1/(14*tsize), 1/(14*tsize), 0, 0 ; 0, 1-1/(14*tsize), 1/(14*tsize), 0; 0,0 1-1/(8*tsize) , 1/(8*tsize); ];
     tgrid=(1:1:nT-1);
 %Individual types: 2 wage types, 2 fixed kappa types, 4 kappa draws when young 
     %(w_l, kapy_l, kap_1 ; w_l, kapy_l, kap_2, ... kap_4 ; w_l , kapy_h,
@@ -78,10 +78,13 @@ global beta crra eta mu r xi z_h tau_wf alpha_e delta_e psi phi_c gam_e ybar_h  
     ftW=ones(1,nI);
     ftW(1,1:floor(nI/2)) = 0.8;
  %Disutility    
-    kap= ones(nT,nI).*0.3; %Base fixed cost =0.2
+    kapbar(1) = -0.03;  %Fixed types
+    kapbar(2) = 0.00;
+    kap= ones(nT,nI).*0.2; %Base fixed cost =0.2
     kap(2,:) = kap(2,:)*0.5; %Half the cost when middle
     kap(3,:) = kap(3,:)*0.5; %Half the cost when old
     kayscale=[3,2,1,0.9];
+    nKy = 4; % # fixed kappa types when young
     for iw=1:2
     for j=1:4
         %four kappa types when young
@@ -89,7 +92,7 @@ global beta crra eta mu r xi z_h tau_wf alpha_e delta_e psi phi_c gam_e ybar_h  
         kap(:,(iw-1)*8+(j-1)+5) = kap(:,(iw-1)*8+(j-1)+5)./kayscale(j); %for now the types scale the cost linearly        
     end
         %two fixed kappa types:
-        kap(:,(iw-1)*8+1:(iw-1)*8+5) = kap(:,(iw-1)*8+1:(iw-1)*8+5)-0.03; %       
+        kap(:,(iw-1)*8+1:(iw-1)*8+5) = kap(:,(iw-1)*8+1:(iw-1)*8+5)+kapbar(iw); %       
     end
  
  
@@ -115,7 +118,7 @@ save('paras')
 %-------------------------------------
 
 % ----- Value functions
-VE = zeros(nI,nT,nE,nY,nZ); VE0 = VE; VE1 = VE;
+VE = zeros(nI,nT,nE,nY,nZ); VE0 = VE; VE1 = VE; V=VE; V0=V;
 VU = VE; VU0 =VE; VU1 = VE;
 %VR = VE;
 
@@ -145,7 +148,7 @@ dVedh = ones(2,nZ,nY); dVUedh = ones(2,nZ,nY);
                     for iz = 1:nZ
                        VE0(i,it,ie,iy,iz) = utilC(wageH(it)*BCwage(iz)*ym(iy)+wage(ftW(i),egrid(ie))*0.5+hprod(ftW(i))*((1-0.5)^nu_h))+utilL(0.5); 
                         VU0(i,it,ie,iy,iz) = utilC(hprod(ftW(i))*0.2+ym(iy)*wageH(nT-1)*BCwage(iz)*lamH(iz,max(iy-1,1),1));
-                       %VU0(ie,ia,iy,iz,nT-1) = 0.5*VE0(ie,ia,iy,iz,nT-1);
+                       V(i,it,ie,iy,iz) = max(VE0(i,it,ie,iy,iz),VU0(i,it,ie,iy,iz));
                     end 
                 end 
            end
@@ -157,11 +160,12 @@ dVedh = ones(2,nZ,nY); dVUedh = ones(2,nZ,nY);
 %clear VU0
 %load('VUguess.mat','VU0')
 % ----- Calculate the Value Function for t=T-1
-   for it=nT-1:-1:1;
+   for it=nT-1:-1:1
  %try just one for now
  for i=1:nI
   
- for tVall = 1:3
+     maxViterAll = 3;
+ for tVall = 1:maxViterAll
      
 tVE=1;
 while tVE<maxViter
@@ -194,12 +198,12 @@ while tVE<maxViter
                         for izz=1:nZ
                             for iyy=1:nY
                             %Numerical Derivative wrt e'
-                            dVedh(1,izz,iyy) = (VE0(i,it,iee+1,iy,iz)-VE0(i,it,iee,iy,iz))/(egrid(iee+1)-egrid(iee)); %age
+                            dVedh(1,izz,iyy) = (V(i,it,iee+1,iy,iz)-V(i,it,iee,iy,iz))/(egrid(iee+1)-egrid(iee)); %age
                             dVedh(1,izz,iyy) = dVedh(1,izz,iyy)*de2_dh(egrid(ie),h);
                             if it+1>nT-1
                               dVedh(2,izz,iyy)=0;  
                             else
-                            dVedh(2,izz,iyy) = (VE0(i,it+1,iee+1,iy,iz)-VE0(i,it+1,iee,iy,iz))/(egrid(iee+1)-egrid(iee)); %age+1
+                            dVedh(2,izz,iyy) = (V(i,it+1,iee+1,iy,iz)-V(i,it+1,iee,iy,iz))/(egrid(iee+1)-egrid(iee)); %age+1
                             dVedh(2,izz,iyy) = dVedh(2,izz,iyy)*de2_dh(egrid(ie),h);
                             end
                         %Repeat for Unemployment
@@ -226,36 +230,26 @@ while tVE<maxViter
                                 end
                             end
                              TD = TD+dUCdh+dULdh;
-                        if (abs(TD)<bisectTol)
+                        if (abs(TD)<bisectTol || ith>maxHSiter-2 || h<0.001 )
                             gH(i,it,ie,iy,iz)=h;
                             V1 = 0;
                             for izz=1:nZ
                             for iyy=1:nY 
-                                EVe = spline(egrid,squeeze(VE0(i,it,:,iyy,izz)),egrid(iee));
+                                EVe = spline(egrid,squeeze(V(i,it,:,iyy,izz)),egrid(iee));
                                 EVu = spline(egrid,squeeze(VU0(i,it,:,iyy,izz)),egrid(iee));
-                                EVe2 = spline(egrid,squeeze(VE0(i,it+1,:,iyy,izz)),egrid(iee));
+                                EVe2 = spline(egrid,squeeze(V(i,it+1,:,iyy,izz)),egrid(iee));
                                 EVu2 = spline(egrid,squeeze(VU0(i,it+1,:,iyy,izz)),egrid(iee));                                
                                 V1= V1+beta*piz(iz,izz)*lamH(izz,iy,iyy)*(1-piT(it))*...
-                                    ((1-lossW(izz))*max(EVe,EVu) + lossW(izz)*EVu)...
+                                    ((1-lossW(izz))*EVe + lossW(izz)*EVu)...
                                    +beta*piz(iz,izz)*lamH(izz,iy,iyy)*(piT(it))*...
-                                   ((1-lossW(izz))*max(EVe2,EVu2)+lossW(izz)*EVu2);
+                                   ((1-lossW(izz))*EVe2+lossW(izz)*EVu2);
                             end
                             end
                              ctdUtil(ie,iy,iz) = V1;
                             V1 = V1+ utilC(YY)+utilL(h)-kap(it,i);
                             flowUtil(ie,iy,iz) = utilC(YY)+utilL(h)-kap(it,i);
-                            if V1> VU0(i,it,ie,iy,iz)
-                                VE1(i,it,ie,iy,iz) = V1; 
-                            else
-                                VE1(i,it,ie,iy,iz) = VU0(i,it,ie,iy,iz);
-                                gQ(i,it,ie,iy,iz) =1;
-                            end
-                            ith = 99999999;
-                        elseif (ith>maxHSiter-2 || h<0.001)
-                             VE1(i,it,ie,iy,iz) = VU0(i,it,ie,iy,iz);  %quit
-                             gH(i,it,ie,iy,iz)=0;
-                             gQ(i,it,ie,iy,iz)=1;
-                            ith = 99999999;                            
+                            VE1(i,it,ie,iy,iz) = V1;
+                            ith = 99999999;                               
                         elseif TD>0 %if TD>0 then there is more to gain by working harder, so move hlow up
                             hlow = 0.8*h+0.2*hlow;
                             ith = ith+1;
@@ -275,30 +269,27 @@ while tVE<maxViter
  V_err=abs(max(max(max(VE1(i,it,:,:,:)- VE0(i,it,:,:,:)))))
  V_err=V_err/(1+abs(max(max(max(VE0(i,it,:,:,:))))))
  plot(egrid,squeeze(gH(i,it,:,1,1)),'-',egrid,squeeze(gH(i,it,:,2,1)),'-.',egrid,squeeze(gH(i,it,:,1,2)),'--')
-
+    VE0=VE1;
+    tVE=tVE+1
+    VE=VE1;
+    tVE=tVE+1;
 if V_err<VFtol
 
     tVE
     tVE=maxViter+1;
-    VE0=VE1;
-    VE=VE1;
-else 
-    VE0=VE1;
-    tVE=tVE+1
-    VE=VE1;
 end
+
 %save('VEguess.mat','VE0' ,'VE')
 end %tVE
 
 save('VEguess.mat','VE')
-save('gH.mat', 'gH')
-save('gQ.mat', 'gQ')
+
 %load('VEguess.mat','VE0' ,'VE')
 %---------------------UNEMPLOYED------------------------------
 %clear VU0
 %load('VUguess.mat','VU0')
 
-    
+ if tVall<maxViterAll   
 tVU=1;
 while tVU<maxViter
      %Calculate policy functions: gA_Un and gS for Unemployed
@@ -315,7 +306,6 @@ while tVU<maxViter
                         else
                             iee= min(nE-1,find(egrid>ee,1,'first'));
                         end       
-                         xee = (ee-egrid(iee+1))/(egrid(iee)-egrid(iee+1));
                         %Bisection on h
                         hlow = 0;
                         hhigh= 1;
@@ -330,44 +320,30 @@ while tVU<maxViter
                             for izz=1:nZ
                                 for iyy=1:nY
                                 TD =TD+beta*piz(iz,izz)*lamH(izz,iy,iyy)*((1-piT(it))*...
-                                    (findW(izz)*nu*(h)^(nu-1))*max(VE(i,it,iee,iyy,izz)-VU0(i,it,iee,iyy,izz),0)+...
-                                    piT(it)*(findW(izz)*nu*(h)^(nu-1))*max(VE(i,it+1,iee,iyy,izz)-VU0(i,it+1,iee,iyy,izz),0));
+                                    (findW(izz)*nu*(h)^(nu-1))*max(V(i,it,iee,iyy,izz)-VU0(i,it,iee,iyy,izz),0)+...
+                                    piT(it)*(findW(izz)*nu*(h)^(nu-1))*max(V(i,it+1,iee,iyy,izz)-VU0(i,it+1,iee,iyy,izz),0));
                                 end
                             end
                              TD = TD+dUCdh;
-                        if (abs(TD)<bisectTol)
+                        if (abs(TD)<bisectTol || h<0.0001 || ith>maxHSiter-2)
                             gS(i,it,ie,iy,iz)=h;
                            %Interpolated values                             
                            V1 = 0;
                             for izz=1:nZ
                             for iyy=1:nY       
-                                EVe = spline(egrid,squeeze(VE0(i,it,:,iyy,izz)),egrid(iee));
+                                EVe = spline(egrid,squeeze(V(i,it,:,iyy,izz)),egrid(iee));
                                 EVu = spline(egrid,squeeze(VU0(i,it,:,iyy,izz)),egrid(iee));
-                                EVe2 = spline(egrid,squeeze(VE0(i,it+1,:,iyy,izz)),egrid(iee));
-                                EVu2 = spline(egrid,squeeze(VU0(i,it+1,:,iyy,izz)),egrid(iee));                                 
+                                EVe2 = spline(egrid,squeeze(V(i,it+1,:,iyy,izz)),egrid(iee));
+                                EVu2 = spline(egrid,squeeze(VU0(i,it+1,:,iyy,izz)),egrid(iee));                                   
                                 V1= V1+beta*piz(iz,izz)*lamH(izz,iy,iyy)*(1-piT(it))*...
-                                    ((1-findW(izz)*(h^(nu)))*EVu+(findW(izz)*(h^(nu)))*max(EVu,EVe))...
+                                    ((1-findW(izz)*(h^(nu)))*EVu+(findW(izz)*(h^(nu)))*EVe)...
                                      +beta*piz(iz,izz)*lamH(izz,iy,iyy)*(piT(it))*...
-                                     ((1-findW(izz)*(h^(nu)))*EVu2+(findW(izz)*(h^(nu)))*max(EVu2,EVe2));
+                                     ((1-findW(izz)*(h^(nu)))*EVu2+(findW(izz)*(h^(nu)))*EVe2);
                             end
                             end
                             V1 = V1+ utilC(YY)+utilL(lhome);
                             VU1(i,it,ie,iy,iz) = V1;
-                            ith = 99999999;
-                        elseif (h<0.0001)
-                            gS(i,it,ie,iy,iz)=0;
-                           V1 = 0;
-                            for izz=1:nZ
-                            for iyy=1:nY                            
-                                V1= V1+beta*piz(iz,izz)*lamH(izz,iy,iyy)*(1-piT(it))*...
-                                   (xee*VU0(i,it,iee,iyy,izz)+(1-xee)*VU0(i,it,iee+1,iyy,izz))...
-                                  +beta*piz(iz,izz)*lamH(izz,iy,iyy)*(piT(it))*...
-                                   (xee*VU0(i,it+1,iee,iyy,izz)+(1-xee)*VU0(i,it+1,iee+1,iyy,izz)) ;
-                            end
-                            end
-                            V1 = V1+ utilC(YY)+utilL(lhome);
-                            VU1(i,it,ie,iy,iz) = V1;                            
-                            ith = 99999999;                            
+                            ith = 99999999;                                             
                         elseif TD>0 %if TD>0 then there is more to gain by working harder, so move hlow up
                             hlow = 0.8*h+0.2*hlow;
                             ith = ith+1;
@@ -387,27 +363,43 @@ while tVU<maxViter
  VU_err=abs(max(max(max(VU1(i,it,:,:,:)- VU0(i,it,:,:,:)))))/abs(max(max(max(VU0(i,it,:,:,:)))))
  plot(egrid,squeeze(gS(i,it,:,1,1)),'-',egrid,squeeze(gS(i,it,:,2,1)),'-.',egrid,squeeze(gS(i,it,:,1,2)),'--')
 
+    VU0=VU1;
+    VU=VU1; 
+    tVU=tVU+1
 if VU_err<VFtol
 
     tVU
     tVU=maxViter+1;
-    VU0=VU1;
-    VU=VU1;
-else 
-    VU0=0.2*VU0+0.8*VU1;
-    tVU=tVU+1
-end
 
 end
-
+end
+end
+ for iy = 1:nY
+    for iz = 1:nZ
+       for ie = 1:nE 
+        V0(i,it,ie,iy,iz) = max(VU(i,it,ie,iy,iz),VE(i,it,ie,iy,iz));
+        if VU(i,it,ie,iy,iz)>VE(i,it,ie,iy,iz)
+           gQ(i,it,ie,iy,iz) =1;
+        else
+           gQ(i,it,ie,iy,iz) =0; 
+        end
+       end
+    end
+ end
+ 
+         VallErr(tVall) = abs(max(max(max(V0(i,it,:,:,:)-V(i,it,:,:,:)))))
+        V=V0;
+ 
 end
 
  end
    end
    
+   
 save('VUguess.mat','VU')
 save('gS.mat', 'gS')
-  
+save('gH.mat', 'gH')
+save('gQ.mat', 'gQ')  
 %**************************************************************************************************************************************
 %---------------------------------------------------------------------------------------------------------------------------------------
 
@@ -423,4 +415,7 @@ save('gS.mat', 'gS')
 
 
 
-    
+
+
+plot(egrid,squeeze(gS(1,2,:,1,1)),'-',egrid,squeeze(gS(1,2,:,2,1)),'-.',egrid,squeeze(gS(1,2,:,1,2)),'--')
+plot(egrid,squeeze(VU(1,1,:,1,1)),'-',egrid,squeeze(VE(1,1,:,1,1)),'-.',egrid,squeeze(V(1,1,:,1,1)),'--')   

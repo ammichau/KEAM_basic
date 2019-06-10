@@ -1,5 +1,5 @@
 function pbar=MarkovStationary(P)
-
+%P=P';
 [ns ms]=size(P);
 n=ns;
 pbar=zeros(n);
@@ -15,11 +15,11 @@ end
 n=n-1;
 end
 %recursion
-pbar(1)=1;
+pbar=ones(ns,1);
 j=2;
 while j<=ns
 j1=j-1;
-pbar(j)=sum(pbar(1:j1).*(P(1:j1,j)));
+pbar(j,1)=sum(pbar(1:j1).*(P(1:j1,j)));
 j=j+1;
 end
 pbar=pbar/(sum(pbar));
