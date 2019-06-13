@@ -3,10 +3,13 @@
 
 %Set Paths
     MAINdir = 'C:\Users\amichau9\Dropbox\DemogBCtrendsCode\Code_Simple_Model\Matlab';
-%Declare if this is the calibration script or the counterfactual script.
-    calib= 1;
-    %If counterfactual:
-    %calib = 0;
+    
+%OPTIONS:
+    %CALIBRATION? Declare if this is the calibration script or the counterfactual script.
+        calib= 1;
+%   %EXPORT DATA?
+        sumstatout = 0;
+        panelout = 1;
 %--------------------------------------------------------------------------------    
 %HH problem with 
 %   1) Nonemployed search intensity 
@@ -40,13 +43,18 @@ load('gS.mat', 'gS')
 if calib==1
     
 %Set panel size
+y0 = 1955;
+yT = 2019;
+yStart = 1973;
 Nsim=100; %Number of individuals PER SINGLE YEAR BIRTH COHORT to simulate
-Ngen = 2019-1955; %Number of single year birth cohorts.
-ScratchT = (1973-1955)*tsize; %Where to start to begin timeseries in 1973 as in the data.
-Tsim=Ngen*tsize;
 Tsim_i= 39*tsize; %For the simple model: 25-39, 40-55, 56-64
-Nsim_i=Nsim*Ngen;
+age0 = 25;
 ninter = 10; %how fine to make individ. type grids.
+
+Ngen = yT-y0; %Number of single year birth cohorts.
+ScratchT = (yStart-y0)*tsize; %Where to start to begin timeseries in 1973 as in the data.
+Tsim=Ngen*tsize;
+Nsim_i=Nsim*Ngen;
 
 %Set initial distribution of states.
 lamHbar=MarkovStationary(squeeze(lamH(1,:,:)));
@@ -386,7 +394,7 @@ end %ends the loop on whether it is calibration or experimential.
 %States/outcomes
     Wage_i = zeros(Nsim_i, Tsim); Inc_w = zeros(Nsim_i, Tsim); Inc_hh=zeros(Nsim_i,Tsim); %Wife Wage, wife income, household income
     Hloss= zeros(Nsim_i, Tsim); Wloss= zeros(Nsim_i, Tsim);%  Husband job loss indicator, wife job loss
-    Alive_i =zeros(Nsim_i, Tsim); Age_i= zeros(Nsim_i, Tsim); %Living indicator, Age group indicator
+    Alive_i =zeros(Nsim_i, Tsim); Age_i= zeros(Nsim_i, Tsim); AgeY_i= zeros(Nsim_i, Tsim); %Living indicator, Age group indicator, age in years
 %Decisions
     Quit_i = zeros(Nsim_i, Tsim); Hours_i = zeros(Nsim_i, Tsim); Srch_i = zeros(Nsim_i, Tsim); %Quit, Hours, Search intensity
     FT_i = zeros(Nsim_i, Tsim); NiLF_i= zeros(Nsim_i,Tsim); NempI_i= zeros(Nsim_i,Tsim); %Indicator for Full Time, Indicator for Not in LF, not employed 
@@ -407,6 +415,7 @@ for in=1:Ngen-1  %Loop over age year cohort generations. Toss last generation.
             tt = (in-1)*4+1;    %Year-Quarter place in time
                 Alive_i(ii,tt) = 1;
                 Age_i(ii,tt) = ageT(1);
+                AgeY_i(ii,tt) = age0;
                 e = exp_i(ii,tt);
                 Wage_i(ii,tt) =  wage(ftW_i(i),e);
                 iy = Hstat_i(ii,tt);
@@ -468,6 +477,7 @@ for in=1:Ngen-1  %Loop over age year cohort generations. Toss last generation.
             if tt<Tsim+1
             Alive_i(ii,tt) = 1;
             Age_i(ii,tt) = ageT(it);
+            AgeY_i(ii,tt) = age0+ceil(it/4);
             e = exp_i(ii,tt);
             Wage_i(ii,tt) =  wage(ftW_i(i),e);
             %Draw shocks                
@@ -548,6 +558,7 @@ for in=1:Ngen-1  %Loop over age year cohort generations. Toss last generation.
         end %it- lifecycle age
     end %i- indv. fixed type   
 end %in- generation number
+
 
 %********************************************************************************************************************************************************************************************
 %CALCULATE AGGREGATE STATISTICS
@@ -805,11 +816,14 @@ Erate = Erate./pop;
 Urate = Urate./pop;
 Nrate = Nrate./pop;
 
+%-------------------EXPORT TO CSV---------------------------------
+if sumstatout==1
+
 header = {'' , 'Young', 'Middle', 'Old'}; 
 
-diary = xlswrite('SimulStats.xls', header, 'CrossSection', 'A2'); 
-diary = xlswrite('SimulStats.xls', header, 'CrossSection', 'E2'); 
-diary = xlswrite('SimulStats.xls', header, 'CrossSection', 'I2'); 
+diary = xlswrite('Output\SimulStats.xls', header, 'CrossSection', 'A2'); 
+diary = xlswrite('Output\SimulStats.xls', header, 'CrossSection', 'E2'); 
+diary = xlswrite('Output\SimulStats.xls', header, 'CrossSection', 'I2'); 
 
 t=1;
 
@@ -822,10 +836,10 @@ NiLFXstats = {'Hours/Search', 'Wages', 'Experience', 'Husband Employed', 'Kappa'
 FlowXstats =  {'EE rate', 'EN rate', 'EU rate', 'Quit rate', 'Job Loss Rate', 'UE rate', 'NE rate';...
             EErate(1,t), ENrate(1,t), EUrate(1,t), Qrate(1,t), jLossrate(1,t), UErate(1,t), NErate(1,t) };       
             
-diary = xlswrite('SimulStats.xls', EmpXstats', 'CrossSection', 'A3');
-diary = xlswrite('SimulStats.xls', UnEmpXstats(2,:)', 'CrossSection', 'F3');
-diary = xlswrite('SimulStats.xls', NiLFXstats(2,:)', 'CrossSection', 'J3');
-diary = xlswrite('SimulStats.xls', FlowXstats', 'CrossSection', 'A9');
+diary = xlswrite('Output\SimulStats.xls', EmpXstats', 'CrossSection', 'A3');
+diary = xlswrite('Output\SimulStats.xls', UnEmpXstats(2,:)', 'CrossSection', 'F3');
+diary = xlswrite('Output\SimulStats.xls', NiLFXstats(2,:)', 'CrossSection', 'J3');
+diary = xlswrite('Output\SimulStats.xls', FlowXstats', 'CrossSection', 'A9');
 
 t=2;
 
@@ -838,10 +852,10 @@ NiLFXstats = {'Hours/Search', 'Wages', 'Experience', 'Husband Employed', 'Kappa'
 FlowXstats =  {'EE rate', 'EN rate', 'EU rate', 'Quit rate', 'Job Loss Rate', 'UE rate', 'NE rate';...
             EErate(1,t), ENrate(1,t), EUrate(1,t), Qrate(1,t), jLossrate(1,t), UErate(1,t), NErate(1,t) };       
             
-diary = xlswrite('SimulStats.xls', EmpXstats(2,:)', 'CrossSection', 'C3');
-diary = xlswrite('SimulStats.xls', UnEmpXstats(2,:)', 'CrossSection', 'G3');
-diary = xlswrite('SimulStats.xls', NiLFXstats(2,:)', 'CrossSection', 'K3');
-diary = xlswrite('SimulStats.xls', FlowXstats(2,:)', 'CrossSection', 'C9');
+diary = xlswrite('Output\SimulStats.xls', EmpXstats(2,:)', 'CrossSection', 'C3');
+diary = xlswrite('Output\SimulStats.xls', UnEmpXstats(2,:)', 'CrossSection', 'G3');
+diary = xlswrite('Output\SimulStats.xls', NiLFXstats(2,:)', 'CrossSection', 'K3');
+diary = xlswrite('Output\SimulStats.xls', FlowXstats(2,:)', 'CrossSection', 'C9');
 
 t=3;
 
@@ -854,11 +868,11 @@ NiLFXstats = {'Hours/Search', 'Wages', 'Experience', 'Husband Employed', 'Kappa'
 FlowXstats =  {'EE rate', 'EN rate', 'EU rate', 'Quit rate', 'Job Loss Rate', 'UE rate', 'NE rate';...
             EErate(1,t), ENrate(1,t), EUrate(1,t), Qrate(1,t), jLossrate(1,t), UErate(1,t), NErate(1,t) };       
             
-diary = xlswrite('SimulStats.xls', EmpXstats(2,:)', 'CrossSection', 'D3');
-diary = xlswrite('SimulStats.xls', UnEmpXstats(2,:)', 'CrossSection', 'H3');
-diary = xlswrite('SimulStats.xls', NiLFXstats(2,:)', 'CrossSection', 'L3');
-diary = xlswrite('SimulStats.xls', FlowXstats(2,:)', 'CrossSection', 'D9');
-
+diary = xlswrite('Output\SimulStats.xls', EmpXstats(2,:)', 'CrossSection', 'D3');
+diary = xlswrite('Output\SimulStats.xls', UnEmpXstats(2,:)', 'CrossSection', 'H3');
+diary = xlswrite('Output\SimulStats.xls', NiLFXstats(2,:)', 'CrossSection', 'L3');
+diary = xlswrite('Output\SimulStats.xls', FlowXstats(2,:)', 'CrossSection', 'D9');
+end
 %-------------------------------------
 %2) Summary statistics- by career type
 %-------------------------------------
@@ -909,6 +923,7 @@ cycleWrate = cycleWtot/(ptWtot+cycleWtot+careerWtot+nilfWtot)
 careerWrate = careerWtot/(ptWtot+cycleWtot+careerWtot+nilfWtot)
 nilfWrate = nilfWtot/(ptWtot+cycleWtot+careerWtot+nilfWtot)
 
+clear ageAlive ageEmp ageEmpR ageFT ageT careerWtot cycleWtot EmpR_i
 %-------------------------------------
 %2) Summary statistics- cyclicality averages and stD
 %-------------------------------------
@@ -989,7 +1004,7 @@ Pop_t = sum(Alive_i(:,ScratchT:Tsim),1);
     EEexp_t = (sum(EE_i(:,ScratchT:Tsim),1).*ExpI(1,:))./sum(EmpI_i(:,ScratchT:Tsim),1);
     m_EEexp = sum(EEexp_t)/sum(ExpI);
     var_EE = var(sum(EE_i(:,ScratchT:Tsim),1)./sum(EmpI_i(:,ScratchT:Tsim),1))*100; 
-    
+       
     ENrecess_t = (sum(EN_i(:,ScratchT:Tsim),1).*RecI(1,:))./sum(EmpI_i(:,ScratchT:Tsim),1);
     m_ENrecess = sum(ENrecess_t)/sum(RecI);   
     ENexp_t = (sum(EN_i(:,ScratchT:Tsim),1).*ExpI(1,:))./sum(EmpI_i(:,ScratchT:Tsim),1);
@@ -1056,6 +1071,13 @@ Pop_t = sum(Alive_i(:,ScratchT:Tsim),1);
     m_Wshare_exp = m_IncW_exp/m_IncHH_exp;
     var_Wshare = var(((sum(Inc_w(:,ScratchT:Tsim),1)./sum(Inc_hh(:,ScratchT:Tsim),1))))*100;   
     
+     clear  H_Ereccess_t H_Eexp_t W_Ureccess_t W_Uexp_t W_Erecess_t W_Eexp_t W_Nrecess_t W_Nexp_t W_NEmprecess_t W_NEmpexp_t EErecess_t EEexp_t ...
+        ENrecess_t ENexp_t EUrecess_t EUexp_t ENonErecess_t ENonEexp_t NonEErecess_t NonEEexp_t Hrs_recess_t Hrs_exp_t Quit_recess_t Quit_exp_t ...
+        Wage_recess_t Wage_exp_t Srch_recess_t Srch_exp_t IncHH_recess_t IncHH_exp_t IncW_recess_t IncW_exp_t Wshare_recess_t Wshare_exp_t
+
+%-------------------EXPORT TO CSV---------------------------------
+if sumstatout==1
+    
 Rec_means = {'H_Emp', 'Emp', 'UnEmp', 'NiLF', 'NonEmp', 'EE', 'EU', 'EN', 'EnonE', 'NonEE', 'Hours', 'Quit', 'Search', 'Wage', 'Household Income', 'Wife Income', 'Wife Share of Inc' ;...
             mH_Erecess , mW_Erecess, mW_Urecess, mW_Nrecess, mW_NEmprecess, m_EErecess, m_ENrecess, m_EUrecess, m_ENonErecess, m_NonEErecess, m_Hrs_recess, m_Quit_recess, m_Srch_recess,...
             m_Wage_recess, m_IncHH_recess, m_IncW_recess, m_Wshare_recess  };
@@ -1068,13 +1090,73 @@ Variance = {'H_Emp', 'Emp', 'UnEmp', 'NiLF', 'NonEmp', 'EE', 'EU', 'EN', 'EnonE'
             varH_Emp , varW_Emp, 0, 0, 0, var_EE, var_EN, var_EU, var_ENonE, var_NonEE, var_Hrs, var_Quit, var_Srch, var_Wage, var_IncHH, var_IncW, var_Wshare};
      
         
-diary = xlswrite('SimulStats.xls', Rec_means', 'Cycle', 'A2');
-diary = xlswrite('SimulStats.xls', Exp_means(2,:)', 'Cycle', 'C2');
-diary = xlswrite('SimulStats.xls', Variance(2,:)', 'Cycle', 'D2');
+diary = xlswrite('Output\SimulStats.xls', Rec_means', 'Cycle', 'A2');
+diary = xlswrite('Output\SimulStats.xls', Exp_means(2,:)', 'Cycle', 'C2');
+diary = xlswrite('Output\SimulStats.xls', Variance(2,:)', 'Cycle', 'D2');
+end
  
 %---------------------------------------------------------------------------------------------%---------------------------------------------------------------------------------------------
 %EXPORT PANEL DATA
 %---------------------------------------------------------------------------------------------%---------------------------------------------------------------------------------------------
+%Set date vectors
+time = (1:1:Tsim);
+id = (1:1:Nsim_i);
+
+sampleT = zeros(1,Tsim);
+
+for t=y0:yT
+    for it=1:tsize
+        year((t-y0)*tsize+it) = t; 
+        subyear((t-y0)*tsize+it) = it;
+        if t>yStart-1
+            sampleT(1,(t-y0)*tsize+it) = 1;
+        end
+    end
+end
 
 
-%plot(egrid,squeeze(ggQ(1,1,:,1,1)))
+    
+%Convert to long
+j=0;
+    for in=1:Ngen-1  %Loop over age year cohort generations. Toss last generation.
+        for i=1:Nsim %Loop over individuals in that cohort- also is individual's fixed type            
+            ii = (in-1)*Nsim+i; %Individual's ID
+        for it=1:Tsim_i
+            t = (in-1)*4+it;
+            if t<Tsim+1 && year(t)> yStart-1
+                j = j+1;
+            paneldata(j,1) = ii; 
+            paneldata(j,2) = time(t); 
+            paneldata(j,3) = year(t); 
+            paneldata(j,4) = subyear(t); 
+            paneldata(j,5) = zsim(t,1); 
+            paneldata(j,6) = AgeY_i(ii,t);
+            paneldata(j,7) = EmpI_i(ii,t);
+            paneldata(j,8) = Hours_i(ii,t);
+            paneldata(j,9) = Wage_i(ii,t);
+            paneldata(j,10) = Srch_i(ii,t);
+            paneldata(j,11) = exp_i(ii,t);
+            if Age_i(ii,t) == 1
+                paneldata(j,12) = ftK_i(i,1)+Ky_i(i,1);
+            else
+                paneldata(j,12) = ftK_i(i,1);
+            end
+            paneldata(j,13) = ftW_i(i,1);
+            paneldata(j,14) = Inc_hh(ii,t);
+            paneldata(j,15) = Hstat_i(ii,t);
+            paneldata(j,16) = Wloss(ii,t);
+            paneldata(j,17) = Quit_i(ii,t);
+            paneldata(j,18) = FT_i(ii,t);
+            paneldata(j,19) = NiLF_i(ii,t);
+            paneldata(j,20) = PTwoman(ii);
+            paneldata(j,21) = cyclewoman(ii);
+            paneldata(j,22) = careerwoman(ii);
+            paneldata(j,23) = NiLFwoman(ii);
+            end
+            
+        end
+        end
+    end
+
+
+csvwrite('Output\simdata.csv',paneldata)
