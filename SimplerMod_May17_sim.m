@@ -2,14 +2,11 @@
 %clear all
 
 %Set Paths
-    MAINdir = 'C:\Users\amichau9\Dropbox\DemogBCtrendsCode\Code_Simple_Model\Matlab';
+    %MAINdir = 'C:\Users\amichau9\Dropbox\DemogBCtrendsCode\Code_Simple_Model\Matlab';
+    %SOLUTIONdir = 'C:\Users\amichau9\Dropbox\DemogBCtrendsCode\Code_Simple_Model\Matlab\Solution\RoE_incr';
+    %OUTPUTdir = 'C:\Users\amichau9\Dropbox\DemogBCtrendsCode\Code_Simple_Model\Matlab\Output\RoE_incr';
+    %file = fullfile(OUTPUTdir,'SimulStats.xlx')  ;  
     
-%OPTIONS:
-    %CALIBRATION? Declare if this is the calibration script or the counterfactual script.
-        calib= 1;
-%   %EXPORT DATA?
-        sumstatout = 0;
-        panelout = 1;
 %--------------------------------------------------------------------------------    
 %HH problem with 
 %   1) Nonemployed search intensity 
@@ -35,12 +32,14 @@
 %       -uniform on kappa
 %--------------------------------------------------------------------------------
 
+cd(SOLUTIONdir) 
 load('paras')
-load('gH.mat', 'gH')
-load('gQ.mat', 'gQ')
-load('gS.mat', 'gS')
+load('policies')
+load('Vfuns' )
 
-if calib==1
+cd(MAINdir)
+
+
     
 %Set panel size
 y0 = 1955;
@@ -71,6 +70,7 @@ end
 for t= 14*tsize+14*tsize+1:Tsim_i
     ageT(t)=3;
 end
+
 
 %Set individual types and interpolated policies.
     %First types across wages
@@ -337,52 +337,13 @@ Qsim0 = rand(Nsim,Tsim_i);
         end
 clear Qsim0 
 
+%{
     save('Shocks_Types.mat','Nsim','Ngen','Tsim','Tsim_i','Nsim_i',...
          'ageT','ftW_i','ftK_i','Ky_i','NiLFbar','FTbar','yqtime','year',...
          'zsim','exp_i','Hstat_i','EmpI_i','UnempI_i','LHsim_i',...
-         'LWsim_i','Qtoss_i') 
-
- else %If this is not the calibration loop, then we want everything the same except the policies.
-    load('Shocks_Types.mat','Nsim','Ngen','Tsim','Tsim_i','Nsim_t',...
-         'ageT','ftW_i','ftK_i','Ky_i','NiLFbar','FTbar','yqtime','year',...
-         'zsim','exp_i','Hstat_i','EmpI_i','UnempI_i','LHsim_i',...
-         'LWsim_i','Qtoss_i')    
-     
-     %Now, interpolate policies
-     %Add indices for types to make things easier
- gH0(1,1,:,:,:,:,:) = gH(1:4,:,:,:,:);
- gH0(1,2,:,:,:,:,:) = gH(5:8,:,:,:,:);
- gH0(2,1,:,:,:,:,:) = gH(9:12,:,:,:,:);
- gH0(2,2,:,:,:,:,:) = gH(13:16,:,:,:,:); 
- gS0(1,1,:,:,:,:,:) = gS(1:4,:,:,:,:);
- gS0(1,2,:,:,:,:,:) = gS(5:8,:,:,:,:);
- gS0(2,1,:,:,:,:,:) = gS(9:12,:,:,:,:);
- gS0(2,2,:,:,:,:,:) = gS(13:16,:,:,:,:); 
- gQ0(1,1,:,:,:,:,:) = gQ(1:4,:,:,:,:);
- gQ0(1,2,:,:,:,:,:) = gQ(5:8,:,:,:,:);
- gQ0(2,1,:,:,:,:,:) = gQ(9:12,:,:,:,:);
- gQ0(2,2,:,:,:,:,:) = gQ(13:16,:,:,:,:);  
+         'LWsim_i','Qtoss_i', 'kapbarlow', 'kapbase', 'Ky_inx') 
+%}
  
-
- for i=1:Nsim
-     for ie=1:nE
-         for iy=1:nY
-             for iz=1:nZ
-                 for it=1:nT  %Room here to do cubic interp instead. 
-                 ggH(i,it,ie,iy,iz) = interp2([ftW(1,1),ftW(1,nI)],[kapbarlow,kapbase],squeeze(gH0(:,:,Ky_inx(i),it,ie,iy,iz)),ftK_i(i),ftW_i(i));
-                 ggS(i,it,ie,iy,iz) = interp2([ftW(1,1),ftW(1,nI)],[kapbarlow,kapbase],squeeze(gS0(:,:,Ky_inx(i),it,ie,iy,iz)),ftK_i(i),ftW_i(i));
-                 gQ1= squeeze(gQ0(:,1,Ky_inx(i),it,ie,iy,iz))+ (ftK_i(i)-kapbarlow)*(squeeze(gQ0(:,2,Ky_inx(i),it,ie,iy,iz)))-squeeze(gQ0(:,1,Ky_inx(i),it,ie,iy,iz))/(kapbase-kapbarlow);         
-                 ggQ(i,it,ie,iy,iz) = gQ1(1)+ (ftW_i(i)-ftW(1,1))*(gQ1(2)-gQ1(1))/(ftW(1,nI)-ftW(1,1));         
-                 ggQ(i,it,ie,iy,iz) = max(min(ggQ(i,it,ie,iy,iz),1),0);
-                 end
-             end
-         end
-     end
- end
- 
- clear gH0 gS0 gQ0 kapbarlow kapbase % gH1 gS1 gQ1
-     
-end %ends the loop on whether it is calibration or experimential. 
  
  
 %-------------------------------------------------------------------------------------------
@@ -574,6 +535,7 @@ Nrate = zeros(1,3);
 Urate = zeros(1,3);
 EErate = zeros(1,3);
 EUrate = zeros(1,3);
+NErate = zeros(1,3);
 ENrate = zeros(1,3);
 UErate = zeros(1,3);
 NonEErate = zeros(1,3);
@@ -677,6 +639,7 @@ W_NonEEexp = zeros(1,Tsim);
                 EUrate(a) = EUrate(a)+EU_i(ii,tt);
                 ENrate(a) = ENrate(a)+EN_i(ii,tt);
                 UErate(a) = UErate(a)+UE_i(ii,tt);
+                NErate(a) = NErate(a)+NE_i(ii,tt);
                 NonEErate(a) = NonEErate(a)+NE_i(ii,tt)+UE_i(ii,tt);
                 Qrate(a) = Qrate(a)+Quit_i(ii,tt);
                 jLossrate(a) = jLossrate(a)+Wloss(ii,tt);                
@@ -727,6 +690,7 @@ W_NonEEexp = zeros(1,Tsim);
                 EUrate(a) = EUrate(a)+EU_i(ii,tt);
                 ENrate(a) = ENrate(a)+EN_i(ii,tt);
                 UErate(a) = UErate(a)+UE_i(ii,tt);
+                NErate(a) = NErate(a)+NE_i(ii,tt);
                 NonEErate(a) = NonEErate(a)+NE_i(ii,tt)+UE_i(ii,tt);
                 Qrate(a) = Qrate(a)+Quit_i(ii,tt);
                 jLossrate(a) = jLossrate(a)+Wloss(ii,tt);                
@@ -777,6 +741,7 @@ W_NonEEexp = zeros(1,Tsim);
                 EUrate(a) = EUrate(a)+EU_i(ii,tt);
                 ENrate(a) = ENrate(a)+EN_i(ii,tt);
                 UErate(a) = UErate(a)+UE_i(ii,tt);
+                NErate(a) = NErate(a)+NE_i(ii,tt);
                 NonEErate(a) = NonEErate(a)+NE_i(ii,tt)+UE_i(ii,tt);
                 Qrate(a) = Qrate(a)+Quit_i(ii,tt);
                 jLossrate(a) = jLossrate(a)+Wloss(ii,tt);                
@@ -790,7 +755,7 @@ W_NonEEexp = zeros(1,Tsim);
 mHours = mHours./Erate;
 mWage_E = mWage_E./Erate;
 mExp_E = mExp_E./Erate;
-HstatE_E = Hstat_E./Erate;
+HstatE_E = HstatE_E./Erate;
 Ktype_E = Ktype_E./Erate;
 EErate = EErate./Erate;
 ENrate = ENrate./Erate;
@@ -801,14 +766,14 @@ jLossrate = jLossrate./Erate;
 mSearch_U = mSearch_U./Urate;
 mExp_U = mExp_U./Urate;
 mWage_U = mWage_U./Urate;
-HstatE_U = Hstat_U./Urate;
+HstatE_U = HstatE_U./Urate;
 Ktype_U = Ktype_U./Urate;
 UErate = UErate./Urate;
 
 mSearch_N = mSearch_N./Nrate;
 mExp_N = mExp_N./Nrate;
 mWage_N = mWage_N./Nrate;
-HstatE_N = Hstat_N./Nrate;
+HstatE_N = HstatE_N./Nrate;
 Ktype_N = Ktype_N./Nrate;
 NErate = NErate./Nrate;
 
@@ -821,9 +786,9 @@ if sumstatout==1
 
 header = {'' , 'Young', 'Middle', 'Old'}; 
 
-diary = xlswrite('Output\SimulStats.xls', header, 'CrossSection', 'A2'); 
-diary = xlswrite('Output\SimulStats.xls', header, 'CrossSection', 'E2'); 
-diary = xlswrite('Output\SimulStats.xls', header, 'CrossSection', 'I2'); 
+diary = xlswrite(file, header, 'CrossSection', 'A2'); 
+diary = xlswrite(file, header, 'CrossSection', 'E2'); 
+diary = xlswrite(file, header, 'CrossSection', 'I2'); 
 
 t=1;
 
@@ -836,10 +801,10 @@ NiLFXstats = {'Hours/Search', 'Wages', 'Experience', 'Husband Employed', 'Kappa'
 FlowXstats =  {'EE rate', 'EN rate', 'EU rate', 'Quit rate', 'Job Loss Rate', 'UE rate', 'NE rate';...
             EErate(1,t), ENrate(1,t), EUrate(1,t), Qrate(1,t), jLossrate(1,t), UErate(1,t), NErate(1,t) };       
             
-diary = xlswrite('Output\SimulStats.xls', EmpXstats', 'CrossSection', 'A3');
-diary = xlswrite('Output\SimulStats.xls', UnEmpXstats(2,:)', 'CrossSection', 'F3');
-diary = xlswrite('Output\SimulStats.xls', NiLFXstats(2,:)', 'CrossSection', 'J3');
-diary = xlswrite('Output\SimulStats.xls', FlowXstats', 'CrossSection', 'A9');
+diary = xlswrite(file, EmpXstats', 'CrossSection', 'A3');
+diary = xlswrite(file, UnEmpXstats(2,:)', 'CrossSection', 'F3');
+diary = xlswrite(file, NiLFXstats(2,:)', 'CrossSection', 'J3');
+diary = xlswrite(file, FlowXstats', 'CrossSection', 'A9');
 
 t=2;
 
@@ -852,10 +817,10 @@ NiLFXstats = {'Hours/Search', 'Wages', 'Experience', 'Husband Employed', 'Kappa'
 FlowXstats =  {'EE rate', 'EN rate', 'EU rate', 'Quit rate', 'Job Loss Rate', 'UE rate', 'NE rate';...
             EErate(1,t), ENrate(1,t), EUrate(1,t), Qrate(1,t), jLossrate(1,t), UErate(1,t), NErate(1,t) };       
             
-diary = xlswrite('Output\SimulStats.xls', EmpXstats(2,:)', 'CrossSection', 'C3');
-diary = xlswrite('Output\SimulStats.xls', UnEmpXstats(2,:)', 'CrossSection', 'G3');
-diary = xlswrite('Output\SimulStats.xls', NiLFXstats(2,:)', 'CrossSection', 'K3');
-diary = xlswrite('Output\SimulStats.xls', FlowXstats(2,:)', 'CrossSection', 'C9');
+diary = xlswrite(file, EmpXstats(2,:)', 'CrossSection', 'C3');
+diary = xlswrite(file, UnEmpXstats(2,:)', 'CrossSection', 'G3');
+diary = xlswrite(file, NiLFXstats(2,:)', 'CrossSection', 'K3');
+diary = xlswrite(file, FlowXstats(2,:)', 'CrossSection', 'C9');
 
 t=3;
 
@@ -868,10 +833,10 @@ NiLFXstats = {'Hours/Search', 'Wages', 'Experience', 'Husband Employed', 'Kappa'
 FlowXstats =  {'EE rate', 'EN rate', 'EU rate', 'Quit rate', 'Job Loss Rate', 'UE rate', 'NE rate';...
             EErate(1,t), ENrate(1,t), EUrate(1,t), Qrate(1,t), jLossrate(1,t), UErate(1,t), NErate(1,t) };       
             
-diary = xlswrite('Output\SimulStats.xls', EmpXstats(2,:)', 'CrossSection', 'D3');
-diary = xlswrite('Output\SimulStats.xls', UnEmpXstats(2,:)', 'CrossSection', 'H3');
-diary = xlswrite('Output\SimulStats.xls', NiLFXstats(2,:)', 'CrossSection', 'L3');
-diary = xlswrite('Output\SimulStats.xls', FlowXstats(2,:)', 'CrossSection', 'D9');
+diary = xlswrite(file, EmpXstats(2,:)', 'CrossSection', 'D3');
+diary = xlswrite(file, UnEmpXstats(2,:)', 'CrossSection', 'H3');
+diary = xlswrite(file, NiLFXstats(2,:)', 'CrossSection', 'L3');
+diary = xlswrite(file, FlowXstats(2,:)', 'CrossSection', 'D9');
 end
 %-------------------------------------
 %2) Summary statistics- by career type
@@ -922,6 +887,15 @@ ptWrate = ptWtot/(ptWtot+cycleWtot+careerWtot+nilfWtot)
 cycleWrate = cycleWtot/(ptWtot+cycleWtot+careerWtot+nilfWtot)
 careerWrate = careerWtot/(ptWtot+cycleWtot+careerWtot+nilfWtot)
 nilfWrate = nilfWtot/(ptWtot+cycleWtot+careerWtot+nilfWtot)
+
+if sumstatout==1
+
+CareerXstats = {'PT', 'Cycle', 'Career', 'NiLF' ;...
+            ptWrate, cycleWrate, careerWrate, nilfWrate  };       
+              
+diary = xlswrite(file, CareerXstats, 'Careers', 'A1');
+
+end
 
 clear ageAlive ageEmp ageEmpR ageFT ageT careerWtot cycleWtot EmpR_i
 %-------------------------------------
@@ -1090,14 +1064,17 @@ Variance = {'H_Emp', 'Emp', 'UnEmp', 'NiLF', 'NonEmp', 'EE', 'EU', 'EN', 'EnonE'
             varH_Emp , varW_Emp, 0, 0, 0, var_EE, var_EN, var_EU, var_ENonE, var_NonEE, var_Hrs, var_Quit, var_Srch, var_Wage, var_IncHH, var_IncW, var_Wshare};
      
         
-diary = xlswrite('Output\SimulStats.xls', Rec_means', 'Cycle', 'A2');
-diary = xlswrite('Output\SimulStats.xls', Exp_means(2,:)', 'Cycle', 'C2');
-diary = xlswrite('Output\SimulStats.xls', Variance(2,:)', 'Cycle', 'D2');
+diary = xlswrite(file, Rec_means', 'Cycle', 'A2');
+diary = xlswrite(file, Exp_means(2,:)', 'Cycle', 'C2');
+diary = xlswrite(file, Variance(2,:)', 'Cycle', 'D2');
 end
  
+
+    
 %---------------------------------------------------------------------------------------------%---------------------------------------------------------------------------------------------
 %EXPORT PANEL DATA
 %---------------------------------------------------------------------------------------------%---------------------------------------------------------------------------------------------
+if panelout==1
 %Set date vectors
 time = (1:1:Tsim);
 id = (1:1:Nsim_i);
@@ -1158,5 +1135,6 @@ j=0;
         end
     end
 
-
-csvwrite('Output\simdata.csv',paneldata)
+file2 = fullfile(OUTPUTdir,'simdata.csv')  ; 
+csvwrite(file2,paneldata)
+end

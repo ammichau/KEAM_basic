@@ -1,8 +1,10 @@
-% SimplerMod_vMay17.m
-clear all
+% SimplerMod_May17_splines.m
+%clear all
 
 %Set Paths
-    MAINdir = 'C:\Users\amichau9\Dropbox\DemogBCtrendsCode\Code_Simple_Model\Matlab';
+%    MAINdir = 'C:\Users\amichau9\Dropbox\DemogBCtrendsCode\Code_Simple_Model\Matlab';
+%    SOLUTIONdir = 'C:\Users\amichau9\Dropbox\DemogBCtrendsCode\Code_Simple_Model\Matlab\Solution\RoE_incr';   
+
 %--------------------------------------------------------------------------------    
 %HH problem with 
 %   1) Nonemployed search intensity 
@@ -51,6 +53,10 @@ global beta crra eta mu r xi z_h tau_wf alpha_e delta_e psi phi_c gam_e ybar_h  
  maxViter=100;
  maxHSiter=100;
  
+ %Compstat Parameters
+ alpha_e = alpha_e*rtoexpscale;
+ tau_wf = 1-wagegapscale*(1-tau_wf);
+ 
  %Recessions- z=1 expansion; z=2 recession
  piz= [0.9 , 0.1; 0.3 , 0.7];
  %Husband and wife job loss rate
@@ -80,7 +86,7 @@ global beta crra eta mu r xi z_h tau_wf alpha_e delta_e psi phi_c gam_e ybar_h  
  %Disutility    
     kapbar(1) = -0.03;  %Fixed types
     kapbar(2) = 0.00;
-    kap= ones(nT,nI).*0.2; %Base fixed cost =0.2
+    kap= ones(nT,nI).*(0.2); %Base fixed cost =0.2
     kap(2,:) = kap(2,:)*0.5; %Half the cost when middle
     kap(3,:) = kap(3,:)*0.5; %Half the cost when old
     kayscale=[3,2,1,0.9];
@@ -88,8 +94,8 @@ global beta crra eta mu r xi z_h tau_wf alpha_e delta_e psi phi_c gam_e ybar_h  
     for iw=1:2
     for j=1:4
         %four kappa types when young
-        kap(:,(iw-1)*8+(j-1)+1) = kap(:,(iw-1)*8+(j-1)+1)./kayscale(j); %for now the types scale the cost linearly
-        kap(:,(iw-1)*8+(j-1)+5) = kap(:,(iw-1)*8+(j-1)+5)./kayscale(j); %for now the types scale the cost linearly        
+        kap(:,(iw-1)*8+(j-1)+1) = kapscale.*kap(:,(iw-1)*8+(j-1)+1)./kayscale(j); %for now the types scale the cost linearly
+        kap(:,(iw-1)*8+(j-1)+5) = kapscale.*kap(:,(iw-1)*8+(j-1)+5)./kayscale(j); %for now the types scale the cost linearly        
     end
         %two fixed kappa types:
         kap(:,(iw-1)*8+1:(iw-1)*8+5) = kap(:,(iw-1)*8+1:(iw-1)*8+5)+kapbar(iw); %       
@@ -113,7 +119,8 @@ plot(egrid,w,'-',egrid,hp,'-.')
 clear hp w
 %}
 
-save('paras')
+INfile = fullfile(SOLUTIONdir,'paras.mat')  ;
+save(INfile)
 
 %-------------------------------------
 
@@ -146,7 +153,7 @@ dVedh = ones(2,nZ,nY); dVUedh = ones(2,nZ,nY);
            for ie = 1:nE
                 for iy = 1:nY
                     for iz = 1:nZ
-                       VE0(i,it,ie,iy,iz) = utilC(wageH(it)*BCwage(iz)*ym(iy)+wage(ftW(i),egrid(ie))*0.5+hprod(ftW(i))*((1-0.5)^nu_h))+utilL(0.5); 
+                       VE0(i,it,ie,iy,iz) = utilC(wageH(it)*BCwage(iz)*ym(iy)+wage(ftW(i),egrid(ie))*0.5+hprod(ftW(i))*((1-0.5)^nu_h))+utilL(0.5)-kap(it,i); 
                         VU0(i,it,ie,iy,iz) = utilC(hprod(ftW(i))*0.2+ym(iy)*wageH(nT-1)*BCwage(iz)*lamH(iz,max(iy-1,1),1));
                        V(i,it,ie,iy,iz) = max(VE0(i,it,ie,iy,iz),VU0(i,it,ie,iy,iz));
                     end 
@@ -397,9 +404,12 @@ end
    
    
 save('VUguess.mat','VU')
-save('gS.mat', 'gS')
-save('gH.mat', 'gH')
-save('gQ.mat', 'gQ')  
+
+INfile = fullfile(SOLUTIONdir,'policies.mat')  ;
+save(INfile, 'gS', 'gH', 'gQ')
+INfile = fullfile(SOLUTIONdir,'Vfuns.mat')  ;
+save(INfile, 'VU', 'VE')
+
 %**************************************************************************************************************************************
 %---------------------------------------------------------------------------------------------------------------------------------------
 
@@ -416,6 +426,6 @@ save('gQ.mat', 'gQ')
 
 
 
-
+plot(egrid,squeeze(gQ(1,2,:,1,1)),'-',egrid,squeeze(gQ(1,2,:,2,1)),'-.',egrid,squeeze(gQ(1,2,:,1,2)),'--')
 plot(egrid,squeeze(gS(1,2,:,1,1)),'-',egrid,squeeze(gS(1,2,:,2,1)),'-.',egrid,squeeze(gS(1,2,:,1,2)),'--')
 plot(egrid,squeeze(VU(1,1,:,1,1)),'-',egrid,squeeze(VE(1,1,:,1,1)),'-.',egrid,squeeze(V(1,1,:,1,1)),'--')   
