@@ -20,36 +20,39 @@
 %   -e = experience
 %   -y = husband's state (1=e, 2=recent u, 3=u)
 %   -z = Macro state 1= high, 2=low
-
+clear global
 %--------------------------------------------------------------------------------
 
 %Set Parameters
 %--------------------------------------------------------------------------------
 global beta crra eta mu r xi z_h tau_wf alpha_e delta_e psi phi_c gam_e ybar_h  alpha_h
 
- beta = 0.95;     % discount factor
+ beta = 0.97;     % discount factor
  crra = 2 ;        % curvature of cons utility
  eta = 1.2;        % curvature of leisure
- mu = 0.4 ;        % utility weight leisure
+ mu = 0.5 ;        % utility weight leisure
  r = 0.0000;        % interest rate
- alpha_e = 0.03;    %Weight on hours in returns to experience
- delta_e = 0.01;   % depreciation human capital
+ alpha_e = 0.025;    %Weight on hours in returns to experience
+ delta_e = 0.008;   % depreciation human capital 0.01
  psi = 0.8;        % curvature on hours in building experience
  %Together should satisfy: (delta_h/alpha_h)^1/psi = 0.25
  lhome = 0.1;       %Time cost when at home.
- z_h = 0.45;        % homeproduction productivity
- ybar_h = 0.2;     %home production constant 0.2
- alpha_h = 0.5;     %curvature on fixed type productivity in home production
+ z_h = 0.4;        % homeproduction productivity
+ ybar_h = 0.15;     %home production constant 0.2
+ alpha_h = 0.7;     %curvature on fixed type productivity in home production
  nu = 0.5;         % parameter on search 
- nu_h = 0.5;         % curvature on hours in home production
+ nu_h = 0.65;         % curvature on hours in home production
  ym_pi = 0.8 ;     % prob. husband income
  xi = 0.8;         % curvature of experience in wage
- gam_e = 1.5;      %weight on experience in wage
- tau_wf =0.6;       %wage gap
- phi_c = 0.6;   %scale in utility fun
+ ftWbase = 0.6;    %Base fixed type for wages
+ gam_e = 0.4;      %weight on experience in wage
+ tau_wf =0.75;       %wage gap
+ phi_c = 0.5;   %scale in utility fun
+ kapbase = 0.1; %Base kappa cost
+ kaplow = -0.02; %less cost for low type
  nI=16; nT=4; nY=3; nE=30; nZ=2;
  bisectTol = 0.00001;
- VFtol = 0.03;
+ VFtol = 0.1;
  maxViter=100;
  maxHSiter=100;
  
@@ -66,7 +69,7 @@ global beta crra eta mu r xi z_h tau_wf alpha_e delta_e psi phi_c gam_e ybar_h  
  %Husband and wife job find rate
  findW = [0.92 ; 0.85 ].*1;
  %Husband Wage by age
- wageH = [0.8; 0.8; 0.6];
+ wageH = [0.8; 0.8; 0.7];
  BCwage = [1;0.85]; %wage penalty during recession?
  ym = [1;0.75;0]; %dude is either employed, recently unemployed or unemployed
  %Aging Probabilities- 18-24; 25-39; 40-54; 55-64; 65-80
@@ -79,17 +82,17 @@ global beta crra eta mu r xi z_h tau_wf alpha_e delta_e psi phi_c gam_e ybar_h  
 %Individual types: 2 wage types, 2 fixed kappa types, 4 kappa draws when young 
     %(w_l, kapy_l, kap_1 ; w_l, kapy_l, kap_2, ... kap_4 ; w_l , kapy_h,
     %kap_1,... w_h, kapy_l kap_1...)
-    igrid=[1:1:nI];
+    igrid=(1:1:nI);
  %Wages   
-    ftW=ones(1,nI);
-    ftW(1,1:floor(nI/2)) = 0.8;
+    ftW=ones(1,nI).*ftWbase;
+    ftW(1,1:floor(nI/2)) = ftW(1,1:floor(nI/2)).*0.5;
  %Disutility    
-    kapbar(1) = -0.03;  %Fixed types
+    kapbar(1) = kaplow;  %Fixed types
     kapbar(2) = 0.00;
-    kap= ones(nT,nI).*(0.2); %Base fixed cost =0.2
+    kap= ones(nT,nI).*(kapbase); %Base fixed cost =0.2
     kap(2,:) = kap(2,:)*0.5; %Half the cost when middle
     kap(3,:) = kap(3,:)*0.5; %Half the cost when old
-    kayscale=[3,2,1,0.9];
+    kayscale=[1,0.95,0.9,0.85];
     nKy = 4; % # fixed kappa types when young
     for iw=1:2
     for j=1:4
@@ -103,7 +106,7 @@ global beta crra eta mu r xi z_h tau_wf alpha_e delta_e psi phi_c gam_e ybar_h  
  
  
 % ----- Generate a non-linear grid for experience 
-        egrid = linspace(0, 1, nE);
+        egrid = linspace(0.01, 1, nE);
         egrid= 2*(egrid.^1.5);
 
 %---Check looks of comparative adv in home production--------------------------------  
@@ -121,6 +124,7 @@ clear hp w
 
 INfile = fullfile(SOLUTIONdir,'paras.mat')  ;
 save(INfile)
+save('paras.mat')
 
 %-------------------------------------
 
@@ -161,21 +165,25 @@ dVedh = ones(2,nZ,nY); dVUedh = ones(2,nZ,nY);
            end
            end 
         end
+        
+
 %plot(egrid,squeeze(VE0(1,2,:,1,1)),egrid,squeeze(VU0(1,2,:,1,1)))
-%clear VE0          
-%load('VEguess.mat','VE0','VE')
-%clear VU0
-%load('VUguess.mat','VU0')
+
 % ----- Calculate the Value Function for t=T-1
    for it=nT-1:-1:1
  %try just one for now
  for i=1:nI
-  
-     maxViterAll = 3;
- for tVall = 1:maxViterAll
      
-tVE=1;
-while tVE<maxViter
+    V(i,it,:,:,:) = V(max(1,i-1),it,:,:,:);
+    VE0(i,it,:,:,:) = VE0(max(1,i-1),it,:,:,:);
+    VU0(i,it,:,:,:) = VU0(max(1,i-1),it,:,:,:);
+tVall=1;
+while tVall<maxViter
+%     maxViterAll = 3;
+% for tVall = 1:maxViterAll
+     
+%tVE=1;
+%while tVE<maxViter
     %Calculate policy functions: gA_Emp and gH for Employed
             for iy = 1:nY
                 for iz = 1:nZ
@@ -273,32 +281,12 @@ while tVE<maxViter
               end %iy
 
 
- V_err=abs(max(max(max(VE1(i,it,:,:,:)- VE0(i,it,:,:,:)))))
- V_err=V_err/(1+abs(max(max(max(VE0(i,it,:,:,:))))))
- plot(egrid,squeeze(gH(i,it,:,1,1)),'-',egrid,squeeze(gH(i,it,:,2,1)),'-.',egrid,squeeze(gH(i,it,:,1,2)),'--')
     VE0=VE1;
-    tVE=tVE+1
     VE=VE1;
-    tVE=tVE+1;
-if V_err<VFtol
 
-    tVE
-    tVE=maxViter+1;
-end
 
-%save('VEguess.mat','VE0' ,'VE')
-end %tVE
-
-save('VEguess.mat','VE')
-
-%load('VEguess.mat','VE0' ,'VE')
 %---------------------UNEMPLOYED------------------------------
-%clear VU0
-%load('VUguess.mat','VU0')
 
- if tVall<maxViterAll   
-tVU=1;
-while tVU<maxViter
      %Calculate policy functions: gA_Un and gS for Unemployed
            for iy = 1:nY
                 for iz = 1:nZ
@@ -366,21 +354,11 @@ while tVU<maxViter
                  end %iz
               end %iy
 
-            
- VU_err=abs(max(max(max(VU1(i,it,:,:,:)- VU0(i,it,:,:,:)))))/abs(max(max(max(VU0(i,it,:,:,:)))))
- plot(egrid,squeeze(gS(i,it,:,1,1)),'-',egrid,squeeze(gS(i,it,:,2,1)),'-.',egrid,squeeze(gS(i,it,:,1,2)),'--')
 
     VU0=VU1;
     VU=VU1; 
-    tVU=tVU+1
-if VU_err<VFtol
 
-    tVU
-    tVU=maxViter+1;
 
-end
-end
-end
  for iy = 1:nY
     for iz = 1:nZ
        for ie = 1:nE 
@@ -394,38 +372,31 @@ end
     end
  end
  
-         VallErr(tVall) = abs(max(max(max(V0(i,it,:,:,:)-V(i,it,:,:,:)))))
+         VallErr = abs(max(max(max(max(V0(i,it,:,:,:)-V(i,it,:,:,:))))))
         V=V0;
- 
+    if  VallErr <VFtol
+        tVall=maxViter+1;
+    end
 end
-
  end
    end
-   
-   
-save('VUguess.mat','VU')
+
+     
 
 INfile = fullfile(SOLUTIONdir,'policies.mat')  ;
 save(INfile, 'gS', 'gH', 'gQ')
+save('policies.mat', 'gS', 'gH', 'gQ')
 INfile = fullfile(SOLUTIONdir,'Vfuns.mat')  ;
-save(INfile, 'VU', 'VE')
+save(INfile, 'VU', 'VE', 'V')
+save('Vfuns.mat', 'VU', 'VE', 'V')
 
 %**************************************************************************************************************************************
 %---------------------------------------------------------------------------------------------------------------------------------------
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-plot(egrid,squeeze(gQ(1,2,:,1,1)),'-',egrid,squeeze(gQ(1,2,:,2,1)),'-.',egrid,squeeze(gQ(1,2,:,1,2)),'--')
-plot(egrid,squeeze(gS(1,2,:,1,1)),'-',egrid,squeeze(gS(1,2,:,2,1)),'-.',egrid,squeeze(gS(1,2,:,1,2)),'--')
+plot(egrid,squeeze(gQ(10,1,:,1,1)),'-',egrid,squeeze(gQ(10,1,:,2,1)),'-.',egrid,squeeze(gQ(10,1,:,1,2)),'--')
+plot(egrid(6:nE),squeeze(gS(10,2,6:nE,1,1)),'-',egrid(6:nE),squeeze(gS(10,2,6:nE,2,1)),'-.',egrid(6:nE),squeeze(gS(10,2,6:nE,1,2)),'--',egrid(6:nE),squeeze(gS(10,2,6:nE,2,2)),'-..')
+plot(egrid,squeeze(gH(1,2,:,1,1)),'-',egrid,squeeze(gH(1,2,:,2,1)),'-.',egrid,squeeze(gH(1,2,:,1,2)),'--')
 plot(egrid,squeeze(VU(1,1,:,1,1)),'-',egrid,squeeze(VE(1,1,:,1,1)),'-.',egrid,squeeze(V(1,1,:,1,1)),'--')   
+plot(egrid,squeeze(VU(10,1,:,1,1)),'-',egrid,squeeze(VE(10,1,:,1,1)),'-.',egrid,squeeze(V(10,1,:,1,1)),'--')

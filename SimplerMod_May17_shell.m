@@ -1,18 +1,18 @@
 %SimplerMod_May17_shell.m
 clear all
 
-%Set Main Path
-    MAINdir = 'C:\Users\amichau9\KEAM\Matlab';
-    solver = fullfile(MAINdir,'SimplerMod_May17_splines.m');
-    simulator = fullfile(MAINdir,'SimplerMod_May17_sim.m');
 %---------------------------------
 %Solve the Baseline
 %---------------------------------
 
+%Set Main Path
+    MAINdir = 'C:\Users\amichau9\KEAM\Matlab';
+    solver = fullfile(MAINdir,'SimplerMod_May17_splines.m');
+    simulator = fullfile(MAINdir,'SimplerMod_May17_sim.m');
 %Set Output Paths
-    SOLUTIONdir = 'C:\Users\amichau9\Dropbox\DemogBCtrendsCode\Code_Simple_Model\Matlab\Solution\Baseline';   
-    OUTPUTdir = 'C:\Users\amichau9\Dropbox\DemogBCtrendsCode\Code_Simple_Model\Matlab\Output\Baseline';
-    file = fullfile(OUTPUTdir,'SimulStats.xlx')  ;      
+    SOLUTIONdir = 'C:\Users\amichau9\KEAM\Matlab\Solution\Baseline';   
+    OUTPUTdir = 'C:\Users\amichau9\KEAM\Matlab\Output\Baseline';
+    file = fullfile(OUTPUTdir,'SimulStats.xls')  ;      
  
     %Choose Experiment    
     kapscale=1;
@@ -24,15 +24,20 @@ clear all
         sumstatout = 1;
         panelout = 0;
 %Run
+    cd(MAINdir);
     run(solver)
-    run(simulator)
+    %run(simulator)
 
  
 
 %---------------------------------
 %Experiment 1: Compstat on RoE
 %---------------------------------
-
+clear all
+%Set Main Path
+    MAINdir = 'C:\Users\amichau9\KEAM\Matlab';
+    solver = fullfile(MAINdir,'SimplerMod_May17_splines.m');
+    simulator = fullfile(MAINdir,'SimplerMod_May17_sim.m');
 %Set Output Paths
     SOLUTIONdir = 'C:\Users\amichau9\KEAM\Matlab\Solution\RoE_incr';   
     OUTPUTdir = 'C:\Users\amichau9\KEAM\Matlab\Output\RoE_incr';
@@ -49,6 +54,7 @@ clear all
         panelout = 0;    
         
 %Run
+    cd(MAINdir);
     run(solver)
     run(simulator)
     
@@ -68,7 +74,7 @@ clear all
     
  %Choose Experiment    
     kapscale=1;
-    wagegapscale=1.5;
+    wagegapscale=0.5;
     rtoexpscale=1;
     
 %OPTIONS:
@@ -77,6 +83,7 @@ clear all
         panelout = 0;    
         
 %Run
+    cd(MAINdir);
     run(solver)
     run(simulator)    
     
@@ -95,7 +102,7 @@ clear all
     file = fullfile(OUTPUTdir,'SimulStats2.xls')  ;      
     
  %Choose Experiment    
-    kapscale=1.5;
+    kapscale=0.9;
     wagegapscale=1;
     rtoexpscale=1;
     
@@ -105,6 +112,7 @@ clear all
         panelout = 0;    
         
 %Run
+    cd(MAINdir);
     run(solver)
     run(simulator)     
     

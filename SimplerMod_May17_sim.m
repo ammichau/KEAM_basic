@@ -7,6 +7,9 @@
     %OUTPUTdir = 'C:\Users\amichau9\Dropbox\DemogBCtrendsCode\Code_Simple_Model\Matlab\Output\RoE_incr';
     %file = fullfile(OUTPUTdir,'SimulStats.xlx')  ;  
     
+%clear global
+
+global beta crra eta mu r xi z_h tau_wf alpha_e delta_e psi phi_c gam_e ybar_h  alpha_h    
 %--------------------------------------------------------------------------------    
 %HH problem with 
 %   1) Nonemployed search intensity 
@@ -32,25 +35,28 @@
 %       -uniform on kappa
 %--------------------------------------------------------------------------------
 
-cd(SOLUTIONdir) 
-load('paras')
-load('policies')
-load('Vfuns' )
 
-cd(MAINdir)
+%cd(SOLUTIONdir) 
+%load('paras')
+%cd(SOLUTIONdir) 
+%load('policies')
+%load('Vfuns' )
 
+%cd(MAINdir)
 
     
 %Set panel size
 y0 = 1955;
 yT = 2019;
 yStart = 1973;
+yCareerEnd=1995;    %Where to stop defining careers
 Nsim=100; %Number of individuals PER SINGLE YEAR BIRTH COHORT to simulate
 Tsim_i= 39*tsize; %For the simple model: 25-39, 40-55, 56-64
 age0 = 25;
 ninter = 10; %how fine to make individ. type grids.
 
 Ngen = yT-y0; %Number of single year birth cohorts.
+NgenCareer = yCareerEnd-y0; %Where to count careers
 ScratchT = (yStart-y0)*tsize; %Where to start to begin timeseries in 1973 as in the data.
 Tsim=Ngen*tsize;
 Nsim_i=Nsim*Ngen;
@@ -75,7 +81,7 @@ end
 %Set individual types and interpolated policies.
     %First types across wages
     Wsimgrid=linspace(ftW(1,1),ftW(1,nI),ninter);
-    muW = 0.7*ftW(1,1)+0.3*ftW(1,nI);
+    muW = 0.3*ftW(1,1)+0.7*ftW(1,nI);
     sigW = (ftW(1,nI)-ftW(1,1))/2;
     pd0W = makedist('normal','mu',muW,'sigma',sigW);
     pdW = truncate(pd0W,ftW(1,1),ftW(1,nI)) ;
@@ -181,12 +187,12 @@ end
  %Set threshold for counting as NILF
     muS = mean(mean(mean(mean(mean(ggS)))));
     mnS = min(min(min(min(min(ggS)))));
-    NiLFbar = 0.5*muS+0.5*mnS;
+    NiLFbar = 0.16; % 0.5*muS+0.5*mnS;
  
  %Set threshold for counting as FT
     muS = mean(mean(mean(mean(mean(ggH)))));
     mnS = min(min(min(min(min(ggH)))));
-    FTbar = 0.5*muS+0.5*mnS;
+    FTbar = 0.34;
     
   clear mnS muS
     
@@ -259,7 +265,7 @@ zsim = ones(size(year,2),1);
 %Initial experience type. Uniform for now.
 exp_i= zeros(Nsim_i,Tsim);
 rng(207);  %Same seed- area codes
-esim0 = randi([floor(nE/3),nE],Nsim,1);
+esim0 = randi([floor(nE/3),floor(0.95*nE)],Nsim,1);
         for i=1:Ngen
             for ie=1:Nsim
                exp_i((i-1)*Nsim+ie,(i-1)*4+1) = egrid(esim0(ie,1));
@@ -389,7 +395,7 @@ for in=1:Ngen-1  %Loop over age year cohort generations. Toss last generation.
                 else
                     Q = ggQ(i,Age_i(ii,tt),size(egrid,2),iy,iz);
                 end   
-                    if Q< Qtoss_i(ii,tt)
+                    if Q> Qtoss_i(ii,tt)
                         Quit_i(ii,tt)=1;
                         EmpI_i(ii,tt)=0;
                     end
@@ -464,7 +470,7 @@ for in=1:Ngen-1  %Loop over age year cohort generations. Toss last generation.
                      else
                          Q = ggQ(i,Age_i(ii,tt),size(egrid,2),iy,iz);
                      end                 
-                    if Q< Qtoss_i(ii,tt)
+                    if Q> Qtoss_i(ii,tt)
                         Quit_i(ii,tt)=1;                                  
                     %Wife job loss
                     elseif LWsim_i(ii,tt)< lossW(iz)
@@ -843,37 +849,45 @@ end
 %-------------------------------------
 
 %1) find career type
-ageFT =zeros(Nsim_i,3);
-ageEmp =zeros(Nsim_i,3);
-ageAlive = zeros(Nsim_i,3);
-cyclewoman = zeros(Nsim_i,1);
-careerwoman = zeros(Nsim_i,1);
-PTwoman = zeros(Nsim_i,1);
-NiLFwoman = zeros(Nsim_i,1);
+ageFT =zeros(Nsim*NgenCareer,3);
+ageEmp =zeros(Nsim*NgenCareer,3);
+ageAlive = zeros(Nsim*NgenCareer,3);
+cyclewoman = zeros(Nsim*NgenCareer,1);
+careerwoman = zeros(Nsim*NgenCareer,1);
+PTwoman = zeros(Nsim*NgenCareer,1);
+NiLFwoman = zeros(Nsim*NgenCareer,1);
 
-    for in=1:Ngen-1  %Loop over age year cohort generations. Toss last generation.
+    for in=1:NgenCareer-1  %Loop over age year cohort generations. Toss ones we see too little
         for i=1:Nsim %Loop over individuals in that cohort- also is individual's fixed type   
             ii = (in-1)*Nsim+i; %Individual's ID
-        for it=1:Tsim_i
+        for it=12:Tsim_i
             tt = (in-1)*4+it;    %Year-Quarter place in time 
-            if tt<Tsim+1 && Age_i(ii,it)>0
-                   ageEmp(ii,Age_i(ii,it)) = ageEmp(ii,Age_i(ii,it))+ EmpI_i(ii,tt); 
-                   ageAlive(ii,Age_i(ii,it)) = ageAlive(ii,Age_i(ii,it))+ Alive_i(ii,tt);
-                   ageFT(ii,Age_i(ii,it)) = ageFT(ii,Age_i(ii,it)) + FT_i(ii,tt);
+            if tt<Tsim+1 && Age_i(ii,tt)>0
+                   ageEmp(ii,Age_i(ii,tt)) = ageEmp(ii,Age_i(ii,tt))+ EmpI_i(ii,tt); 
+                   ageAlive(ii,Age_i(ii,tt)) = ageAlive(ii,Age_i(ii,tt))+ Alive_i(ii,tt);
+                   ageFT(ii,Age_i(ii,tt)) = ageFT(ii,Age_i(ii,tt)) + FT_i(ii,tt);
             end
         end
-        ageEmpR(ii,:) = ageEmp(ii,:)./ageAlive(ii,:);
-        EmpR_i(ii) = mean(ageEmp(ii,:)./ageAlive(ii,:));
-        if EmpR_i(ii)>0.7
-            if sum(ageFT(ii,:))/sum(ageEmp(ii,:)) > 0.8
+        for ia =1:3
+            if ageEmp(ii,ia)>0
+                ageEmpR(ii,ia) = ageEmp(ii,ia)/ageAlive(ii,ia);
+            else
+                ageEmpR(ii,ia) = 0;
+            end
+        end
+            EmpR_i(ii) = mean(ageEmpR(ii,1:2));        
+        if EmpR_i(ii)>0.8
+            if sum(ageFT(ii,:))/sum(ageEmp(ii,:)) > 0.7
                 careerwoman(ii) = 1;
             else
                 PTwoman(ii) = 1;
             end
         elseif ageEmpR(ii,1)<0.5*ageEmpR(ii,2)
             cyclewoman(ii) = 1;
-        elseif EmpR_i(ii)<0.5
+        elseif EmpR_i(ii)<0.3
             NiLFwoman(ii) =1;
+        else
+            UnDeftot(ii) = 1;
         end
         end         
     end
@@ -882,11 +896,13 @@ ptWtot = sum(PTwoman);
 cycleWtot = sum(cyclewoman);
 careerWtot = sum(careerwoman);
 nilfWtot = sum(NiLFwoman);
+%UnDeftot = sum(UnDef);
 
 ptWrate = ptWtot/(ptWtot+cycleWtot+careerWtot+nilfWtot)
 cycleWrate = cycleWtot/(ptWtot+cycleWtot+careerWtot+nilfWtot)
 careerWrate = careerWtot/(ptWtot+cycleWtot+careerWtot+nilfWtot)
 nilfWrate = nilfWtot/(ptWtot+cycleWtot+careerWtot+nilfWtot)
+%UnDefrate = UnDeftot/(ptWtot+cycleWtot+careerWtot+nilfWtot+UnDeftot)
 
 if sumstatout==1
 
