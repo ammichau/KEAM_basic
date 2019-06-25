@@ -1,4 +1,4 @@
-%SimplerMod_May17_shell.m
+%SimplerMod_May1 7_shell.m
 clear all
 
 %---------------------------------
@@ -6,12 +6,12 @@ clear all
 %---------------------------------
 
 %Set Main Path
-    MAINdir = 'C:\Users\amichau9\KEAM\Matlab';
-    solver = fullfile(MAINdir,'SimplerMod_May17_splines.m');
+    MAINdir = 'C:\Users\amichau9\Desktop\Matlab';
+    solver = fullfile(MAINdir,'SimplerMod_May17_splines_betteronBC.m');
     simulator = fullfile(MAINdir,'SimplerMod_May17_sim.m');
 %Set Output Paths
-    SOLUTIONdir = 'C:\Users\amichau9\KEAM\Matlab\Solution\Baseline';   
-    OUTPUTdir = 'C:\Users\amichau9\KEAM\Matlab\Output\Baseline';
+    SOLUTIONdir = 'C:\Users\amichau9\Desktop\Matlab\Solution\Baseline';   
+    OUTPUTdir = 'C:\Users\amichau9\Desktop\Matlab\Output\Baseline';
     file = fullfile(OUTPUTdir,'SimulStats.xls')  ;      
  
     %Choose Experiment    
@@ -26,21 +26,21 @@ clear all
 %Run
     cd(MAINdir);
     run(solver)
-    %run(simulator)
+    run(simulator)
 
- 
+
 
 %---------------------------------
 %Experiment 1: Compstat on RoE
 %---------------------------------
 clear all
 %Set Main Path
-    MAINdir = 'C:\Users\amichau9\KEAM\Matlab';
-    solver = fullfile(MAINdir,'SimplerMod_May17_splines.m');
+    MAINdir = 'C:\Users\ammic\Desktop\Matlab';
+    solver = fullfile(MAINdir,'SimplerMod_May17_splines_betteronBC.m');
     simulator = fullfile(MAINdir,'SimplerMod_May17_sim.m');
 %Set Output Paths
-    SOLUTIONdir = 'C:\Users\amichau9\KEAM\Matlab\Solution\RoE_incr';   
-    OUTPUTdir = 'C:\Users\amichau9\KEAM\Matlab\Output\RoE_incr';
+    SOLUTIONdir = 'C:\Users\ammic\Desktop\Matlab\Solution\RoE_incr';   
+    OUTPUTdir = 'C:\Users\ammic\Desktop\Matlab\Output\RoE_incr';
     file = fullfile(OUTPUTdir,'SimulStats2.xls')  ;      
     
  %Choose Experiment    
@@ -51,7 +51,7 @@ clear all
 %OPTIONS:
 %   %EXPORT DATA?
         sumstatout = 1;
-        panelout = 0;    
+        panelout = 1;    
         
 %Run
     cd(MAINdir);
@@ -64,23 +64,23 @@ clear all
 clear all
 
 %Set Main Path
-    MAINdir = 'C:\Users\amichau9\KEAM\Matlab';
-    solver = fullfile(MAINdir,'SimplerMod_May17_splines.m');
+    MAINdir = 'C:\Users\ammic\Desktop\Matlab';
+    solver = fullfile(MAINdir,'SimplerMod_May17_splines_betteronBC.m');
     simulator = fullfile(MAINdir,'SimplerMod_May17_sim.m');
 %Set Output Paths
-    SOLUTIONdir = 'C:\Users\amichau9\KEAM\Matlab\Solution\Wgap_dcr';   
-    OUTPUTdir = 'C:\Users\amichau9\KEAM\Matlab\Output\Wgap_dcr';
+    SOLUTIONdir = 'C:\Users\ammic\Desktop\Matlab\Solution\Wgap_dcr';   
+    OUTPUTdir = 'C:\Users\ammic\Desktop\Matlab\Output\Wgap_dcr';
     file = fullfile(OUTPUTdir,'SimulStats2.xls')  ;      
     
  %Choose Experiment    
     kapscale=1;
-    wagegapscale=0.5;
+    wagegapscale=0.8;
     rtoexpscale=1;
     
 %OPTIONS:
 %   %EXPORT DATA?
         sumstatout = 1;
-        panelout = 0;    
+        panelout = 1;    
         
 %Run
     cd(MAINdir);
@@ -93,12 +93,12 @@ clear all
 clear all
 
 %Set Main Path
-    MAINdir = 'C:\Users\amichau9\KEAM\Matlab';
-    solver = fullfile(MAINdir,'SimplerMod_May17_splines.m');
+    MAINdir = 'C:\Users\ammic\Desktop\Matlab';
+    solver = fullfile(MAINdir,'SimplerMod_May17_splines_betteronBC.m');
     simulator = fullfile(MAINdir,'SimplerMod_May17_sim.m');
 %Set Output Paths
-    SOLUTIONdir = 'C:\Users\amichau9\KEAM\Matlab\Solution\Kap_dcr';   
-    OUTPUTdir = 'C:\Users\amichau9\KEAM\Matlab\Output\Kap_dcr';
+    SOLUTIONdir = 'C:\Users\ammic\Desktop\Matlab\Solution\Kap_dcr';   
+    OUTPUTdir = 'C:\Users\ammic\Desktop\Matlab\Output\Kap_dcr';
     file = fullfile(OUTPUTdir,'SimulStats2.xls')  ;      
     
  %Choose Experiment    
@@ -109,7 +109,7 @@ clear all
 %OPTIONS:
 %   %EXPORT DATA?
         sumstatout = 1;
-        panelout = 0;    
+        panelout = 1;    
         
 %Run
     cd(MAINdir);

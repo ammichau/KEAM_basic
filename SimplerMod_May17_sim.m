@@ -81,7 +81,7 @@ end
 %Set individual types and interpolated policies.
     %First types across wages
     Wsimgrid=linspace(ftW(1,1),ftW(1,nI),ninter);
-    muW = 0.3*ftW(1,1)+0.7*ftW(1,nI);
+    muW = 0.5*ftW(1,1)+0.5*ftW(1,nI);
     sigW = (ftW(1,nI)-ftW(1,1))/2;
     pd0W = makedist('normal','mu',muW,'sigma',sigW);
     pdW = truncate(pd0W,ftW(1,1),ftW(1,nI)) ;
@@ -187,12 +187,12 @@ end
  %Set threshold for counting as NILF
     muS = mean(mean(mean(mean(mean(ggS)))));
     mnS = min(min(min(min(min(ggS)))));
-    NiLFbar = 0.16; % 0.5*muS+0.5*mnS;
+    NiLFbar = 0.2; % 0.5*muS+0.5*mnS;
  
  %Set threshold for counting as FT
     muS = mean(mean(mean(mean(mean(ggH)))));
     mnS = min(min(min(min(min(ggH)))));
-    FTbar = 0.34;
+    FTbar = 0.39;
     
   clear mnS muS
     
@@ -265,7 +265,7 @@ zsim = ones(size(year,2),1);
 %Initial experience type. Uniform for now.
 exp_i= zeros(Nsim_i,Tsim);
 rng(207);  %Same seed- area codes
-esim0 = randi([floor(nE/3),floor(0.95*nE)],Nsim,1);
+esim0 = randi([floor(0.4*nE),floor(0.6*nE)],Nsim,1);
         for i=1:Ngen
             for ie=1:Nsim
                exp_i((i-1)*Nsim+ie,(i-1)*4+1) = egrid(esim0(ie,1));
@@ -849,13 +849,13 @@ end
 %-------------------------------------
 
 %1) find career type
-ageFT =zeros(Nsim*NgenCareer,3);
-ageEmp =zeros(Nsim*NgenCareer,3);
-ageAlive = zeros(Nsim*NgenCareer,3);
-cyclewoman = zeros(Nsim*NgenCareer,1);
-careerwoman = zeros(Nsim*NgenCareer,1);
-PTwoman = zeros(Nsim*NgenCareer,1);
-NiLFwoman = zeros(Nsim*NgenCareer,1);
+ageFT =zeros(Nsim*Ngen,3);
+ageEmp =zeros(Nsim*Ngen,3);
+ageAlive = zeros(Nsim*Ngen,3);
+cyclewoman = zeros(Nsim*Ngen,1);
+careerwoman = zeros(Nsim*Ngen,1);
+PTwoman = zeros(Nsim*Ngen,1);
+NiLFwoman = zeros(Nsim*Ngen,1);
 
     for in=1:NgenCareer-1  %Loop over age year cohort generations. Toss ones we see too little
         for i=1:Nsim %Loop over individuals in that cohort- also is individual's fixed type   
@@ -1111,7 +1111,7 @@ end
     
 %Convert to long
 j=0;
-    for in=1:Ngen-1  %Loop over age year cohort generations. Toss last generation.
+    for in=1:Ngen-5  %Loop over age year cohort generations. Toss last generation.
         for i=1:Nsim %Loop over individuals in that cohort- also is individual's fixed type            
             ii = (in-1)*Nsim+i; %Individual's ID
         for it=1:Tsim_i

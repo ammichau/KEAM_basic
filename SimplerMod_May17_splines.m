@@ -29,27 +29,27 @@ global beta crra eta mu r xi z_h tau_wf alpha_e delta_e psi phi_c gam_e ybar_h  
 
  beta = 0.97;     % discount factor
  crra = 2 ;        % curvature of cons utility
- eta = 1.2;        % curvature of leisure
+ eta = 1.4;        % curvature of leisure
  mu = 0.5 ;        % utility weight leisure
  r = 0.0000;        % interest rate
- alpha_e = 0.025;    %Weight on hours in returns to experience
- delta_e = 0.008;   % depreciation human capital 0.01
+ alpha_e = 0.026;    %Weight on hours in returns to experience
+ delta_e = 0.005;   % depreciation human capital 0.01
  psi = 0.8;        % curvature on hours in building experience
+ xi = 0.85;         % curvature of experience in wage
  %Together should satisfy: (delta_h/alpha_h)^1/psi = 0.25
- lhome = 0.1;       %Time cost when at home.
- z_h = 0.4;        % homeproduction productivity
- ybar_h = 0.15;     %home production constant 0.2
- alpha_h = 0.7;     %curvature on fixed type productivity in home production
- nu = 0.5;         % parameter on search 
- nu_h = 0.65;         % curvature on hours in home production
+ lhome = 0.0;       %Time cost when at home.
+ z_h = 0.45;        % homeproduction productivity
+ ybar_h = 0.1;     %home production constant 0.2
+ alpha_h = 0.2;     %curvature on fixed type productivity in home production
+ nu = 0.4;         % parameter on search 
+ nu_h = 0.5;         % curvature on hours in home production
  ym_pi = 0.8 ;     % prob. husband income
- xi = 0.8;         % curvature of experience in wage
- ftWbase = 0.6;    %Base fixed type for wages
- gam_e = 0.4;      %weight on experience in wage
- tau_wf =0.75;       %wage gap
+ ftWbase = 1.0;    %Base fixed type for wages
+ gam_e = 0.5;      %weight on experience in wage
+ tau_wf =0.8;       %wage gap
  phi_c = 0.5;   %scale in utility fun
- kapbase = 0.1; %Base kappa cost
- kaplow = -0.02; %less cost for low type
+ kapbase = 0.075; %Base kappa cost
+ kaplow = -0.04; %less cost for low type
  nI=16; nT=4; nY=3; nE=30; nZ=2;
  bisectTol = 0.00001;
  VFtol = 0.1;
@@ -57,19 +57,20 @@ global beta crra eta mu r xi z_h tau_wf alpha_e delta_e psi phi_c gam_e ybar_h  
  maxHSiter=100;
  
  %Compstat Parameters
- alpha_e = alpha_e*rtoexpscale;
+ gam_e = gam_e*rtoexpscale;
+ %alpha_e = alpha_e*(rtoexpscale);
  tau_wf = 1-wagegapscale*(1-tau_wf);
  
  %Recessions- z=1 expansion; z=2 recession
  piz= [0.9 , 0.1; 0.3 , 0.7];
  %Husband and wife job loss rate
- lossW = [0.03 ; 0.05 ];
+ lossW = [0.04 ; 0.07 ];
  lamH(1,:,:,:) = [0.96, 0.0, 0.04 ; 0.3, 0.60, 0.1 ; 0.0, 0.95, 0.05]; %(iz,EE,ES,EU; 
  lamH(2,:,:,:) = [0.93, 0.0, 0.07; 0.25, 0.60, 0.15 ; 0.0, 0.88, 0.12];
  %Husband and wife job find rate
- findW = [0.92 ; 0.85 ].*1;
+ findW = [0.8 ; 0.5 ].*1;
  %Husband Wage by age
- wageH = [0.8; 0.8; 0.7];
+ wageH = [0.8; 0.8; 0.78];
  BCwage = [1;0.85]; %wage penalty during recession?
  ym = [1;0.75;0]; %dude is either employed, recently unemployed or unemployed
  %Aging Probabilities- 18-24; 25-39; 40-54; 55-64; 65-80
@@ -90,9 +91,9 @@ global beta crra eta mu r xi z_h tau_wf alpha_e delta_e psi phi_c gam_e ybar_h  
     kapbar(1) = kaplow;  %Fixed types
     kapbar(2) = 0.00;
     kap= ones(nT,nI).*(kapbase); %Base fixed cost =0.2
-    kap(2,:) = kap(2,:)*0.5; %Half the cost when middle
-    kap(3,:) = kap(3,:)*0.5; %Half the cost when old
-    kayscale=[1,0.95,0.9,0.85];
+    kap(2,:) = kap(2,:)*1; %Half the cost when middle
+    kap(3,:) = kap(3,:)*1; %Half the cost when old
+    kayscale=[1.0,0.9,0.85,0.5];
     nKy = 4; % # fixed kappa types when young
     for iw=1:2
     for j=1:4
@@ -157,7 +158,7 @@ dVedh = ones(2,nZ,nY); dVUedh = ones(2,nZ,nY);
            for ie = 1:nE
                 for iy = 1:nY
                     for iz = 1:nZ
-                       VE0(i,it,ie,iy,iz) = utilC(wageH(it)*BCwage(iz)*ym(iy)+wage(ftW(i),egrid(ie))*0.5+hprod(ftW(i))*((1-0.5)^nu_h))+utilL(0.5)-kap(it,i); 
+                       VE0(i,it,ie,iy,iz) = utilC(wageH(it)*BCwage(iz)*ym(iy)+BCwage(iz)*wage(ftW(i),egrid(ie))*0.5+hprod(ftW(i))*((1-0.5)^nu_h))+utilL(0.5)-kap(it,i); 
                         VU0(i,it,ie,iy,iz) = utilC(hprod(ftW(i))*0.2+ym(iy)*wageH(nT-1)*BCwage(iz)*lamH(iz,max(iy-1,1),1));
                        V(i,it,ie,iy,iz) = max(VE0(i,it,ie,iy,iz),VU0(i,it,ie,iy,iz));
                     end 
@@ -194,9 +195,9 @@ while tVall<maxViter
                         ith=1;
                         while ith<maxHSiter
                             h=0.5*(hlow+hhigh);
-                        YY = wageH(it)*BCwage(iz)*ym(iy)+wage(ftW(i),egrid(ie))*h+hprod(ftW(i))*((1-h)^nu_h);
+                        YY = wageH(it)*BCwage(iz)*ym(iy)+BCwage(iz)*wage(ftW(i),egrid(ie))*h+hprod(ftW(i))*((1-h)^nu_h);
                         YYplot(ie,iy,iz) = YY;
-                        dUCdh = du_dC(YY)*(wage(ftW(i),egrid(ie))-hprod(ftW(i))*nu_h*(1-h)^(nu_h-1));
+                        dUCdh = du_dC(YY)*(BCwage(iz)*wage(ftW(i),egrid(ie))-hprod(ftW(i))*nu_h*(1-h)^(nu_h-1));
                         dULdh = du_dL(h);
                         %Find gridpont for e' 
                         ee = exp2(egrid(ie),h); 
