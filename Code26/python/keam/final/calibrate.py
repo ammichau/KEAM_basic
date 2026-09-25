@@ -47,6 +47,8 @@ def apply_params(base: FinalParams, x: dict) -> FinalParams:
               lam_f=(x["lam_f0"], 0.85 * x["lam_f0"]), lam_u=(x["lam_u0"], x["lam_u1"]),
               ybar_h=x["ybar_h"], sd_kT=x["sd_kT"])
     kw.update({n: x[n] for n in OPTIONAL_PARAMS if n in x})
+    # carry through any other calibrated field of FinalParams (e.g. home_young_mult, nu_h, z_h, alpha_h)
+    kw.update({k: v for k, v in x.items() if k in FinalParams.__dataclass_fields__ and k not in kw})
     return base.replace(**kw)
 
 

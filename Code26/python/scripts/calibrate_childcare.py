@@ -14,17 +14,22 @@ ap = argparse.ArgumentParser()
 ap.add_argument("--maxfev", type=int, default=180)
 ap.add_argument("--tag", type=str, default="childcare")
 ap.add_argument("--x0", type=str, default="")
+ap.add_argument("--extra", type=str, default="", help="extra calibrated FinalParams fields, comma-separated (e.g. alpha_h)")
 a = ap.parse_args()
 HERE = os.path.dirname(os.path.abspath(__file__))
-C.BOUNDS.update({"home_young_mult": (1.0, 3.0), "nu_h": (0.3, 0.8), "z_h": (0.3, 0.6)})
-for n in ["home_young_mult", "nu_h", "z_h"]:
+C.BOUNDS.update({"home_young_mult": (1.0, 3.0), "nu_h": (0.3, 0.8), "z_h": (0.3, 0.6), "alpha_h": (0.05, 1.5),
+                 "e_max": (1.5, 4.0), "theta_e": (0.005, 0.05)})
+extra = [n for n in a.extra.split(",") if n]
+for n in ["home_young_mult", "nu_h", "z_h"] + extra:
     if n not in C.OPTIONAL_PARAMS:
         C.OPTIONAL_PARAMS.append(n)
-names = C.PARAM_NAMES + ["home_young_mult", "nu_h", "z_h"]
+names = C.PARAM_NAMES + ["home_young_mult", "nu_h", "z_h"] + extra
 base = FinalParams(n_omega=3, n_kbar=3, n_km=3)
 cfg = SimConfigFinal(N=60, n_cohorts=90)
 x0 = json.load(open(os.path.join(HERE, "..", "output", "x0_km14.json")))["x"]
 x0.update(km_max=4.0, home_young_mult=1.5, nu_h=0.65, z_h=0.45)
+for n in extra:
+    x0.setdefault(n, getattr(FinalParams(), n))
 if a.x0:
     x0.update(json.load(open(a.x0))["x"])
 log = os.path.join(HERE, "..", "output", f"final_calib_{a.tag}.log"); open(log, "w").close()
