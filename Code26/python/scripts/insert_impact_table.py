@@ -6,12 +6,12 @@ csv = os.path.join(HERE, "..", "output", "departure_impacts.csv")
 doc = os.path.join(HERE, "..", "..", "..", "DEPARTURES.md")
 df = pd.read_csv(csv, index_col=0)
 keep = ["E/pop (all ages)", "hours | E", "quit rate/qtr (exp)", "quit rate/qtr (rec)",
-        "E->nonE/qtr (exp)", "dE/pop rec-exp (pts)", "dHours rec-exp (%)", "wife inc share (exp)",
+        "E->nonE/qtr (exp)", "dE/pop rec-exp (pts)", "dE/pop rec-all (pts, MATLAB)", "wife inc share (exp)",
         "share PT", "share Lifecycle", "share Career", "share NiLF", "share undefined (of all)",
         "share person-qtrs e > grid max", "mean gQ (working ages)", "max|dV| vs faithful"]
 short = {"E/pop (all ages)": "E/pop", "hours | E": "hours|E", "quit rate/qtr (exp)": "quit/q exp",
          "quit rate/qtr (rec)": "quit/q rec", "E->nonE/qtr (exp)": "E→nonE/q", "dE/pop rec-exp (pts)": "ΔE rec-exp (pts)",
-         "dHours rec-exp (%)": "Δhours rec (%)", "wife inc share (exp)": "wife share", "share PT": "PT",
+         "dE/pop rec-all (pts, MATLAB)": "ΔE rec-all (pts)", "wife inc share (exp)": "wife share", "share PT": "PT",
          "share Lifecycle": "Lifecycle", "share Career": "Career", "share NiLF": "NiLF",
          "share undefined (of all)": "undefined", "share person-qtrs e > grid max": "e>grid",
          "mean gQ (working ages)": "mean gQ", "max|dV| vs faithful": "max|ΔV|"}

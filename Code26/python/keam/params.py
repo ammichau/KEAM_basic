@@ -43,8 +43,8 @@ class Options:
     #: D-S8  loose VFI tolerance (0.1 in value units) and previous type's
     #: value as the initial guess.  False: tolerance `vf_tol_corrected`.
     loose_vf_tolerance: bool = True
-    vf_tol_corrected: float = 1e-7
-    max_vf_iter_corrected: int = 5000
+    vf_tol_corrected: float = 1e-6
+    max_vf_iter_corrected: int = 3000
 
     # ---- simulator (SimplerMod_May17_sim.m) --------------------------------
     #: D-M1 interpolation weights in experience are reversed (weight on the

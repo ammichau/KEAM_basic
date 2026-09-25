@@ -24,7 +24,7 @@ def moments(r: SimResult, sol: Solution | None = None, nilfdef_alt: float | None
         "dE/pop rec-exp (pts)": 100 * (cy["Emp"]["rec"] - cy["Emp"]["exp"]),
         "dE/pop rec-all (pts, MATLAB)": 100 * (cy_all["Emp"]["rec"] - cy_all["Emp"]["exp"]),
         "dHours rec-exp (%)": 100 * (cy["Hours"]["rec"] / cy["Hours"]["exp"] - 1),
-        "wife inc share (exp)": cy["Wshare"]["exp"],
+        "wife inc share (exp)": cy["Wshare"]["exp"], "wife inc share (rec)": cy["Wshare"]["rec"],
         "share PT": ca["PT"], "share Lifecycle": ca["Cycle"], "share Career": ca["Career"],
         "share NiLF": ca["NiLF"], "share undefined (of all)": ca["Undefined"],
         "share person-qtrs e > grid max": e_over,
