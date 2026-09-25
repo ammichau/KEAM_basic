@@ -1,0 +1,30 @@
+{
+ "x": {
+  "mu": 1.0969461541734833,
+  "kbar_max": 0.06786603714335383,
+  "km_max": 8.000770753459655,
+  "tau_w": 0.8,
+  "lam_f0": 0.40074055486624477,
+  "lam_u0": 0.01707535895910945,
+  "lam_u1": 0.01896028905746846,
+  "ybar_h": 0.10116460087666533,
+  "sd_kT": 0.2999703927112902
+ },
+ "obj": 1.8561324182920536,
+ "dev": {
+  "E/pop": -0.066,
+  "hours|E": 0.042,
+  "share Lifecycle": -0.644,
+  "share PT": -0.34,
+  "share Career": 0.659,
+  "share NiLF": 0.772,
+  "quit/m exp": 0.062,
+  "quit/m rec": 0.013,
+  "E->nonE/m exp": 0.071,
+  "E->nonE/m rec": -0.013,
+  "dE/pop rec-exp (pts)": -0.075,
+  "wage gap (hourly ratio)": 0.161
+ },
+ "n_eval": 25,
+ "note": "partial round 2 (cloud, 4 cores), stopped: superseded by the workstation search from km_max=14"
+}

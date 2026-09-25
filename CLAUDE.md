@@ -35,8 +35,13 @@ lower cost of work) make it more cyclical, a closing wage gap less so. Reference
      The wage-gap moment is the hourly wage ratio with the husband at 2,000 hours/year.
    - A second coarse run from (`km_max` 8, `kbar_max` 0.06) was started in the cloud
      (`output/final_calib_coarse2.*`); if it is present, start from its best point.
-   Remaining tension: career and NiLF shares too high, part-time too low. Levers: `mu`,
-   `ybar_h` (home production level), the hours grid (`h_min`, `nH`), and possibly `nu_h`.
+   Remaining tension: career and NiLF shares too high, part-time too low.
+   `scripts/explore_parttime.py` (`output/explore_parttime.json`, cloud): raising `z_h` from
+   0.45 to 0.65 collapses employment (0.59 -> 0.36); lowering `nu_h` from 0.65 to 0.45 raises
+   part-time 16% -> 20% and lowers NiLF 37% -> 24% at the cost of employment (0.59 -> 0.67,
+   too high) and the objective. Recommendation: add `nu_h` (bounds 0.3-0.8) and `z_h`
+   (0.3-0.6) to the calibrated parameters (OPTIONAL_PARAMS) together with `delta_e`.
+   Cloud partial round 2 (`output/final_calib_coarse2_partial.json`, objective 1.86, km_max 8).
 
 ## Plan (execute autonomously, commit and push after each step)
 
