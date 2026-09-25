@@ -3,3 +3,4 @@ __pycache__/
 solution_faithful_*.npz
 output/*.log
 .venv/
+output/calibrate_*.out
