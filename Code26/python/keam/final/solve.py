@@ -159,7 +159,10 @@ def _solve_one(args):
     return solve_type(p, om, kb, km_, VR)
 
 
-def solve_all(p: FinalParams, verbose=False, n_jobs: int = 4) -> FinalSolution:
+def solve_all(p: FinalParams, verbose=False, n_jobs: int | None = None) -> FinalSolution:
+    import os
+    if n_jobs is None:
+        n_jobs = int(os.environ.get("KEAM_NJOBS", os.cpu_count() or 1))
     omega, kbar, km = make_types(p)
     nK = omega.size
     VR = solve_retirement(p)

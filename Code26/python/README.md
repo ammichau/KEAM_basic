@@ -55,3 +55,24 @@ print(stats.summary_table(r))
 Array conventions follow MATLAB: `gH[i, it, ie, iy, iz]`, ages `it = 0,1,2`
 working and `3` retired, husband state `iy = 0` employed, `1` recently
 unemployed, `2` unemployed, aggregate state `iz = 0` expansion, `1` recession.
+
+## Final model (`keam/final`) on a multicore machine
+
+The per-type solve parallelises across cores (`KEAM_NJOBS` or `--n-jobs`; default: all
+cores). One evaluation of the 100-type model takes about 65 s on 4 cores, so on a
+32-core workstation expect roughly 10 s per evaluation.
+
+```bash
+pip install numpy scipy pandas
+export KEAM_NJOBS=32                                 # or pass --n-jobs 32
+# global screening (Latin hypercube, 300 points) + Nelder-Mead from the 3 best, 100 types
+python scripts/calibrate_final.py --global 300 --starts 3 --maxfev 400 --tag full
+# quicker: 27-type grid
+python scripts/calibrate_final.py --coarse --global 200 --starts 3 --maxfev 300 --tag coarse2
+# results (baseline, sized experiments, cohort accounting, counterfactuals)
+python scripts/run_final.py --calib output/final_calib_full.json --full
+```
+
+Progress is written one JSON line per evaluation to `output/final_calib_<tag>.log`; the
+best point and its moments go to `output/final_calib_<tag>.json`. Targets and bounds are
+in `keam/final/calibrate.py` (`TARGETS`, `BOUNDS`, `WEIGHT`).

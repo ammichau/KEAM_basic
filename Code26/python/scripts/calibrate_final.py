@@ -7,14 +7,19 @@ import sys, os, json, argparse, time, warnings
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 warnings.simplefilter("ignore")
 from keam.final import FinalParams, SimConfigFinal
-from keam.final.calibrate import run_smm, evaluate, TARGETS
+from keam.final.calibrate import run_smm, evaluate, TARGETS, global_screen
 
 ap = argparse.ArgumentParser()
 ap.add_argument("--coarse", action="store_true")
 ap.add_argument("--maxfev", type=int, default=150)
 ap.add_argument("--x0", type=str, default="")
 ap.add_argument("--tag", type=str, default="coarse")
+ap.add_argument("--n-jobs", type=int, default=0, help="worker processes (default: all cores or $KEAM_NJOBS)")
+ap.add_argument("--global", dest="n_global", type=int, default=0, help="Latin-hypercube screening points before the local search")
+ap.add_argument("--starts", type=int, default=1, help="number of best screening points to polish with Nelder-Mead")
 a = ap.parse_args()
+if a.n_jobs:
+    os.environ["KEAM_NJOBS"] = str(a.n_jobs)
 HERE = os.path.dirname(os.path.abspath(__file__))
 base = FinalParams(n_omega=3, n_kbar=3, n_km=3) if a.coarse else FinalParams()
 cfg = SimConfigFinal(N=60, n_cohorts=90)
@@ -25,8 +30,21 @@ if a.x0:
 log = os.path.join(HERE, "..", "output", f"final_calib_{a.tag}.log")
 open(log, "w").close()
 t0 = time.time()
-best, hist, res = run_smm(base, x0, cfg, log, maxfev=a.maxfev)
-out = dict(x=best["x"], obj=best["obj"], moments=best["m"], targets=TARGETS, n_eval=len(hist),
+starts = [x0]
+n_eval = 0
+if a.n_global:
+    screened = global_screen(base, cfg, a.n_global, log)
+    n_eval += len(screened)
+    print("screening done; best objectives:", [round(r["obj"], 2) for r in screened[:5]], flush=True)
+    starts = [r["x"] for r in screened[: a.starts]]
+best = None
+for k, xs in enumerate(starts):
+    b, hist, res = run_smm(base, xs, cfg, log, maxfev=a.maxfev)
+    n_eval += len(hist)
+    print(f"local search {k + 1}/{len(starts)}: best objective {b['obj']:.3f}", flush=True)
+    if best is None or b["obj"] < best["obj"]:
+        best = b
+out = dict(x=best["x"], obj=best["obj"], moments=best["m"], targets=TARGETS, n_eval=n_eval,
            seconds=time.time() - t0, coarse=a.coarse)
 json.dump(out, open(os.path.join(HERE, "..", "output", f"final_calib_{a.tag}.json"), "w"), indent=1)
 print("best objective", best["obj"], "after", len(hist), "evaluations")

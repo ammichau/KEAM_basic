@@ -17,7 +17,7 @@ from .simulate import simulate_final, SimConfigFinal
 from .moments import moments_final
 
 
-def run(p: FinalParams, cfg: SimConfigFinal, n_jobs=4):
+def run(p: FinalParams, cfg: SimConfigFinal, n_jobs=None):
     sol = solve_all(p, n_jobs=n_jobs)
     sim = simulate_final(p, sol, cfg)
     return moments_final(sim), sol, sim
@@ -39,7 +39,7 @@ def returns_scaled(p: FinalParams, scale: float) -> FinalParams:
     return p.replace(gam_e=p.gam_e * scale)
 
 
-def size_to_employment(make, p, cfg, target_E, lo, hi, tol=0.004, maxit=8, n_jobs=4):
+def size_to_employment(make, p, cfg, target_E, lo, hi, tol=0.004, maxit=8, n_jobs=None):
     """Find the scale such that E/pop hits target_E (bisection, few evaluations)."""
     cache = {}
 
@@ -65,7 +65,7 @@ def size_to_employment(make, p, cfg, target_E, lo, hi, tol=0.004, maxit=8, n_job
     return mid, cache[mid], cache
 
 
-def counterfactuals(p: FinalParams, cfg: SimConfigFinal, n_jobs=4):
+def counterfactuals(p: FinalParams, cfg: SimConfigFinal, n_jobs=None):
     out = {}
     out["baseline"] = run(p, cfg, n_jobs)[0]
     # acyclical husband job-loss risk (expansion values in both states)

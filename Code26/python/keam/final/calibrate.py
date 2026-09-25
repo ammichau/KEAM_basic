@@ -68,7 +68,7 @@ def objective_from_moments(m):
     return tot, parts
 
 
-def evaluate(base: FinalParams, x: dict, cfg: SimConfigFinal, n_jobs=4):
+def evaluate(base: FinalParams, x: dict, cfg: SimConfigFinal, n_jobs=None):
     p = apply_params(base, x)
     sol = solve_all(p, n_jobs=n_jobs)
     sim = simulate_final(p, sol, cfg)
@@ -77,7 +77,7 @@ def evaluate(base: FinalParams, x: dict, cfg: SimConfigFinal, n_jobs=4):
     return obj, m, parts, p
 
 
-def run_smm(base: FinalParams, x0: dict, cfg: SimConfigFinal, log_path: str, maxfev=150, n_jobs=4):
+def run_smm(base: FinalParams, x0: dict, cfg: SimConfigFinal, log_path: str, maxfev=150, n_jobs=None):
     hist = []
     t0 = time.time()
 
@@ -94,3 +94,23 @@ def run_smm(base: FinalParams, x0: dict, cfg: SimConfigFinal, log_path: str, max
                    options=dict(maxfev=maxfev, xatol=1e-3, fatol=1e-4, initial_simplex=None))
     best = min(hist, key=lambda h: h["obj"])
     return best, hist, res
+
+
+def global_screen(base: FinalParams, cfg: SimConfigFinal, n_points: int, log_path: str, seed=0, n_jobs=None):
+    """Latin-hypercube screening of the bounded parameter box (scipy.stats.qmc). Returns the
+    evaluated points sorted by objective; each point is appended to the log."""
+    from scipy.stats import qmc
+    sampler = qmc.LatinHypercube(d=len(PARAM_NAMES), seed=seed)
+    U = sampler.random(n_points)
+    lo = np.array([BOUNDS[n][0] for n in PARAM_NAMES]); hi = np.array([BOUNDS[n][1] for n in PARAM_NAMES])
+    pts = lo + U * (hi - lo)
+    out = []; t0 = time.time()
+    for i, row in enumerate(pts):
+        x = dict(zip(PARAM_NAMES, row))
+        obj, m, parts, _ = evaluate(base, x, cfg, n_jobs)
+        out.append(dict(obj=obj, x=x, m={k: float(v) for k, v in m.items() if isinstance(v, (float, int))}))
+        with open(log_path, "a") as fh:
+            fh.write(json.dumps(dict(stage="global", n=i + 1, t=round(time.time() - t0), obj=obj, x=x,
+                                     dev={k: round(v, 3) for k, v in parts.items()})) + "\n")
+    out.sort(key=lambda r: r["obj"])
+    return out
