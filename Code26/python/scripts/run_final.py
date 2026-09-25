@@ -69,3 +69,9 @@ md.append(table(cf, "Mechanism counterfactuals (baseline parameters)")); print(m
 md.append(f"\nElapsed {time.time()-t0:.0f}s. Calibration file: {a.calib}\n")
 out = a.out or os.path.join(HERE, "..", "output", f"final_results_{'full' if a.full else 'coarse'}.md")
 open(out, "w").write("\n".join(md)); print("saved", out)
+fl = lambda d: {k: float(v) for k, v in d.items() if isinstance(v, (int, float, np.floating))}
+json.dump(dict(calib=a.calib, full=a.full, baseline=fl(base_m),
+               scales={"returns": s_roe, "wage_gap": s_wg, "cost": s_k}, experiments={k: fl(v) for k, v in ex.items()},
+               cohort_cost_scale={str(k): v for k, v in cscale.items()}, cohorts={k: fl(v) for k, v in crow.items()},
+               counterfactuals={k: fl(v) for k, v in cf.items()}),
+          open(out[:-3] + ".json", "w"), indent=1)
