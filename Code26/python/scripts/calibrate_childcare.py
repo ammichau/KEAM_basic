@@ -15,6 +15,8 @@ ap.add_argument("--maxfev", type=int, default=180)
 ap.add_argument("--tag", type=str, default="childcare")
 ap.add_argument("--x0", type=str, default="")
 ap.add_argument("--extra", type=str, default="", help="extra calibrated FinalParams fields, comma-separated (e.g. alpha_h)")
+ap.add_argument("--full", action="store_true", help="100-type grid (default: 27 types)")
+ap.add_argument("--n-jobs", type=int, default=0)
 a = ap.parse_args()
 HERE = os.path.dirname(os.path.abspath(__file__))
 C.BOUNDS.update({"home_young_mult": (1.0, 3.0), "nu_h": (0.3, 0.8), "z_h": (0.3, 0.6), "alpha_h": (0.05, 1.5),
@@ -24,7 +26,9 @@ for n in ["home_young_mult", "nu_h", "z_h"] + extra:
     if n not in C.OPTIONAL_PARAMS:
         C.OPTIONAL_PARAMS.append(n)
 names = C.PARAM_NAMES + ["home_young_mult", "nu_h", "z_h"] + extra
-base = FinalParams(n_omega=3, n_kbar=3, n_km=3)
+if a.n_jobs:
+    os.environ["KEAM_NJOBS"] = str(a.n_jobs)
+base = FinalParams() if a.full else FinalParams(n_omega=3, n_kbar=3, n_km=3)
 cfg = SimConfigFinal(N=60, n_cohorts=90)
 x0 = json.load(open(os.path.join(HERE, "..", "output", "x0_km14.json")))["x"]
 x0.update(km_max=4.0, home_young_mult=1.5, nu_h=0.65, z_h=0.45)
@@ -36,7 +40,7 @@ log = os.path.join(HERE, "..", "output", f"final_calib_{a.tag}.log"); open(log, 
 t0 = time.time()
 best, hist, res = C.run_smm(base, x0, cfg, log, maxfev=a.maxfev, names=names)
 out = dict(x=best["x"], obj=best["obj"], moments=best["m"], targets=C.TARGETS, n_eval=len(hist),
-           seconds=time.time() - t0, coarse=True, names=names)
+           seconds=time.time() - t0, coarse=not a.full, names=names)
 json.dump(out, open(os.path.join(HERE, "..", "output", f"final_calib_{a.tag}.json"), "w"), indent=1)
 print("best objective", round(best["obj"], 3), "after", len(hist), "evaluations")
 for k, v in best["x"].items():
