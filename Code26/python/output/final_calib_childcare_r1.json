@@ -1,0 +1,33 @@
+{
+ "x": {
+  "mu": 0.929494252916421,
+  "kbar_max": 0.04491356445145542,
+  "km_max": 4.251627878502522,
+  "tau_w": 0.8,
+  "lam_f0": 0.39997305409691525,
+  "lam_u0": 0.01717744198104933,
+  "lam_u1": 0.020470834771792814,
+  "ybar_h": 0.09094000634228477,
+  "sd_kT": 0.30000121296196597,
+  "home_young_mult": 1.4931033904185718,
+  "nu_h": 0.6483822865406828,
+  "z_h": 0.45
+ },
+ "obj": 0.7515350193920629,
+ "dev": {
+  "E/pop": 0.022,
+  "hours|E": 0.099,
+  "share Lifecycle": -0.215,
+  "share PT": -0.417,
+  "share Career": 0.436,
+  "share NiLF": 0.457,
+  "quit/m exp": 0.038,
+  "quit/m rec": -0.063,
+  "E->nonE/m exp": 0.059,
+  "E->nonE/m rec": -0.03,
+  "dE/pop rec-exp (pts)": -0.167,
+  "wage gap (hourly ratio)": 0.148
+ },
+ "n_eval": 60,
+ "note": "child-care round 1 (tau_w, sd_kT, z_h frozen by the simplex bug), stopped"
+}

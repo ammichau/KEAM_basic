@@ -100,8 +100,12 @@ def run_smm(base: FinalParams, x0: dict, cfg: SimConfigFinal, log_path: str, max
                                      dev={k: round(v, 3) for k, v in parts.items()})) + "\n")
         return obj
 
-    res = minimize(fun, _to_unit(x0, names), method="Nelder-Mead",
-                   options=dict(maxfev=maxfev, xatol=1e-3, fatol=1e-4, initial_simplex=None))
+    z0 = _to_unit(x0, names)
+    # explicit initial simplex: scipy's default perturbs each coordinate by 5% of its value, which is
+    # ~0 for a parameter that starts at the midpoint of its bounds (logit = 0) and freezes it.
+    simplex = np.vstack([z0] + [z0 + 0.6 * np.eye(len(z0))[i] for i in range(len(z0))])
+    res = minimize(fun, z0, method="Nelder-Mead",
+                   options=dict(maxfev=maxfev, xatol=1e-3, fatol=1e-4, initial_simplex=simplex))
     best = min(hist, key=lambda h: h["obj"])
     return best, hist, res
 
