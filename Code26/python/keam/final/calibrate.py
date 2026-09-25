@@ -6,6 +6,11 @@ Targets (slides p.30, 35, 37; unemployment rate assumed) and the parameters that
 Parameters: mu, kbar_max, km_max, tau_w, lam_f (expansion; recession = 0.85x),
   lam_u (expansion and recession), ybar_h, sd_kT (transitory cost shock). s_bar (unemployment
   definition) is fixed at 0.25; the unemployment rate and the wife's income share are reported, not targeted.
+Optionally the experience depreciation delta_e (`OPTIONAL_PARAMS`; `names=PARAM_NAMES + ["delta_e"]`).
+
+Bounds: km_max up to 15, kbar_max up to 1.0. With km_max <= 6 the life-cycle career share cannot
+exceed about 9% (scripts/explore_lifecycle.py, output/explore_lifecycle.out); it keeps rising beyond
+10 (scripts/explore_experience.py, output/explore_experience.out).
 """
 from __future__ import annotations
 import json, os, time
@@ -31,29 +36,31 @@ WEIGHT.update({"E/pop": 3.0, "hours|E": 2.0, "quit/m exp": 2.0, "quit/m rec": 2.
                "share Lifecycle": 1.5})
 
 PARAM_NAMES = ["mu", "kbar_max", "km_max", "tau_w", "lam_f0", "lam_u0", "lam_u1", "ybar_h", "sd_kT"]
-BOUNDS = {"mu": (0.2, 5.0), "kbar_max": (0.005, 0.6), "km_max": (1.0, 15.0), "tau_w": (0.4, 1.2),
+BOUNDS = {"mu": (0.2, 5.0), "kbar_max": (0.005, 1.0), "km_max": (1.0, 15.0), "tau_w": (0.4, 1.2),
           "lam_f0": (0.05, 0.9), "lam_u0": (0.003, 0.05), "lam_u1": (0.003, 0.08), "ybar_h": (0.0, 0.6),
-          "sd_kT": (0.001, 0.6)}
+          "sd_kT": (0.001, 0.6), "delta_e": (0.001, 0.008)}
+OPTIONAL_PARAMS = ["delta_e"]
 
 
 def apply_params(base: FinalParams, x: dict) -> FinalParams:
     kw = dict(mu=x["mu"], kbar_max=x["kbar_max"], km_max=x["km_max"], tau_w=x["tau_w"],
               lam_f=(x["lam_f0"], 0.85 * x["lam_f0"]), lam_u=(x["lam_u0"], x["lam_u1"]),
               ybar_h=x["ybar_h"], sd_kT=x["sd_kT"])
+    kw.update({n: x[n] for n in OPTIONAL_PARAMS if n in x})
     return base.replace(**kw)
 
 
-def _to_unit(x):   # map params to R via logit of the bounded interval
+def _to_unit(x, names=PARAM_NAMES):   # map params to R via logit of the bounded interval
     z = []
-    for n in PARAM_NAMES:
+    for n in names:
         lo, hi = BOUNDS[n]; u = (x[n] - lo) / (hi - lo); u = min(max(u, 1e-6), 1 - 1e-6)
         z.append(np.log(u / (1 - u)))
     return np.array(z)
 
 
-def _from_unit(z):
+def _from_unit(z, names=PARAM_NAMES):
     x = {}
-    for n, v in zip(PARAM_NAMES, z):
+    for n, v in zip(names, z):
         lo, hi = BOUNDS[n]; x[n] = lo + (hi - lo) / (1 + np.exp(-v))
     return x
 
@@ -79,12 +86,13 @@ def evaluate(base: FinalParams, x: dict, cfg: SimConfigFinal, n_jobs=None):
     return obj, m, parts, p
 
 
-def run_smm(base: FinalParams, x0: dict, cfg: SimConfigFinal, log_path: str, maxfev=150, n_jobs=None):
+def run_smm(base: FinalParams, x0: dict, cfg: SimConfigFinal, log_path: str, maxfev=150, n_jobs=None,
+            names=PARAM_NAMES):
     hist = []
     t0 = time.time()
 
     def fun(z):
-        x = _from_unit(z)
+        x = _from_unit(z, names)
         obj, m, parts, _ = evaluate(base, x, cfg, n_jobs)
         hist.append(dict(obj=obj, x=x, m={k: float(v) for k, v in m.items() if isinstance(v, (float, int))}))
         with open(log_path, "a") as fh:
@@ -92,23 +100,24 @@ def run_smm(base: FinalParams, x0: dict, cfg: SimConfigFinal, log_path: str, max
                                      dev={k: round(v, 3) for k, v in parts.items()})) + "\n")
         return obj
 
-    res = minimize(fun, _to_unit(x0), method="Nelder-Mead",
+    res = minimize(fun, _to_unit(x0, names), method="Nelder-Mead",
                    options=dict(maxfev=maxfev, xatol=1e-3, fatol=1e-4, initial_simplex=None))
     best = min(hist, key=lambda h: h["obj"])
     return best, hist, res
 
 
-def global_screen(base: FinalParams, cfg: SimConfigFinal, n_points: int, log_path: str, seed=0, n_jobs=None):
+def global_screen(base: FinalParams, cfg: SimConfigFinal, n_points: int, log_path: str, seed=0, n_jobs=None,
+                  names=PARAM_NAMES):
     """Latin-hypercube screening of the bounded parameter box (scipy.stats.qmc). Returns the
     evaluated points sorted by objective; each point is appended to the log."""
     from scipy.stats import qmc
-    sampler = qmc.LatinHypercube(d=len(PARAM_NAMES), seed=seed)
+    sampler = qmc.LatinHypercube(d=len(names), seed=seed)
     U = sampler.random(n_points)
-    lo = np.array([BOUNDS[n][0] for n in PARAM_NAMES]); hi = np.array([BOUNDS[n][1] for n in PARAM_NAMES])
+    lo = np.array([BOUNDS[n][0] for n in names]); hi = np.array([BOUNDS[n][1] for n in names])
     pts = lo + U * (hi - lo)
     out = []; t0 = time.time()
     for i, row in enumerate(pts):
-        x = dict(zip(PARAM_NAMES, row))
+        x = dict(zip(names, row))
         obj, m, parts, _ = evaluate(base, x, cfg, n_jobs)
         out.append(dict(obj=obj, x=x, m={k: float(v) for k, v in m.items() if isinstance(v, (float, int))}))
         with open(log_path, "a") as fh:
