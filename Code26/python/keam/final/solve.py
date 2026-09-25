@@ -89,8 +89,9 @@ def solve_type(p: FinalParams, omega: float, kbar: float, km: float, VR: np.ndar
         cE = (w[:, None, None, :, None, None] * hg[None, None, None, None, :, None]
               + fh[None, None, None, None, :, None] + yH[tau][None, None, :, :, None, None]
               + ag[None, :, None, None, None, None] - ag[None, None, None, None, None, :])
+        kap_h = kap * (hg / 0.4) ** p.kappa_h_power if p.kappa_h_power > 0 else np.full(nH, kap)
         flowE = np.where(cE > 1e-8, u(np.maximum(cE, 1e-8), p.gamma), -1e10) \
-            - p.mu * hg[None, None, None, None, :, None] ** (1 + p.eta) / (1 + p.eta) - kap
+            - p.mu * hg[None, None, None, None, :, None] ** (1 + p.eta) / (1 + p.eta) - kap_h[None, None, None, None, :, None]
         cN = (fs[None, None, None, None, :, None] + yH[tau][None, None, :, :, None, None]
               + ag[None, :, None, None, None, None] - ag[None, None, None, None, None, :])
         flowN = np.where(cN > 1e-8, u(np.maximum(cN, 1e-8), p.gamma), -1e10)

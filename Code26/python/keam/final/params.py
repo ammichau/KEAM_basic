@@ -29,6 +29,7 @@ class FinalParams:
     alpha_h: float = 0.21
     nu_h: float = 0.65
     home_young_mult: float = 1.0        # multiplier on f(omega) at ages 25-39 (child care); 1 = off
+    kappa_h_power: float = 0.0          # fixed cost scales with (h/0.4)^p; 0 = pure fixed cost (paper)
     # ---------------- search / job loss (monthly) ----------------
     nu: float = 0.5             # search efficiency curvature (slides p.29)
     lam_f: tuple = (0.40, 0.34)   # job-finding efficiency, expansion / recession (15% lower)
