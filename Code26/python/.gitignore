@@ -1,0 +1,4 @@
+__pycache__/
+*.pyc
+solution_faithful_*.npz
+output/*.log
