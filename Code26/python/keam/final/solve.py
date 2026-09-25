@@ -56,8 +56,6 @@ def solve_type(p: FinalParams, omega: float, kbar: float, km: float, VR: np.ndar
     phi = np.array([1.0, p.phi_rec])
     w = phi[None, :] * p.tau_w * omega * (1 + p.gam_e * eg[:, None] ** p.xi)      # (nE, nZ)
     f = p.ybar_h + p.z_h * omega ** p.alpha_h
-    fh = f * (1 - hg) ** p.nu_h                                                     # (nH,)
-    fs = f * (1 - sg) ** p.nu_h                                                     # (nS,)
     yH = p.y_husband()                                                              # (nT, nY, nZ)
     lamH = p.lamH()                                                                 # (nZ, nY, nY)
     lam_u = np.asarray(p.lam_u); lam_f = np.asarray(p.lam_f)
@@ -84,6 +82,9 @@ def solve_type(p: FinalParams, omega: float, kbar: float, km: float, VR: np.ndar
 
     for tau in range(nT - 1, -1, -1):
         kap = kbar * (km if tau == 0 else 1.0)
+        f_tau = f * (p.home_young_mult if tau == 0 else 1.0)
+        fh = f_tau * (1 - hg) ** p.nu_h                                             # (nH,)
+        fs = f_tau * (1 - sg) ** p.nu_h                                             # (nS,)
         # flow utilities (independent of V): employed (e, a, y, z, h, a'), non-employed (e, a, y, z, s, a')
         cE = (w[:, None, None, :, None, None] * hg[None, None, None, None, :, None]
               + fh[None, None, None, None, :, None] + yH[tau][None, None, :, :, None, None]

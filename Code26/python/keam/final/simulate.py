@@ -129,8 +129,9 @@ def simulate_final(p: FinalParams, sol: FinalSolution, cfg: SimConfigFinal | Non
         # non-employed
         s = _interp2(sol.gS, ktype, tau, ek, ew, ak, aw, y, z)
         aN = _interp2(sol.gAN, ktype, tau, ek, ew, ak, aw, y, z)
-        incE = w * h + f * (1 - h) ** p.nu_h + yh
-        incN = f * (1 - s) ** p.nu_h + yh
+        f_t = f * (p.home_young_mult if tau == 0 else 1.0)
+        incE = w * h + f_t * (1 - h) ** p.nu_h + yh
+        incN = f_t * (1 - s) ** p.nu_h + yh
         aE = np.minimum(aE, a + incE - 1e-6); aN = np.minimum(aN, a + incN - 1e-6)
         a_next = np.where(work, aE, aN)
         c = np.where(work, incE + a - aE, incN + a - aN)
