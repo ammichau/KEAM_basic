@@ -24,7 +24,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 base = FinalParams(n_omega=3, n_kbar=3, n_km=3) if a.coarse else FinalParams()
 cfg = SimConfigFinal(N=60, n_cohorts=90)
 x0 = dict(mu=1.0, kbar_max=0.075, km_max=2.27, tau_w=0.80, lam_f0=0.40, lam_u0=0.017, lam_u1=0.022,
-          ybar_h=0.11, s_bar=0.25, sd_kT=0.30)
+          ybar_h=0.11, sd_kT=0.30)
 if a.x0:
     x0.update(json.load(open(a.x0))["x"])
 log = os.path.join(HERE, "..", "output", f"final_calib_{a.tag}.log")

@@ -23,12 +23,20 @@ lower cost of work) make it more cyclical, a closing wage gap less so. Reference
    author: monthly period, 30% replacement rate for the husband's unemployment income,
    compensated wage-gap experiment (household income held constant at baseline behaviour,
    income share moved toward the wife), assets with a borrowing constraint.
-3. The 1940s-cohort calibration is NOT finished. A single Nelder-Mead run on the 27-type grid
-   (`Code26/python/output/final_calib_coarse.*`) stalls at objective 3.6: quit rates, hours,
-   employment and the wage gap are close, but the life-cycle career share stays near 2%
-   against a 31% target (the young-age cost multiplier `km_max` never gets large enough for
-   high-productivity women to stay out at 25-39 and return at 40). Career and NiLF shares
-   are too high, the wife's income share too high.
+3. The 1940s-cohort calibration is NOT finished. Findings so far (27-type grid):
+   - A first Nelder-Mead run (`output/final_calib_coarse.*`) stalled at objective 3.6 with the
+     life-cycle career share near 2% (target 31%) because the young-age cost multiplier
+     `km_max` was bounded at 6.
+   - `scripts/explore_lifecycle.py` (`output/explore_lifecycle.json`) shows the life-cycle
+     share rising with `km_max`: 2% at 3, 6% at 4.5, 9% at 6, 12% at 8 (with `kbar_max`
+     0.06); objective 2.27 at (8, 0.06). Bounds were widened to `km_max` <= 15.
+   - The unemployment rate and the wife's income share are model outputs on slides p.36-37,
+     not calibration targets; they were removed from `TARGETS`. `s_bar` is fixed at 0.25.
+     The wage-gap moment is the hourly wage ratio with the husband at 2,000 hours/year.
+   - A second coarse run from (`km_max` 8, `kbar_max` 0.06) was started in the cloud
+     (`output/final_calib_coarse2.*`); if it is present, start from its best point.
+   Remaining tension: career and NiLF shares too high, part-time too low. Levers: `mu`,
+   `ybar_h` (home production level), the hours grid (`h_min`, `nH`), and possibly `nu_h`.
 
 ## Plan (execute autonomously, commit and push after each step)
 
@@ -41,7 +49,8 @@ Work on branch `claude/hopeful-ride-vbnou4`. Use all cores (`KEAM_NJOBS` = numbe
    the experience process is the obstacle (a woman out for 15 years loses 55% of e; consider
    whether `delta_e` or `e_max` should be part of the calibration).
 3. Calibrate on the full 100-type grid:
-   `python scripts/calibrate_final.py --global 300 --starts 3 --maxfev 400 --tag full`.
+   `python scripts/calibrate_final.py --global 300 --starts 3 --maxfev 400 --tag full`
+   (add `--x0 output/final_calib_coarse2.json` to seed the local searches from the best coarse point).
    Report the fit of every target in `TARGETS`. If a target cannot be reached, say which and
    why, do not silently drop it.
 4. Produce results: `python scripts/run_final.py --calib output/final_calib_full.json --full`.

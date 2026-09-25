@@ -48,10 +48,11 @@ def moments_final(sim: FinalSim, window=None) -> dict:
     out["wife share exp"] = float(IW[exp_].sum() / (IW[exp_] + IH[exp_]).sum())
     out["wife share rec"] = float(IW[rec].sum() / (IW[rec] + IH[rec]).sum())
     out["HH income rec/exp - 1 (%)"] = 100 * (ratio(IW + IH, pop, rec) / ratio(IW + IH, pop, exp_) - 1)
-    # wage gap: full-time-equivalent monthly earnings of employed wives / husband income when employed
+    # wage gap: hourly wage ratio; the husband is assumed to work 2,000 hours (0.5 of the endowment)
     wE = (sim.wage * sim.emp * inwin).sum() / max((sim.emp * inwin).sum(), 1)
     hE_mask = (sim.hstat == 0) & inwin
     yHm = (sim.inc_h * hE_mask).sum() / max(hE_mask.sum(), 1)
+    out["wage gap (hourly ratio)"] = float(0.5 * wE / yHm)
     out["wage gap (FTE earnings ratio)"] = float(0.4 * wE / yHm)
     # careers: annual hours over ages 25-54 (life months 0..359), cohorts fully inside the window
     m0, m1, _ = p.age_months

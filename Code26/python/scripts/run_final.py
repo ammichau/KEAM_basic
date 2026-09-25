@@ -25,7 +25,7 @@ base = FinalParams() if a.full else FinalParams(n_omega=3, n_kbar=3, n_km=3)
 p = apply_params(base, calib["x"])
 cfg = SimConfigFinal(N=60, n_cohorts=90)
 KEYS = ["E/pop", "hours|E", "U rate", "quit/m exp", "quit/m rec", "E->nonE/m exp", "E->nonE/m rec",
-        "dE/pop rec-exp (pts)", "wife share exp", "wife share rec", "wage gap (FTE earnings ratio)",
+        "dE/pop rec-exp (pts)", "wife share exp", "wife share rec", "wage gap (hourly ratio)",
         "share Lifecycle", "share PT", "share Career", "share NiLF", "HH income rec/exp - 1 (%)",
         "cons drop at H job loss exp (%)", "cons drop at H job loss rec (%)", "mean assets/monthly HH inc"]
 

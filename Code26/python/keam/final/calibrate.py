@@ -4,7 +4,8 @@ Targets (slides p.30, 35, 37; unemployment rate assumed) and the parameters that
   employment rate, hours, career shares, monthly quit and E->nonE rates by cycle, employment
   drop in recessions, within-couple wage gap, unemployment rate, wife's income share.
 Parameters: mu, kbar_max, km_max, tau_w, lam_f (expansion; recession = 0.85x),
-  lam_u (expansion and recession), ybar_h, s_bar, sd_kT (transitory cost shock).
+  lam_u (expansion and recession), ybar_h, sd_kT (transitory cost shock). s_bar (unemployment
+  definition) is fixed at 0.25; the unemployment rate and the wife's income share are reported, not targeted.
 """
 from __future__ import annotations
 import json, os, time
@@ -19,25 +20,26 @@ TARGETS = {
     "E/pop": 0.62, "hours|E": 0.40,
     "share Lifecycle": 0.31, "share PT": 0.28, "share Career": 0.19, "share NiLF": 0.22,
     "quit/m exp": 0.034, "quit/m rec": 0.028, "E->nonE/m exp": 0.050, "E->nonE/m rec": 0.048,
-    "dE/pop rec-exp (pts)": -1.7, "wage gap (FTE earnings ratio)": 0.71, "U rate": 0.05,
-    "wife share exp": 0.225,
+    "dE/pop rec-exp (pts)": -1.7, "wage gap (hourly ratio)": 0.71,
 }
+# NOT targeted (model outputs on slides p.36-37): unemployment rate, wife's share of income.
 # scale for each target (deviation divided by this); percentage-point moments use absolute scales
 SCALE = {k: v for k, v in TARGETS.items()}
 SCALE["dE/pop rec-exp (pts)"] = 1.0
 WEIGHT = {k: 1.0 for k in TARGETS}
-WEIGHT.update({"E/pop": 3.0, "hours|E": 2.0, "quit/m exp": 2.0, "quit/m rec": 2.0, "wage gap (FTE earnings ratio)": 2.0})
+WEIGHT.update({"E/pop": 3.0, "hours|E": 2.0, "quit/m exp": 2.0, "quit/m rec": 2.0, "wage gap (hourly ratio)": 2.0,
+               "share Lifecycle": 1.5})
 
-PARAM_NAMES = ["mu", "kbar_max", "km_max", "tau_w", "lam_f0", "lam_u0", "lam_u1", "ybar_h", "s_bar", "sd_kT"]
-BOUNDS = {"mu": (0.2, 5.0), "kbar_max": (0.005, 0.6), "km_max": (1.0, 6.0), "tau_w": (0.4, 1.2),
+PARAM_NAMES = ["mu", "kbar_max", "km_max", "tau_w", "lam_f0", "lam_u0", "lam_u1", "ybar_h", "sd_kT"]
+BOUNDS = {"mu": (0.2, 5.0), "kbar_max": (0.005, 0.6), "km_max": (1.0, 15.0), "tau_w": (0.4, 1.2),
           "lam_f0": (0.05, 0.9), "lam_u0": (0.003, 0.05), "lam_u1": (0.003, 0.08), "ybar_h": (0.0, 0.6),
-          "s_bar": (0.02, 0.9), "sd_kT": (0.001, 0.6)}
+          "sd_kT": (0.001, 0.6)}
 
 
 def apply_params(base: FinalParams, x: dict) -> FinalParams:
     kw = dict(mu=x["mu"], kbar_max=x["kbar_max"], km_max=x["km_max"], tau_w=x["tau_w"],
               lam_f=(x["lam_f0"], 0.85 * x["lam_f0"]), lam_u=(x["lam_u0"], x["lam_u1"]),
-              ybar_h=x["ybar_h"], s_bar=x["s_bar"], sd_kT=x["sd_kT"])
+              ybar_h=x["ybar_h"], sd_kT=x["sd_kT"])
     return base.replace(**kw)
 
 
