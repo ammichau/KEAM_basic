@@ -4,3 +4,4 @@ solution_faithful_*.npz
 output/*.log
 .venv/
 output/calibrate_*.out
+output/*.pid
