@@ -22,8 +22,11 @@ the table at the end lists what is calibrated.
 * **Wage:** w = φ(Z) τ_w ω (1 + γ_e e^ξ) with γ_e = 0.5, ξ = 0.8, φ(rec) = 0.88.
 * **Experience:** e' = min(2, (1−δ)e + θ e h^ψ) while employed, e' = (1−δ)e otherwise;
   δ = 0.005, θ = 0.025, ψ = 0.66 (slides p.28, monthly). Initial e uniform on [0.2, 1.0].
-* **Home production:** f(ω)(1−h)^{ν_h} with f = ȳ_h + z_h ω^{α_h}, z_h = 0.45, α_h = 0.21,
-  ν_h = 0.65; the non-employed use f(ω)(1−s)^{ν_h}.
+* **Home production:** f(ω)(1−h)^{ν_h} with f = ȳ_h + z_h ω^{α_h}; the non-employed use
+  f(ω)(1−s)^{ν_h}. **Child care:** at ages 25-39 home productivity is multiplied by
+  m_c ≥ 1 (`home_young_mult`), the paper's "opportunity cost of home production around
+  child bearing" (p.12); together with the utility-cost multiplier κ_m this generates the
+  life-cycle women. ȳ_h, z_h, α_h, ν_h and m_c are calibrated (see below).
 * **Search and job loss:** job finding s^ν λ_f(Z), ν = 0.5, λ_f(rec) = 0.85 λ_f(exp);
   exogenous job loss λ_u(Z). A non-employed woman counts as unemployed if s ≥ s̄.
 * **Husband:** states E, R (re-employed with scar), U. Monthly transitions: E→U 1.35%
@@ -82,9 +85,11 @@ equivalent monthly earnings to the employed husband's monthly income.
 | κ̄_max, κ_m,max | cost of work levels | career shares (LC 31, PT 28, career 19, NiLF 22) |
 | σ_κ | transitory cost shock | monthly quit rates 3.4% / 2.8% |
 | τ_w | wage penalty | wage gap 0.71 |
-| λ_f | job-finding efficiency | employment 0.62, U rate 5% |
+| λ_f | job-finding efficiency | employment 0.62 |
 | λ_u(exp), λ_u(rec) | exogenous loss | E→nonE 5.0% / 4.8% |
-| ȳ_h | home production level | wife share of income 22.5% |
-| s̄ | unemployment definition | U rate 5% |
+| ȳ_h, z_h, α_h, ν_h | home production level, its slope in ω, curvature in hours | NiLF and part-time shares, hours |
+| m_c (child-care multiplier) | home productivity at 25-39 | life-cycle share |
 
-Externally set: β, γ, η, γ_e, ξ, φ, δ, θ, ψ, z_h, α_h, ν_h, ν, husband process, ageing, pension.
+Externally set: β, γ, η, γ_e, ξ, φ, δ, θ, ψ, ν, s̄ = 0.25, husband process, ageing, pension.
+Not targeted, reported: unemployment rate, wife's share of income, consumption response to the
+husband's job loss, assets.

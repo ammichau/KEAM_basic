@@ -42,6 +42,16 @@ lower cost of work) make it more cyclical, a closing wage gap less so. Reference
    too high) and the objective. Recommendation: add `nu_h` (bounds 0.3-0.8) and `z_h`
    (0.3-0.6) to the calibrated parameters (OPTIONAL_PARAMS) together with `delta_e`.
    Cloud partial round 2 (`output/final_calib_coarse2_partial.json`, objective 1.86, km_max 8).
+   - NEW INGREDIENT (cloud): a child-care multiplier on home productivity at ages 25-39
+     (`home_young_mult` in FinalParams, default 1 = off). `scripts/explore_childcare.py` shows it
+     generates life-cycle women far more economically than the utility-cost multiplier alone.
+     `scripts/calibrate_childcare.py` calibrates it jointly with nu_h, z_h (and `--extra alpha_h`).
+     Round 2 (`output/final_calib_childcare2.json/.md`, 27 types): objective 0.21, all targets
+     within 10% except NiLF 29% (target 22%) and the wage gap 0.82 (target 0.71). Round 3 with
+     alpha_h calibrated is running in the cloud (`output/final_calib_childcare3.*`).
+   - The SMM initial simplex was fixed (parameters starting at a bound midpoint were frozen).
+   - The routine/trigger channel does NOT deliver into a CLI remote-control session; the
+     workstation session must be given its job by the author in the Claude Code app.
 
 ## Plan (execute autonomously, commit and push after each step)
 
@@ -53,11 +63,12 @@ Work on branch `claude/hopeful-ride-vbnou4`. Use all cores (`KEAM_NJOBS` = numbe
    (`km_max` up to 10, `kbar_max` up to 1.0) in `keam/final/calibrate.py` and check whether
    the experience process is the obstacle (a woman out for 15 years loses 55% of e; consider
    whether `delta_e` or `e_max` should be part of the calibration).
-3. Calibrate on the full 100-type grid:
-   `python scripts/calibrate_final.py --global 300 --starts 3 --maxfev 400 --tag full`
-   (add `--x0 output/final_calib_coarse2.json` to seed the local searches from the best coarse point).
-   Report the fit of every target in `TARGETS`. If a target cannot be reached, say which and
-   why, do not silently drop it.
+3. Calibrate on the full 100-type grid, starting from the best coarse child-care point:
+   copy `scripts/calibrate_childcare.py`, change `base = FinalParams()` (100 types), run it with
+   `--x0 output/final_calib_childcare3.json --extra alpha_h --maxfev 300 --tag full` (or from
+   `childcare2.json` if round 3 is absent), on all cores in the background. Then
+   `python scripts/calib_table.py output/final_calib_full.json > output/final_calib_full.md`.
+   Report the fit of every target; if one cannot be reached, say which and why.
 4. Produce results: `python scripts/run_final.py --calib output/final_calib_full.json --full`.
    This writes baseline moments, the three single-factor experiments sized to the 1970s
    employment rate, the cohort accounting and the mechanism counterfactuals to
