@@ -51,7 +51,8 @@ log = os.path.join(HERE, "..", "output", f"final_calib_{a.tag}.log"); open(log, 
 t0 = time.time()
 best, hist, res = C.run_smm(base, x0, cfg, log, maxfev=a.maxfev, names=names)
 out = dict(x=best["x"], obj=best["obj"], moments=best["m"], targets=C.TARGETS, n_eval=len(hist),
-           seconds=time.time() - t0, coarse=not a.full, names=names)
+           seconds=time.time() - t0, coarse=not a.full, names=names,
+           fixed={kv.split('=')[0]: float(kv.split('=')[1]) for kv in a.fixed})
 json.dump(out, open(os.path.join(HERE, "..", "output", f"final_calib_{a.tag}.json"), "w"), indent=1)
 print("best objective", round(best["obj"], 3), "after", len(hist), "evaluations")
 for k, v in best["x"].items():
