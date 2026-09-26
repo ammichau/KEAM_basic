@@ -1,0 +1,18 @@
+output/final_calib_rho_coarse.json: full grid, objective 0.2384 (198s)
+  E/pop                        model   0.6592 target   0.6200 dev +0.063
+  hours|E                      model   0.4454 target   0.4000 dev +0.113
+  share Lifecycle              model   0.2963 target   0.3100 dev -0.044
+  share PT                     model   0.2631 target   0.2800 dev -0.060
+  share Career                 model   0.1929 target   0.1900 dev +0.015
+  share NiLF                   model   0.2477 target   0.2200 dev +0.126
+  quit/m exp                   model   0.0327 target   0.0340 dev -0.039
+  quit/m rec                   model   0.0252 target   0.0280 dev -0.102
+  E->nonE/m exp                model   0.0557 target   0.0500 dev +0.114
+  E->nonE/m rec                model   0.0510 target   0.0480 dev +0.062
+  dE/pop rec-exp (pts)         model  -2.0625 target  -1.7000 dev -0.362
+  wage gap (hourly ratio)      model   0.7490 target   0.7100 dev +0.055
+  U rate                       model   0.1180
+  wife share exp               model   0.3521
+  cons drop at H job loss exp (%) model  -4.6244
+  mean assets/monthly HH inc   model   1.4726
+saved
