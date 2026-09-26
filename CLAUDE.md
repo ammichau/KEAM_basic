@@ -73,3 +73,7 @@ Work on branch `claude/hopeful-ride-vbnou4`. Use all cores (`KEAM_NJOBS` = numbe
 - Every number reported must come from a script in `Code26/python/scripts`; write the
   script, run it, cite its output file.
 - Commit messages: plain description of the change. Push to the branch after each step.
+- The cloud container is reclaimed a few minutes after the session goes idle, which kills
+  background jobs (three runs were lost this way on 2026-09-26). While a long job runs, keep
+  the session busy with foreground waits (`timeout 590 bash -c 'until <done>; do sleep 20; done'`,
+  repeated), and make long scripts resumable (`calibrate_ls.py --resume` replays its log).
