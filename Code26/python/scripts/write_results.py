@@ -107,7 +107,8 @@ if jac and "elasticities" in jac:
     jk = list(TARGETS.keys()); short = {"E/pop": "E/pop", "hours|E": "hours", "share Lifecycle": "LC", "share PT": "PT",
         "share Career": "Career", "share NiLF": "NiLF", "quit/m exp": "quit exp", "quit/m rec": "quit rec",
         "E->nonE/m exp": "E->N exp", "E->nonE/m rec": "E->N rec", "dE/pop rec-exp (pts)": "dE (pts)",
-        "wage gap (hourly ratio)": "wage gap"}
+        "wage gap (hourly ratio)": "wage gap", "sd log UE (women)": "sd UE"}
+    jk = [k for k in jk if all(k in row for row in jac["elasticities"].values())]   # targets the Jacobian covers
     L.append("| parameter | " + " | ".join(short[k] for k in jk) + " |\n|---|" + "---|" * len(jk))
     for n, row in jac["elasticities"].items():
         cells = [("**{:+.2f}**" if abs(row[k]) >= 0.5 else "{:+.2f}").format(row[k]) for k in jk]
