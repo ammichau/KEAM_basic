@@ -140,6 +140,27 @@ Supplementary experiments (`output/extra_experiments_full.json`): child-care cos
 | cons drop at H job loss rec (%) | -7.1846 | -6.8833 | -6.4779 | -6.2469 | -6.1531 |
 | mean assets/monthly HH inc | 1.4722 | 1.6379 | 1.7272 | 1.8225 | 1.8305 |
 
+### 3b. Cohort accounting, refined: cost scale and τ_w solved jointly
+
+Source: `output/cohorts_refined_full.json`. For each cohort the cost scale and τ_w (husband's income compensated) are solved so that the cohort's employment rate and its measured within-couple wage gap (data ratio applied to the model's 1940 gap) both match, given the cohort's γ_e.
+
+| | 1940 | 1950 | 1960 | 1970 | 1980 |
+|---|---|---|---|---|---|
+| cost scale | 1.000 | 1.192 | 0.754 | 0.089 | 0.334 |
+| τ_w | 0.757 | 0.758 | 0.759 | 0.706 | 0.711 |
+| E/pop | 0.6644 | 0.6700 | 0.7100 | 0.7299 | 0.7200 |
+| wage gap (hourly ratio) | 0.7477 | 0.7794 | 0.8109 | 0.8004 | 0.8110 |
+| quit/m exp | 0.0311 | 0.0299 | 0.0247 | 0.0227 | 0.0239 |
+| quit/m rec | 0.0237 | 0.0225 | 0.0184 | 0.0167 | 0.0178 |
+| dE/pop rec-exp (pts) | -1.5984 | -1.5061 | -1.6626 | -2.1952 | -2.2357 |
+| wife share exp | 0.3370 | 0.3530 | 0.3793 | 0.3838 | 0.3842 |
+| share Lifecycle | 0.3038 | 0.3185 | 0.2752 | 0.1506 | 0.1906 |
+| share PT | 0.2531 | 0.2290 | 0.2290 | 0.2679 | 0.2352 |
+| share Career | 0.1833 | 0.2006 | 0.2796 | 0.3554 | 0.3433 |
+| share NiLF | 0.2598 | 0.2519 | 0.2162 | 0.2260 | 0.2308 |
+| cons drop at H job loss rec (%) | -7.1846 | -7.0924 | -6.9749 | -7.1119 | -7.0844 |
+| residual (|ΔE|+|Δgap|) | 0.0000 | 0.0000 | 0.0000 | 0.0001 | 0.0001 |
+
 ## 4. Mechanism counterfactuals (baseline parameters)
 
 | counterfactual | quit exp | quit rec | quit gap (pts) | ΔE/pop rec-exp (pts) | E/pop |

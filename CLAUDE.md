@@ -29,8 +29,9 @@ lower cost of work) make it more cyclical, a closing wage gap less so. Reference
    (`output/robustness_final.*`) and the write-up `RESULTS.md` at the repository root.
    Calibration history: `output/final_calib_childcare{2,3,4}.md`; scans `output/explore_*.json`.
 4. Known limitations / next steps (see RESULTS.md section 7):
-   - the cohort accounting scales tau_w by the raw data ratio; solve tau_w per cohort to hit
-     the measured wage gap jointly with the cost residual (2-D root finding);
+   - DONE: `scripts/cohorts_refined.py` solves the cost scale and tau_w jointly per cohort
+     (`output/cohorts_refined_full.md`, RESULTS.md section 3b); the raw-ratio version in
+     `run_final.py` is superseded for the cohort narrative;
    - the "cost of work" experiment on the permanent cost alone needs a 90% cut; the
      supplementary child-care and all-costs versions are the relevant ones;
    - NiLF share still 18% too high; candidates: alpha_h upper range, s_bar-independent
@@ -43,9 +44,7 @@ lower cost of work) make it more cyclical, a closing wage gap less so. Reference
 Work on branch `claude/hopeful-ride-vbnou4`. Use all cores (`KEAM_NJOBS` = number of cores).
 
 1. `cd Code26/python && pip install numpy scipy pandas openpyxl xlrd`.
-2. Refine the cohort accounting: for each cohort solve (cost scale, tau_w) so that employment
-   and the measured wage gap both match (targets in `scripts/run_final.py`, `coh` dict);
-   add the routine to `keam/final/experiments.py` and re-run `run_final.py --full`.
+2. (done) Refined cohort accounting: `scripts/cohorts_refined.py`.
 3. Improve the NiLF fit (see limitations) and re-run `calibrate_childcare.py --full` from
    `output/final_calib_full.json`; regenerate results with `run_final.py`, `extra_experiments.py`,
    `robustness_final.py`, `write_results.py`.
