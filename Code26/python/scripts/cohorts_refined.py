@@ -46,7 +46,7 @@ for c, (gap, ge, E) in COH.items():
     pc = p.replace(gam_e=p.gam_e * ge / COH[1940][1])
     cache = {}; best = [None]
     def residual(x):
-        s_cost, g_tau = float(x[0]), float(x[1])
+        s_cost, g_tau = max(float(x[0]), 0.0), float(x[1])      # the cost scale cannot be negative (corner at 0)
         key = (round(s_cost, 5), round(g_tau, 5))
         if key not in cache:
             if len(cache) >= a.max_eval:
@@ -69,7 +69,7 @@ for c, (gap, ge, E) in COH.items():
     err, s_cost, g_tau, m = best[0]
     out[str(c)] = dict(m={k: float(v) for k, v in m.items() if isinstance(v, (int, float, np.floating))},
                        cost_scale=s_cost, tau_scale=g_tau, tau_w=p.tau_w * g_tau, gap_target=gap_target,
-                       resid=err, n_eval=len(cache))
+                       resid=err, n_eval=len(cache), corner=bool(s_cost <= 0.0))
     print(f"{c}: cost x{s_cost:.3f}, tau_w {p.tau_w * g_tau:.3f}, |resid| {err:.4f} after {len(cache)} evaluations", flush=True)
 
 KEYS = ["E/pop", "hours|E", "quit/m exp", "quit/m rec", "E->nonE/m exp", "E->nonE/m rec", "dE/pop rec-exp (pts)",
@@ -78,7 +78,7 @@ KEYS = ["E/pop", "hours|E", "quit/m exp", "quit/m rec", "E->nonE/m exp", "E->non
 names = list(out)
 md = ["### Cohort accounting, refined: cost scale and tau_w solved jointly for employment and the wage gap", "",
       "| cohort | " + " | ".join(names) + " |", "|---|" + "---|" * len(names),
-      "| cost scale | " + " | ".join(f"{out[n]['cost_scale']:.3f}" for n in names) + " |",
+      "| cost scale | " + " | ".join(f"{out[n]['cost_scale']:.3f}" + (" (corner)" if out[n].get("corner") else "") for n in names) + " |",
       "| tau_w | " + " | ".join(f"{out[n]['tau_w']:.3f}" for n in names) + " |",
       "| gamma_e | " + " | ".join(f"{p.gam_e * COH[int(n)][1] / COH[1940][1]:.3f}" for n in names) + " |"]
 for k in KEYS:
