@@ -8,7 +8,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 warnings.simplefilter("ignore")
 import numpy as np
 from keam.final import FinalParams, SimConfigFinal
-from keam.final.calibrate import apply_params, TARGETS
+from keam.final.calibrate import apply_params, TARGETS, params_from_calib
 from keam.final.experiments import run, compensated_wage_gap, cost_scaled, returns_scaled, size_to_employment, counterfactuals
 
 ap = argparse.ArgumentParser()
@@ -16,13 +16,14 @@ ap.add_argument("--calib", required=True)
 ap.add_argument("--full", action="store_true", help="100 types (default: coarse 27)")
 ap.add_argument("--out", default="")
 ap.add_argument("--n-jobs", type=int, default=0)
+ap.add_argument("--tag", default="", help="output name suffix (default: full or coarse)")
 a = ap.parse_args()
 if a.n_jobs:
     os.environ["KEAM_NJOBS"] = str(a.n_jobs)
 HERE = os.path.dirname(os.path.abspath(__file__))
 calib = json.load(open(a.calib))
 base = FinalParams() if a.full else FinalParams(n_omega=3, n_kbar=3, n_km=3)
-p = apply_params(base, calib["x"])
+p = params_from_calib(calib, base)
 cfg = SimConfigFinal(N=60, n_cohorts=90)
 KEYS = ["E/pop", "hours|E", "U rate", "quit/m exp", "quit/m rec", "E->nonE/m exp", "E->nonE/m rec",
         "dE/pop rec-exp (pts)", "wife share exp", "wife share rec", "wage gap (hourly ratio)",
@@ -67,7 +68,7 @@ md.append(table(crow, "Cohort accounting (tau_w and gamma_e from the data, cost 
 cf = counterfactuals(p, cfg)
 md.append(table(cf, "Mechanism counterfactuals (baseline parameters)")); print(md[-1])
 md.append(f"\nElapsed {time.time()-t0:.0f}s. Calibration file: {a.calib}\n")
-out = a.out or os.path.join(HERE, "..", "output", f"final_results_{'full' if a.full else 'coarse'}.md")
+out = a.out or os.path.join(HERE, "..", "output", f"final_results_{a.tag or ('full' if a.full else 'coarse')}.md")
 open(out, "w").write("\n".join(md)); print("saved", out)
 fl = lambda d: {k: float(v) for k, v in d.items() if isinstance(v, (int, float, np.floating))}
 json.dump(dict(calib=a.calib, full=a.full, baseline=fl(base_m),

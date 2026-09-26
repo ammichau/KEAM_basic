@@ -19,14 +19,15 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from keam.final import FinalParams
 from keam.final.params import make_types
-from keam.final.calibrate import apply_params
+from keam.final.calibrate import apply_params, params_from_calib
 
 ap = argparse.ArgumentParser()
 ap.add_argument("--calib", default="output/final_calib_full.json")
 ap.add_argument("--results", default="output/final_results_full.json")
 ap.add_argument("--cohorts", default="output/cohorts_refined_full.json")
+ap.add_argument("--tag", default="", help="figure sub-directory suffix (output/figures_<tag>)")
 a = ap.parse_args()
-HERE = os.path.dirname(os.path.abspath(__file__)); PY = os.path.join(HERE, ".."); OUT = os.path.join(PY, "output", "figures")
+HERE = os.path.dirname(os.path.abspath(__file__)); PY = os.path.join(HERE, ".."); OUT = os.path.join(PY, "output", "figures" + (("_" + a.tag) if a.tag else ""))
 os.makedirs(OUT, exist_ok=True)
 
 # ---- palette (validated reference instance, light mode) and chrome
@@ -51,7 +52,7 @@ def save(fig, name):
 
 # ---- solve all types; policies are averaged over types (equal weights) at age 40-54, median assets
 from keam.final.solve import solve_all
-p = apply_params(FinalParams(), json.load(open(os.path.join(PY, a.calib)))["x"])
+p = params_from_calib(json.load(open(os.path.join(PY, a.calib))))
 sol = solve_all(p)
 eg, ag, hg, sg = p.egrid, p.agrid, p.hgrid, p.sgrid
 kT, wT = p.kT_nodes()

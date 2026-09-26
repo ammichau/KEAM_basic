@@ -12,20 +12,23 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from keam.final import FinalParams, SimConfigFinal, solve_all, simulate_final
-from keam.final.calibrate import apply_params
+from keam.final.calibrate import apply_params, params_from_calib
 from keam.final.moments import HOURS_PER_YEAR
 
 ap = argparse.ArgumentParser()
 ap.add_argument("--calib", default="output/final_calib_full.json")
+ap.add_argument("--tag", default="", help="figure sub-directory suffix and JSON name suffix")
 a = ap.parse_args()
-HERE = os.path.dirname(os.path.abspath(__file__)); PY = os.path.join(HERE, ".."); OUT = os.path.join(PY, "output", "figures")
+HERE = os.path.dirname(os.path.abspath(__file__)); PY = os.path.join(HERE, ".."); OUT = os.path.join(PY, "output", "figures" + (("_" + a.tag) if a.tag else ""))
+os.makedirs(OUT, exist_ok=True)
+tagsfx = ("_" + a.tag) if a.tag else ""
 SERIES = ["#2a78d6", "#eb6834", "#1baf7a", "#eda100", "#e87ba4"]
 INK, INK2, GRID, SURF = "#0b0b0b", "#52514e", "#e6e5e1", "#fcfcfb"
 plt.rcParams.update({"font.size": 10, "axes.edgecolor": GRID, "axes.linewidth": 1, "axes.labelcolor": INK2,
                      "xtick.color": INK2, "ytick.color": INK2, "axes.titlecolor": INK, "figure.facecolor": SURF,
                      "axes.facecolor": SURF, "savefig.facecolor": SURF, "legend.frameon": False})
 
-p = apply_params(FinalParams(), json.load(open(os.path.join(PY, a.calib)))["x"])
+p = params_from_calib(json.load(open(os.path.join(PY, a.calib))))
 sol = solve_all(p)
 cfg = SimConfigFinal(N=300, n_cohorts=65, zmode="nber", seed=2024)
 sim = simulate_final(p, sol, cfg)
@@ -60,7 +63,7 @@ for g, mask in groups.items():
         e_dev.append(100 * (e_rate[s - pre: s + post + 1] - e_base)); q_dev.append(100 * (q_rate[s - pre: s + post + 1] - q_base))
     irf[g] = dict(emp=np.mean(e_dev, axis=0).tolist(), quit=np.mean(q_dev, axis=0).tolist(), n_women=int(mask.sum()))
 irf["_meta"] = dict(recession_starts=[int(s) for s in starts], pre=pre, post=post, note="deviation from the mean of the 6 months before the recession start, averaged over recessions 1973-2007; 3-month centred moving average; percentage points")
-json.dump(irf, open(os.path.join(PY, "output", "irf_careers.json"), "w"), indent=1)
+json.dump(irf, open(os.path.join(PY, "output", f"irf_careers{tagsfx}.json"), "w"), indent=1)
 h = np.arange(-pre, post + 1)
 
 def fig(key, ylabel, title, name):

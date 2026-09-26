@@ -55,6 +55,16 @@ def apply_params(base: FinalParams, x: dict) -> FinalParams:
     return base.replace(**kw)
 
 
+def params_from_calib(calib: dict, base: FinalParams | None = None) -> FinalParams:
+    """FinalParams from a calibration JSON: its fixed fields (e.g. n_kT for the persistent shock)
+    applied to `base`, then the calibrated vector `x`."""
+    base = base or FinalParams()
+    fixed = calib.get("fixed", {}) or {}
+    if fixed:
+        base = base.replace(**{k: type(getattr(base, k))(v) for k, v in fixed.items()})
+    return apply_params(base, calib["x"])
+
+
 def _to_unit(x, names=PARAM_NAMES):   # map params to R via logit of the bounded interval
     z = []
     for n in names:

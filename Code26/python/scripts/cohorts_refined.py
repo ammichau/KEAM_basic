@@ -12,7 +12,7 @@ warnings.simplefilter("ignore")
 import numpy as np
 from scipy.optimize import root
 from keam.final import FinalParams, SimConfigFinal
-from keam.final.calibrate import apply_params
+from keam.final.calibrate import apply_params, params_from_calib
 from keam.final.experiments import run, compensated_wage_gap, cost_scaled
 
 ap = argparse.ArgumentParser()
@@ -20,12 +20,13 @@ ap.add_argument("--calib", required=True)
 ap.add_argument("--coarse", action="store_true")
 ap.add_argument("--n-jobs", type=int, default=0)
 ap.add_argument("--max-eval", type=int, default=22)
+ap.add_argument("--tag", default="", help="output name suffix (default: full or coarse)")
 a = ap.parse_args()
 if a.n_jobs:
     os.environ["KEAM_NJOBS"] = str(a.n_jobs)
 HERE = os.path.dirname(os.path.abspath(__file__))
 base = FinalParams(n_omega=3, n_kbar=3, n_km=3) if a.coarse else FinalParams()
-p = apply_params(base, json.load(open(a.calib))["x"])
+p = params_from_calib(json.load(open(a.calib)), base)
 cfg = SimConfigFinal(N=60, n_cohorts=90)
 COH = {1940: (0.71, 0.50, 0.62), 1950: (0.74, 0.55, 0.67), 1960: (0.77, 0.58, 0.71), 1970: (0.76, 0.68, 0.73), 1980: (0.77, 0.69, 0.72)}
 t0 = time.time()
@@ -83,7 +84,7 @@ md = ["### Cohort accounting, refined: cost scale and tau_w solved jointly for e
 for k in KEYS:
     md.append(f"| {k} | " + " | ".join(f"{out[n]['m'].get(k, np.nan):.4f}" for n in names) + " |")
 md.append(f"\nElapsed {time.time()-t0:.0f}s.\n")
-tag = "coarse" if a.coarse else "full"
+tag = a.tag or ("coarse" if a.coarse else "full")
 open(os.path.join(HERE, "..", "output", f"cohorts_refined_{tag}.md"), "w").write("\n".join(md))
 json.dump(out, open(os.path.join(HERE, "..", "output", f"cohorts_refined_{tag}.json"), "w"), indent=1)
 print("\n".join(md))

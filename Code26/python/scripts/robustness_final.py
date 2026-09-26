@@ -15,7 +15,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 warnings.simplefilter("ignore")
 import numpy as np
 from keam.final import FinalParams, SimConfigFinal
-from keam.final.calibrate import apply_params
+from keam.final.calibrate import apply_params, params_from_calib
 from keam.final.experiments import run, returns_scaled
 
 ap = argparse.ArgumentParser()
@@ -23,12 +23,13 @@ ap.add_argument("--calib", required=True)
 ap.add_argument("--results", required=True, help="JSON written by run_final.py (for the experiment scale)")
 ap.add_argument("--coarse", action="store_true")
 ap.add_argument("--n-jobs", type=int, default=0)
+ap.add_argument("--tag", default="", help="output name suffix")
 a = ap.parse_args()
 if a.n_jobs:
     os.environ["KEAM_NJOBS"] = str(a.n_jobs)
 HERE = os.path.dirname(os.path.abspath(__file__))
 base = FinalParams(n_omega=3, n_kbar=3, n_km=3) if a.coarse else FinalParams()
-p0 = apply_params(base, json.load(open(a.calib))["x"])
+p0 = params_from_calib(json.load(open(a.calib)), base)
 s_roe = json.load(open(a.results))["scales"]["returns"]
 cfg = SimConfigFinal(N=60, n_cohorts=90)
 
@@ -74,6 +75,6 @@ for n in names:
     md.append(f"| {n} | {gap(r['m']):+.3f} | {r['m']['dE/pop rec-exp (pts)']:+.3f} | {r['acyc']['quit_gap']:+.3f} | "
               f"{r['acyc']['dE_rec']:+.3f} | {r['roe']['E']:.3f} | {r['roe']['quit_gap']:+.3f} | {r['roe']['dE_rec']:+.3f} |")
 md.append(f"\nElapsed {time.time() - t0:.0f}s.\n")
-out = os.path.join(HERE, "..", "output", "robustness_final" + ("_coarse" if a.coarse else ""))
+out = os.path.join(HERE, "..", "output", "robustness_final" + ("_coarse" if a.coarse else "") + (("_" + a.tag) if a.tag else ""))
 open(out + ".md", "w").write("\n".join(md)); json.dump(res, open(out + ".json", "w"), indent=1)
 print("saved", out + ".md")
