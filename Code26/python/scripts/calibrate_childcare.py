@@ -16,12 +16,18 @@ ap.add_argument("--tag", type=str, default="childcare")
 ap.add_argument("--x0", type=str, default="")
 ap.add_argument("--extra", type=str, default="", help="extra calibrated FinalParams fields, comma-separated (e.g. alpha_h)")
 ap.add_argument("--full", action="store_true", help="100-type grid (default: 27 types)")
+ap.add_argument("--bound", action="append", default=[], help="override a bound: name:lo:hi (repeatable)")
+ap.add_argument("--set", action="append", default=[], help="override a starting value: name=value (repeatable)")
+ap.add_argument("--maxfev-note", type=str, default="")
 ap.add_argument("--n-jobs", type=int, default=0)
 a = ap.parse_args()
 HERE = os.path.dirname(os.path.abspath(__file__))
 C.BOUNDS.update({"home_young_mult": (1.0, 3.0), "nu_h": (0.3, 0.8), "z_h": (0.3, 0.6), "alpha_h": (0.05, 1.5),
                  "e_max": (1.5, 4.0), "theta_e": (0.005, 0.05)})
 extra = [n for n in a.extra.split(",") if n]
+C.BOUNDS.update({"kappa_h_power": (0.0, 1.0)})
+for b in a.bound:
+    n, lo, hi = b.split(":"); C.BOUNDS[n] = (float(lo), float(hi))
 for n in ["home_young_mult", "nu_h", "z_h"] + extra:
     if n not in C.OPTIONAL_PARAMS:
         C.OPTIONAL_PARAMS.append(n)
@@ -36,6 +42,8 @@ for n in extra:
     x0.setdefault(n, getattr(FinalParams(), n))
 if a.x0:
     x0.update(json.load(open(a.x0))["x"])
+for kv in a.set:
+    n, v = kv.split("="); x0[n] = float(v)
 log = os.path.join(HERE, "..", "output", f"final_calib_{a.tag}.log"); open(log, "w").close()
 t0 = time.time()
 best, hist, res = C.run_smm(base, x0, cfg, log, maxfev=a.maxfev, names=names)
