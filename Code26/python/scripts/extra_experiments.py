@@ -33,7 +33,9 @@ def cost_all(pp, s):
     return pp.replace(kbar_max=pp.kbar_max * s, km_max=1.0 + s * (pp.km_max - 1.0))
 s1, m1, _ = size_to_employment(childcare, p, cfg, E70, 0.0, 1.0)
 ex[f"child-care cost x{s1:.2f}"] = m1; scales["childcare"] = s1
-s2, m2, _ = size_to_employment(cost_all, p, cfg, E70, 0.0, 1.0)
+json.dump(dict(scales=scales, experiments={k: {kk: float(vv) for kk, vv in v.items() if isinstance(vv, (int, float, np.floating))} for k, v in ex.items()}),
+          open(os.path.join(HERE, "..", "output", "extra_experiments_partial.json"), "w"), indent=1)
+s2, m2, _ = size_to_employment(cost_all, p, cfg, E70, 0.02, 1.0)
 ex[f"all costs x{s2:.2f}"] = m2; scales["cost_all"] = s2
 KEYS = ["E/pop", "hours|E", "U rate", "quit/m exp", "quit/m rec", "E->nonE/m exp", "E->nonE/m rec",
         "dE/pop rec-exp (pts)", "wife share exp", "wife share rec", "wage gap (hourly ratio)",

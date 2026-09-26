@@ -131,8 +131,11 @@ def make_types(p: FinalParams):
     # truncated normal on [0, kbar_max], mean at the midpoint, sd = half the range (paper p.22)
     q = (np.arange(p.n_kbar) + 0.5) / p.n_kbar
     mu_k, sd_k = p.kbar_max / 2, p.kbar_max / 2
-    a, b = norm.cdf((0 - mu_k) / sd_k), norm.cdf((p.kbar_max - mu_k) / sd_k)
-    kbar = mu_k + sd_k * norm.ppf(a + q * (b - a))
+    if sd_k <= 0:
+        kbar = np.zeros(p.n_kbar)
+    else:
+        a, b = norm.cdf((0 - mu_k) / sd_k), norm.cdf((p.kbar_max - mu_k) / sd_k)
+        kbar = mu_k + sd_k * norm.ppf(a + q * (b - a))
     km = np.linspace(1.0, p.km_max, p.n_km) if p.n_km > 1 else np.array([1.0])
     O, K, M = np.meshgrid(omega, kbar, km, indexing="ij")
     return O.ravel(), K.ravel(), M.ravel()
