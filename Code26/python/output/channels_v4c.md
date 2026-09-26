@@ -1,0 +1,16 @@
+# Precautionary labor supply versus job hoarding (`output/final_calib_v4c_full.json`, parameters held fixed across variants)
+
+Quit gap = recession minus expansion monthly quit rate, percentage points. Precaution share = fall in the gap when the husband's risk (job loss, job finding, recession UI cut) is made acyclical; hoarding share = fall when the wife's job-finding efficiency is made acyclical; both off = fall when both are; the remainder is the wage cut, the wife's own cyclical job loss and interactions.
+
+| variant | E/pop | quit exp | quit rec | gap | precaution | hoarding | both off | dE base | dE acyc. husband |
+|---|---|---|---|---|---|---|---|---|---|
+| baseline | 0.674 | 0.0343 | 0.0227 | -1.16 | 31% | 44% | 66% | -1.65 | -2.88 |
+| job finding falls 5% in recessions (ratio 0.95) | 0.675 | 0.0350 | 0.0270 | -0.80 | 37% | 18% | 51% | -0.41 | -1.37 |
+| job finding falls 30% in recessions (ratio 0.70) | 0.672 | 0.0341 | 0.0201 | -1.41 | 27% | 54% | 72% | -2.57 | -3.91 |
+| husband job loss x2.5 in recessions (data: x1.78) | 0.678 | 0.0337 | 0.0208 | -1.29 | 38% | 37% | 70% | -1.17 | -2.88 |
+| husband job finding 0.20 in recessions (data: 0.28) | 0.677 | 0.0339 | 0.0209 | -1.30 | 38% | 36% | 70% | -1.22 | -2.88 |
+| UI replacement 15% in recessions (ui_rec_mult 0.5) | 0.674 | 0.0343 | 0.0227 | -1.16 | 31% | 44% | 66% | -1.65 | -2.88 |
+| UI replacement 15% always | 0.687 | 0.0319 | 0.0209 | -1.09 | 26% | 43% | 63% | -1.42 | -2.69 |
+| no assets | 0.678 | 0.0326 | 0.0203 | -1.24 | 37% | 39% | 68% | -1.47 | -3.29 |
+| risk aversion 3 | 0.562 | 0.0803 | 0.0402 | -4.01 | 30% | 35% | 70% | +1.75 | -2.24 |
+| longer recessions (persistence 0.95) | 0.675 | 0.0341 | 0.0214 | -1.26 | 25% | 41% | 61% | -2.53 | -3.96 |
