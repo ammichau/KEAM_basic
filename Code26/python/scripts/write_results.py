@@ -107,7 +107,48 @@ if rob:
         L.append(f"| {n} | {r['m']['E/pop']:.3f} | {gap(r['m']):+.3f} | {r['m']['dE/pop rec-exp (pts)']:+.3f} | "
                  f"{r['acyc']['quit_gap']:+.3f} | {r['roe']['E']:.3f} | {r['roe']['quit_gap']:+.3f} |")
     L.append("")
-L.append("## 6. What is fragile\n")
+L.append("## 6. Summary of findings\n")
+if calib and res:
+    m = calib.get("moments", {}); b = res["baseline"]; cf = res["counterfactuals"]; bg = gap(b)
+    ex = res["experiments"]; names = list(ex)
+    L.append(f"* Calibration: employment {m.get('E/pop', np.nan):.3f} (target 0.62), hours {m.get('hours|E', np.nan):.3f} "
+             f"(0.40), monthly quit rate {m.get('quit/m exp', np.nan):.4f} in expansions and {m.get('quit/m rec', np.nan):.4f} "
+             f"in recessions (targets 0.034 / 0.028), recession employment drop {m.get('dE/pop rec-exp (pts)', np.nan):.2f} "
+             f"points (-1.7), wage gap {m.get('wage gap (hourly ratio)', np.nan):.3f} (0.71); career shares life-cycle "
+             f"{m.get('share Lifecycle', np.nan):.2f}, part-time {m.get('share PT', np.nan):.2f}, career "
+             f"{m.get('share Career', np.nan):.2f}, NiLF {m.get('share NiLF', np.nan):.2f} (0.31 / 0.28 / 0.19 / 0.22). "
+             f"Untargeted: unemployment rate {m.get('U rate', np.nan):.3f}, wife's income share {m.get('wife share exp', np.nan):.3f}, "
+             f"consumption falls {abs(m.get('cons drop at H job loss exp (%)', np.nan)):.1f}% at the husband's job loss in "
+             f"expansions and {abs(m.get('cons drop at H job loss rec (%)', np.nan)):.1f}% in recessions.")
+    L.append(f"* Quits are pro-cyclical: the monthly quit rate falls by {100 * (1 - b['quit/m rec'] / b['quit/m exp']):.0f}% "
+             f"in recessions ({bg:+.2f} points). Decomposition: making the husband's job-loss risk acyclical removes "
+             f"{100 * (bg - gap(cf['acyclical husband risk'])) / bg:+.0f}% of the drop, making job finding acyclical removes "
+             f"{100 * (bg - gap(cf['acyclical job finding'])) / bg:+.0f}%, removing the recession wage cut changes it by "
+             f"{100 * (bg - gap(cf['no recession wage cut'])) / bg:+.0f}% (the wage cut works against the insurance motive), "
+             f"and making the wife's own job loss acyclical changes it by {100 * (bg - gap(cf['acyclical own job loss'])) / bg:+.0f}%.")
+    L.append(f"* Recession employment drop {b['dE/pop rec-exp (pts)']:+.2f} points in the baseline; "
+             f"{cf['acyclical husband risk']['dE/pop rec-exp (pts)']:+.2f} without cyclical husband risk (precautionary labor "
+             f"supply offsets {cf['acyclical husband risk']['dE/pop rec-exp (pts)'] - b['dE/pop rec-exp (pts)']:+.2f} points), "
+             f"{cf['acyclical job finding']['dE/pop rec-exp (pts)']:+.2f} without the fall in job finding, "
+             f"{cf['no recession wage cut']['dE/pop rec-exp (pts)']:+.2f} without the wage cut, "
+             f"{cf['acyclical own job loss']['dE/pop rec-exp (pts)']:+.2f} without cyclical own job loss.")
+    parts = []
+    for n in names:
+        parts.append(f"{n}: employment {ex[n]['E/pop']:.3f}, recession drop {ex[n]['dE/pop rec-exp (pts)']:+.2f} points "
+                     f"(baseline {b['dE/pop rec-exp (pts)']:+.2f}), quit gap {gap(ex[n]):+.2f} (baseline {bg:+.2f}), "
+                     f"career shares LC/PT/career/NiLF {ex[n]['share Lifecycle']:.2f}/{ex[n]['share PT']:.2f}/"
+                     f"{ex[n]['share Career']:.2f}/{ex[n]['share NiLF']:.2f}")
+    L.append("* Trend to cycle, each force sized to the 1970s employment rate: " + "; ".join(parts) + ".")
+    coh = res["cohorts"]; ck = list(coh)
+    L.append(f"* Cohort accounting with the data's wage-gap and returns-to-experience paths (household income compensated): "
+             f"the residual cost scale is {', '.join(f'{k}: x{v:.2f}' for k, v in res['cohort_cost_scale'].items())}; "
+             f"the recession employment drop goes from {coh[ck[0]]['dE/pop rec-exp (pts)']:+.2f} to {coh[ck[-1]]['dE/pop rec-exp (pts)']:+.2f} "
+             f"points and the expansion quit rate from {coh[ck[0]]['quit/m exp']:.4f} to {coh[ck[-1]]['quit/m exp']:.4f}. "
+             f"Caveat: tau_w is scaled by the raw data ratio, so the measured wage gap in the model rises to "
+             f"{coh[ck[-1]]['wage gap (hourly ratio)']:.2f} by the last cohort (data 0.77); the next refinement is to solve "
+             f"tau_w per cohort to hit the measured gap jointly with the cost residual.")
+    L.append("")
+L.append("## 7. What is fragile\n")
 L.append("* The never-working (NiLF) share is the least well fitted target; it depends on the home-production "
          "curvature in productivity (α_h) and the hours scaling of the fixed cost.\n"
          "* The experience cap e_max is calibrated; the wage gap among employed wives is largely the experience "
