@@ -55,6 +55,7 @@ p = apply_params(FinalParams(), json.load(open(os.path.join(PY, a.calib)))["x"])
 sol = solve_all(p)
 eg, ag, hg, sg = p.egrid, p.agrid, p.hgrid, p.sgrid
 kT, wT = p.kT_nodes()
+jmid = sol.VE.shape[-1] // 2          # cost-shock state at the median node (0 for an iid shock)
 tau = 1
 ia = int(np.argmin(np.abs(ag - 1.47)))
 states = [((0, 0), "Normal times"), ((2, 0), "Husband unemployed"), ((0, 1), "Recession"), ((2, 1), "Husband unemployed + recession")]
@@ -71,12 +72,12 @@ def panel(title, ylabel, series, name, ylim=None):
     save(fig, name)
 
 def quit_prob(y, z):
-    d = sol.VE[:, tau, :, ia, y, z] - sol.VN[:, tau, :, ia, y, z]          # (nK, nE)
+    d = sol.VE[:, tau, :, ia, y, z, jmid] - sol.VN[:, tau, :, ia, y, z, jmid]          # (nK, nE)
     return np.mean(np.sum(wT[None, None, :] * ((d[:, :, None] - kT[None, None, :]) < 0), axis=2), axis=0)
 
 panel("Quit probability of an employed woman", "monthly quit probability", quit_prob, "fig1_quit", ylim=(0, None))
-panel("Search intensity of a non-employed woman", "search intensity s", lambda y, z: sol.gS[:, tau, :, ia, y, z].mean(axis=0), "fig2_search", ylim=(0, None))
-panel("Hours of an employed woman", "hours (share of time endowment)", lambda y, z: sol.gH[:, tau, :, ia, y, z].mean(axis=0), "fig3_hours", ylim=(0, None))
+panel("Search intensity of a non-employed woman", "search intensity s", lambda y, z: sol.gS[:, tau, :, ia, y, z, jmid].mean(axis=0), "fig2_search", ylim=(0, None))
+panel("Hours of an employed woman", "hours (share of time endowment)", lambda y, z: sol.gH[:, tau, :, ia, y, z, jmid].mean(axis=0), "fig3_hours", ylim=(0, None))
 
 # ---- cohort trend (refined accounting)
 coh = json.load(open(os.path.join(PY, a.cohorts)))

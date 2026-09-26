@@ -55,8 +55,9 @@ class FinalParams:
     kbar_max: float = 0.075              # permanent cost, truncated normal on [0, kbar_max]
     n_km: int = 4
     km_max: float = 2.27                 # life-cycle multiplier, uniform on [1, km_max]
-    n_kT: int = 5                        # transitory cost-of-work shock (slides p.13), iid, discrete normal
+    n_kT: int = 5                        # transitory cost-of-work shock (slides p.13), discrete normal
     sd_kT: float = 0.05
+    rho_kT: float = 0.0                  # monthly probability that the shock keeps its value (0 = iid)
     # ---------------- grids ----------------
     nE: int = 20
     nA: int = 20
@@ -101,6 +102,16 @@ class FinalParams:
         nodes = norm.ppf(q) * self.sd_kT
         nodes = nodes - nodes.mean()
         return nodes, np.full(self.n_kT, 1.0 / self.n_kT)
+
+    def kT_chain(self):
+        """Cost-shock nodes, the number of shock states carried in the value functions (1 when the
+        shock is iid) and the transition matrix from state to next period's node, (n_state, n_kT):
+        with probability rho_kT the shock keeps its value, otherwise it is redrawn from the nodes."""
+        nodes, w = self.kT_nodes()
+        if self.rho_kT <= 0 or nodes.size == 1:
+            return nodes, 1, w[None, :]
+        P = self.rho_kT * np.eye(nodes.size) + (1 - self.rho_kT) * w[None, :]
+        return nodes, nodes.size, P
 
     def lamH(self):
         """Husband transition matrices by aggregate state: (nZ, 3, 3), rows = from (E, R, U)."""

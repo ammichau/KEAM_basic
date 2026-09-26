@@ -65,10 +65,10 @@ class FinalSim:
         return self.entry[:, None] + np.arange(self.cfg.L)[None, :]
 
 
-def _interp2(g, k, tau, ek, ew, ak, aw, y, z):
-    """Bilinear interpolation of g[k, tau, e, a, y, z] at (e, a) brackets."""
-    g00 = g[k, tau, ek, ak, y, z]; g01 = g[k, tau, ek, ak + 1, y, z]
-    g10 = g[k, tau, ek + 1, ak, y, z]; g11 = g[k, tau, ek + 1, ak + 1, y, z]
+def _interp2(g, k, tau, ek, ew, ak, aw, y, z, j=0):
+    """Bilinear interpolation of g[k, tau, e, a, y, z, j] at (e, a) brackets (j: cost-shock state)."""
+    g00 = g[k, tau, ek, ak, y, z, j]; g01 = g[k, tau, ek, ak + 1, y, z, j]
+    g10 = g[k, tau, ek + 1, ak, y, z, j]; g11 = g[k, tau, ek + 1, ak + 1, y, z, j]
     return ((1 - ew) * ((1 - aw) * g00 + aw * g01) + ew * ((1 - aw) * g10 + aw * g11))
 
 
@@ -96,7 +96,13 @@ def simulate_final(p: FinalParams, sol: FinalSolution, cfg: SimConfigFinal | Non
     # draws
     uH = rng.random((Nind, L), dtype=np.float32); uJ = rng.random((Nind, L), dtype=np.float32)
     kT_nodes, kT_w = p.kT_nodes()
-    kT_draw = kT_nodes[rng.choice(kT_nodes.size, size=(Nind, L), p=kT_w)].astype(np.float32)
+    kT_idx = rng.choice(kT_nodes.size, size=(Nind, L), p=kT_w)
+    if p.rho_kT > 0:                      # persistent shock: keep last month's node with probability rho_kT
+        keep = rng.random((Nind, L), dtype=np.float32) < p.rho_kT
+        for it in range(1, L):
+            kT_idx[:, it] = np.where(keep[:, it], kT_idx[:, it - 1], kT_idx[:, it])
+    kT_draw = kT_nodes[kT_idx].astype(np.float32)
+    jst = kT_idx if sol.VE.shape[-1] > 1 else np.zeros((Nind, L), int)     # shock state used in the policies
     # storage (life-cycle time)
     I8 = lambda: np.zeros((Nind, L), np.int8); F4 = lambda: np.zeros((Nind, L), np.float32)
     emp, stat, quit, loss, declined, hstat, hloss = I8(), I8(), I8(), I8(), I8(), I8(), I8()
@@ -117,18 +123,18 @@ def simulate_final(p: FinalParams, sol: FinalSolution, cfg: SimConfigFinal | Non
         ew = np.clip((e - eg[ek]) / (eg[ek + 1] - eg[ek]), 0, 1)
         ak = np.clip(np.searchsorted(ag, a, side="right") - 1, 0, ag.size - 2)
         aw = np.clip((a - ag[ak]) / (ag[ak + 1] - ag[ak]), 0, 1)
-        VEi = _interp2(sol.VE, ktype, tau, ek, ew, ak, aw, y, z)
-        VNi = _interp2(sol.VN, ktype, tau, ek, ew, ak, aw, y, z)
+        VEi = _interp2(sol.VE, ktype, tau, ek, ew, ak, aw, y, z, jst[:, it])
+        VNi = _interp2(sol.VN, ktype, tau, ek, ew, ak, aw, y, z, jst[:, it])
         q = E_in & (VNi > VEi - kT_draw[:, it])
         work = E_in & ~q
         w = phi[z] * p.tau_w * omega * (1 + p.gam_e * e ** p.xi)
         yh = yH[tau, y, z]
         # employed
-        h = _interp2(sol.gH, ktype, tau, ek, ew, ak, aw, y, z)
-        aE = _interp2(sol.gAE, ktype, tau, ek, ew, ak, aw, y, z)
+        h = _interp2(sol.gH, ktype, tau, ek, ew, ak, aw, y, z, jst[:, it])
+        aE = _interp2(sol.gAE, ktype, tau, ek, ew, ak, aw, y, z, jst[:, it])
         # non-employed
-        s = _interp2(sol.gS, ktype, tau, ek, ew, ak, aw, y, z)
-        aN = _interp2(sol.gAN, ktype, tau, ek, ew, ak, aw, y, z)
+        s = _interp2(sol.gS, ktype, tau, ek, ew, ak, aw, y, z, jst[:, it])
+        aN = _interp2(sol.gAN, ktype, tau, ek, ew, ak, aw, y, z, jst[:, it])
         f_t = f * (p.home_young_mult if tau == 0 else 1.0)
         incE = w * h + f_t * (1 - h) ** p.nu_h + yh
         incN = f_t * (1 - s) ** p.nu_h + yh

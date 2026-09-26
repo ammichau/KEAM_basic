@@ -21,6 +21,7 @@ ap.add_argument("--max-nfev", type=int, default=6)
 ap.add_argument("--diff-step", type=float, default=0.04)
 ap.add_argument("--tag", type=str, default="ls")
 ap.add_argument("--bound", action="append", default=[])
+ap.add_argument("--fixed", action="append", default=[], help="fix a FinalParams field (not calibrated): name=value (repeatable)")
 ap.add_argument("--set", action="append", default=[])
 a = ap.parse_args()
 HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.join(HERE, "..")
@@ -36,6 +37,9 @@ for kv in a.set:
 names = list(x0.keys())
 lo = np.array([C.BOUNDS[n][0] for n in names]); hi = np.array([C.BOUNDS[n][1] for n in names])
 z0 = np.clip(np.array([x0[n] for n in names]), lo + 1e-9, hi - 1e-9)
+base = FinalParams()
+for kv in a.fixed:
+    n, v = kv.split("="); base = base.replace(**{n: type(getattr(base, n))(float(v))})
 cfg = SimConfigFinal(N=60, n_cohorts=90)
 log = os.path.join(ROOT, "output", f"final_calib_{a.tag}.log"); open(log, "w").close()
 hist = []; t0 = time.time()
@@ -44,7 +48,7 @@ keys = list(C.TARGETS.keys()); w = np.sqrt([C.WEIGHT[k] for k in keys])
 
 def resid(z):
     x = dict(zip(names, [float(v) for v in z]))
-    m, _, _ = run(C.apply_params(FinalParams(), x), cfg)
+    m, _, _ = run(C.apply_params(base, x), cfg)
     obj, parts = C.objective_from_moments(m)
     r = w * np.array([parts[k] for k in keys])
     hist.append(dict(n=len(hist) + 1, t=round(time.time() - t0), obj=obj, x=x, m={k: float(v) for k, v in m.items()},

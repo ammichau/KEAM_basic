@@ -17,6 +17,7 @@ ap.add_argument("--x0", type=str, default="")
 ap.add_argument("--extra", type=str, default="", help="extra calibrated FinalParams fields, comma-separated (e.g. alpha_h)")
 ap.add_argument("--full", action="store_true", help="100-type grid (default: 27 types)")
 ap.add_argument("--bound", action="append", default=[], help="override a bound: name:lo:hi (repeatable)")
+ap.add_argument("--fixed", action="append", default=[], help="fix a FinalParams field (not calibrated): name=value (repeatable)")
 ap.add_argument("--set", action="append", default=[], help="override a starting value: name=value (repeatable)")
 ap.add_argument("--maxfev-note", type=str, default="")
 ap.add_argument("--n-jobs", type=int, default=0)
@@ -35,6 +36,8 @@ names = C.PARAM_NAMES + ["home_young_mult", "nu_h", "z_h"] + extra
 if a.n_jobs:
     os.environ["KEAM_NJOBS"] = str(a.n_jobs)
 base = FinalParams() if a.full else FinalParams(n_omega=3, n_kbar=3, n_km=3)
+for kv in a.fixed:
+    n, v = kv.split("="); base = base.replace(**{n: type(getattr(base, n))(float(v))})
 cfg = SimConfigFinal(N=60, n_cohorts=90)
 x0 = json.load(open(os.path.join(HERE, "..", "output", "x0_km14.json")))["x"]
 x0.update(km_max=4.0, home_young_mult=1.5, nu_h=0.65, z_h=0.45)

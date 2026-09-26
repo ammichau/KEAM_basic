@@ -1,10 +1,15 @@
 """Value function iteration for the final model (monthly, assets, per-type solve).
 
-Per type the state is (age tau, experience e, assets a, husband y, aggregate z) and there are
-two value functions: employed V^E (chooses hours h and savings a', may quit) and non-employed
-V^N (chooses search s and savings a').  Choices are on grids; continuation values are linearly
-interpolated in e'.  Modified policy iteration (maximisation step followed by `howard_steps`
-evaluation steps) is used for speed.
+Per type the state is (age tau, experience e, assets a, husband y, aggregate z, cost-shock state j)
+and there are two value functions: employed V^E (chooses hours h and savings a', may quit) and
+non-employed V^N (chooses search s and savings a').  Choices are on grids; continuation values are
+linearly interpolated in e'.  Modified policy iteration (maximisation step followed by
+`howard_steps` evaluation steps) is used for speed.
+
+The cost-of-work shock kappa_T is realised at the start of the period, before the quit decision:
+an employed woman (or a job finder) with shock node j' gets max{V^E_j' - kappa_j', V^N_j'}.  With an
+iid shock (rho_kT = 0) the values do not depend on the shock and a single shock state is carried
+(last axis of length 1); with persistence the state carries the current node (last axis n_kT).
 """
 from __future__ import annotations
 from dataclasses import dataclass
@@ -17,7 +22,7 @@ from .params import FinalParams, make_types
 class FinalSolution:
     params: FinalParams
     omega: np.ndarray; kbar: np.ndarray; km: np.ndarray
-    VE: np.ndarray; VN: np.ndarray          # (nK, nT, nE, nA, nY, nZ)
+    VE: np.ndarray; VN: np.ndarray          # (nK, nT, nE, nA, nY, nZ, nJ); nJ = 1 for an iid shock
     gH: np.ndarray; gAE: np.ndarray         # hours, savings when employed (values, not indices)
     gS: np.ndarray; gAN: np.ndarray         # search, savings when non-employed
     VR: np.ndarray                          # retirement value on the asset grid
@@ -61,13 +66,15 @@ def solve_type(p: FinalParams, omega: float, kbar: float, km: float, VR: np.ndar
     lam_u = np.asarray(p.lam_u); lam_f = np.asarray(p.lam_f)
     pi_f = lam_f[None, :] * sg[:, None] ** p.nu                                     # (nS, nZ)
     p_age = p.p_age
-    kT, wT = p.kT_nodes()
+    kT, nJ, PJ = p.kT_chain()                                                       # nodes, states, (nJ, n_kT)
+    st = np.arange(kT.size) if nJ > 1 else np.zeros(kT.size, int)                   # state reached at node j'
+    jj = np.arange(nJ)[:, None, None, None, None]
     # joint transition of (y, z): T[z, y, z', y'] = piz[z, z'] lamH[z, y, y']
     T = p.piz[:, None, :, None] * lamH[:, :, None, :]                               # (nZ, nY, nZ', nY')
 
     def expect(X):
-        """E over (y', z') of X(e, a, y', z') given today's (y, z): returns (e, a, y, z)."""
-        return np.einsum("zyxw,eaxw->eayz", T, X.transpose(0, 1, 3, 2))            # X indexed (e,a,y',z') -> transpose to (e,a,z',y')
+        """E over (y', z') of X(j, e, a, y', z') given today's (y, z): returns (j, e, a, y, z)."""
+        return np.einsum("zyxw,jeaxw->jeayz", T, X.transpose(0, 1, 2, 4, 3))       # X indexed (j,e,a,y',z') -> (j,e,a,z',y')
 
     # experience transitions
     eE = np.minimum(p.e_max, (1 - p.delta_e) * eg[:, None] + p.theta_e * eg[:, None] * hg[None, :] ** p.psi_e)  # (nE, nH)
@@ -75,8 +82,8 @@ def solve_type(p: FinalParams, omega: float, kbar: float, km: float, VR: np.ndar
     eN = (1 - p.delta_e) * eg
     kN, wN = _bracket(eg, eN)
 
-    VE = np.zeros((nT, nE, nA, nY, nZ)); VN = np.zeros((nT, nE, nA, nY, nZ))
-    gH = np.zeros((nT, nE, nA, nY, nZ), np.int16); gAE = np.zeros_like(gH)
+    VE = np.zeros((nT, nJ, nE, nA, nY, nZ)); VN = np.zeros((nT, nJ, nE, nA, nY, nZ))
+    gH = np.zeros((nT, nJ, nE, nA, nY, nZ), np.int16); gAE = np.zeros_like(gH)
     gS = np.zeros_like(gH); gAN = np.zeros_like(gH)
     iters = np.zeros(nT, int)
 
@@ -96,45 +103,52 @@ def solve_type(p: FinalParams, omega: float, kbar: float, km: float, VR: np.ndar
               + ag[None, :, None, None, None, None] - ag[None, None, None, None, None, :])
         flowN = np.where(cN > 1e-8, u(np.maximum(cN, 1e-8), p.gamma), -1e10)
         flowN = np.ascontiguousarray(np.broadcast_to(flowN, (nE, nA, nY, nZ, nS, nA)))
-        # next-age continuation (fixed during the iteration)
+        # next-age continuation (fixed during the iteration): start-of-period values at age tau+1 by
+        # shock node j' (quit decision at node j'), then by today's shock state through PJ
         if tau == nT - 1:
-            Vnext_max = np.broadcast_to(VR[None, :, None, None], (nE, nA, nY, nZ))
-            Vnext_N = Vnext_max
+            VRb = np.broadcast_to(VR[None, :, None, None], (nE, nA, nY, nZ))
+            Qnext = np.broadcast_to(VRb, (kT.size, nE, nA, nY, nZ)); VNnext = np.broadcast_to(VRb, (nJ, nE, nA, nY, nZ))
         else:
-            Vnext_max = np.maximum(VE[tau + 1], VN[tau + 1]); Vnext_N = VN[tau + 1]
-        EVmax_next = expect(Vnext_max); EVN_next = expect(Vnext_N)
+            Qnext = np.maximum(VE[tau + 1][st] - kT[:, None, None, None, None], VN[tau + 1][st]); VNnext = VN[tau + 1]
+        EVmax_next = expect(np.tensordot(PJ, Qnext, axes=(1, 0)))                   # (j, e, a, y, z)
+        EVN_next = expect(np.tensordot(PJ if nJ > 1 else np.ones((1, 1)), VNnext, axes=(1, 0)))
         pa = p_age[tau]
         # initial guess
-        VEc = Vnext_max.copy() if tau < nT - 1 else np.broadcast_to(VR[None, :, None, None], (nE, nA, nY, nZ)).copy()
+        VEc = (np.maximum(VE[tau + 1], VN[tau + 1]) if tau < nT - 1
+               else np.broadcast_to(VR[None, None, :, None, None], (nJ, nE, nA, nY, nZ))).copy()
         VNc = VEc.copy()
-        hE = np.zeros((nE, nA, nY, nZ), int); aE = np.zeros_like(hE); sN = np.zeros_like(hE); aN = np.zeros_like(hE)
+        hE = np.zeros((nJ, nE, nA, nY, nZ), int); aE = np.zeros_like(hE); sN = np.zeros_like(hE); aN = np.zeros_like(hE)
 
         def continuation(VEc, VNc):
-            # value at the start of a period, before the quit decision, integrating the iid cost shock
-            Vmax = sum(wj * np.maximum(VEc - kj, VNc) for kj, wj in zip(kT, wT))
-            Wmax = (1 - pa) * expect(Vmax) + pa * EVmax_next          # (e', a', y, z)
-            WN = (1 - pa) * expect(VNc) + pa * EVN_next
-            WE = (1 - lam_u)[None, None, None, :] * Wmax + lam_u[None, None, None, :] * WN
-            # employed: interpolate WE at e'(e, h): (e, h, a', y, z)
-            contE = (1 - wE)[:, :, None, None, None] * WE[kE] + wE[:, :, None, None, None] * WE[kE + 1]
-            # non-employed: interpolate at e'_N(e): (e, a', y, z)
-            WNs = (1 - wN)[:, None, None, None] * WN[kN] + wN[:, None, None, None] * WN[kN + 1]
-            WNf = (1 - wN)[:, None, None, None] * Wmax[kN] + wN[:, None, None, None] * Wmax[kN + 1]
-            # (e, s, a', y, z)
-            contN = ((1 - pi_f)[None, :, None, None, :] * WNs[:, None] + pi_f[None, :, None, None, :] * WNf[:, None])
+            # value at the start of a period by shock node j' (before the quit decision), then the
+            # expectation over j' given today's state j; all arrays (j, e', a', y, z)
+            Q = np.maximum(VEc[st] - kT[:, None, None, None, None], VNc[st])           # (j', e, a, y, z)
+            Vmax = np.tensordot(PJ, Q, axes=(1, 0))
+            VNj = np.tensordot(PJ if nJ > 1 else np.ones((1, 1)), VNc, axes=(1, 0))
+            Wmax = (1 - pa) * expect(Vmax) + pa * EVmax_next
+            WN = (1 - pa) * expect(VNj) + pa * EVN_next
+            WE = (1 - lam_u)[None, None, None, None, :] * Wmax + lam_u[None, None, None, None, :] * WN
+            # employed: interpolate WE at e'(e, h): (j, e, h, a', y, z)
+            contE = (1 - wE)[None, :, :, None, None, None] * WE[:, kE] + wE[None, :, :, None, None, None] * WE[:, kE + 1]
+            # non-employed: interpolate at e'_N(e): (j, e, a', y, z)
+            WNs = (1 - wN)[None, :, None, None, None] * WN[:, kN] + wN[None, :, None, None, None] * WN[:, kN + 1]
+            WNf = (1 - wN)[None, :, None, None, None] * Wmax[:, kN] + wN[None, :, None, None, None] * Wmax[:, kN + 1]
+            # (j, e, s, a', y, z)
+            contN = ((1 - pi_f)[None, None, :, None, None, :] * WNs[:, :, None]
+                     + pi_f[None, None, :, None, None, :] * WNf[:, :, None])
             return contE, contN
 
         ie, ia, iy, iz = np.ogrid[:nE, :nA, :nY, :nZ]
         for it in range(p.max_iter):
             contE, contN = continuation(VEc, VNc)
             # maximisation
-            totE = flowE + beta * contE.transpose(0, 3, 4, 1, 2)[:, None]            # (e, a, y, z, h, a')
-            flatE = totE.reshape(nE, nA, nY, nZ, -1)
+            totE = flowE[None] + beta * contE.transpose(0, 1, 4, 5, 2, 3)[:, :, None]   # (j, e, a, y, z, h, a')
+            flatE = totE.reshape(nJ, nE, nA, nY, nZ, -1)
             idxE = flatE.argmax(axis=-1)
             hE, aE = np.divmod(idxE, nA)
             VEn = np.take_along_axis(flatE, idxE[..., None], axis=-1)[..., 0]
-            totN = flowN + beta * contN.transpose(0, 3, 4, 1, 2)[:, None]            # (e, a, y, z, s, a')
-            flatN = totN.reshape(nE, nA, nY, nZ, -1)
+            totN = flowN[None] + beta * contN.transpose(0, 1, 4, 5, 2, 3)[:, :, None]   # (j, e, a, y, z, s, a')
+            flatN = totN.reshape(nJ, nE, nA, nY, nZ, -1)
             idxN = flatN.argmax(axis=-1)
             sN, aN = np.divmod(idxN, nA)
             VNn = np.take_along_axis(flatN, idxN[..., None], axis=-1)[..., 0]
@@ -146,8 +160,8 @@ def solve_type(p: FinalParams, omega: float, kbar: float, km: float, VR: np.ndar
             fE = flowE[ie, ia, iy, iz, hE, aE]; fN = flowN[ie, ia, iy, iz, sN, aN]
             for _ in range(p.howard_steps):
                 contE, contN = continuation(VEc, VNc)
-                VEc = fE + beta * contE[ie, hE, aE, iy, iz]
-                VNc = fN + beta * contN[ie, sN, aN, iy, iz]
+                VEc = fE + beta * contE[jj, ie, hE, aE, iy, iz]
+                VNc = fN + beta * contN[jj, ie, sN, aN, iy, iz]
         iters[tau] = it + 1
         VE[tau], VN[tau] = VEc, VNc
         gH[tau], gAE[tau], gS[tau], gAN[tau] = hE, aE, sN, aN
@@ -168,7 +182,8 @@ def solve_all(p: FinalParams, verbose=False, n_jobs: int | None = None) -> Final
     omega, kbar, km = make_types(p)
     nK = omega.size
     VR = solve_retirement(p)
-    shape = (nK, 3, p.nE, p.nA, 3, 2)
+    nJ = p.kT_chain()[1]
+    shape = (nK, 3, p.nE, p.nA, 3, 2, nJ)
     VE = np.zeros(shape); VN = np.zeros(shape)
     gH = np.zeros(shape, np.float32); gAE = np.zeros(shape, np.float32)
     gS = np.zeros(shape, np.float32); gAN = np.zeros(shape, np.float32)
@@ -181,8 +196,10 @@ def solve_all(p: FinalParams, verbose=False, n_jobs: int | None = None) -> Final
     else:
         results = [_solve_one(j) for j in jobs]
     for k, (ve, vn, h, aE, s, aN, its) in enumerate(results):
-        VE[k], VN[k], iters[k] = ve, vn, its
-        gH[k] = p.hgrid[h]; gAE[k] = p.agrid[aE]; gS[k] = p.sgrid[s]; gAN[k] = p.agrid[aN]
+        # per-type arrays are (nT, nJ, nE, nA, nY, nZ); the shock state is stored last
+        VE[k], VN[k], iters[k] = np.moveaxis(ve, 1, -1), np.moveaxis(vn, 1, -1), its
+        gH[k] = np.moveaxis(p.hgrid[h], 1, -1); gAE[k] = np.moveaxis(p.agrid[aE], 1, -1)
+        gS[k] = np.moveaxis(p.sgrid[s], 1, -1); gAN[k] = np.moveaxis(p.agrid[aN], 1, -1)
     if verbose:
         print(f"solved {nK} types in {time.time() - t0:.0f}s; max iterations {iters.max()}")
     return FinalSolution(params=p, omega=omega, kbar=kbar, km=km, VE=VE, VN=VN, gH=gH, gAE=gAE,
