@@ -246,8 +246,14 @@ if os.path.isdir(figdir) and os.listdir(figdir):
         if os.path.exists(os.path.join(figdir, name + ".png")):
             L.append(f"![{cap}](Code26/python/{a.figdir}/{name}.png)\n\n*{cap}*\n")
 L.append("## 8. What is fragile\n")
-L.append("* The never-working (NiLF) share is the least well fitted target; it depends on the home-production "
-         "curvature in productivity (α_h) and the hours scaling of the fixed cost.\n"
+L.append("* The never-working (NiLF) share is the least well fitted target. Section 1b shows why: it is one wage-type "
+         "cell of the five-point grid plus part of the next, and every parameter that lowers it also raises the "
+         "employment rate or the quit rates, so the weighted objective settles for a 20-25% overshoot. A finer wage-type "
+         "grid or a second dimension of permanent home-productivity heterogeneity is the natural next step; a persistent "
+         "cost shock (section 1a) does not help.\n"
+         "* In the refined cohort accounting the residual cost of work reaches its lower bound for the 1970s cohort "
+         "(scale near zero): that cohort's employment rate and wage gap are reproduced with almost no fixed cost of "
+         "work, so its row is a corner solution and its recession drop is an upper bound.\n"
          "* The experience cap e_max is calibrated; the wage gap among employed wives is largely the experience "
          "premium at the cap, so the returns-to-experience experiment interacts with it.\n"
          "* The transitory cost shock (sd σ_κ) drives the monthly quit rate; its distribution is not disciplined by "
