@@ -17,6 +17,7 @@ ap.add_argument("--robust", default="output/robustness_final.json")
 ap.add_argument("--extra", default="output/extra_experiments_full.json")
 ap.add_argument("--cohorts2", default="output/cohorts_refined_full.json")
 ap.add_argument("--jacobian", default="output/jacobian_final.json")
+ap.add_argument("--calib-alt", default="output/final_calib_rho_full.json", help="second calibration (persistent shock) shown side by side")
 ap.add_argument("--diag", default="output/diag_careers.json")
 ap.add_argument("--out", default=os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "..", "RESULTS.md"))
 a = ap.parse_args()
@@ -25,7 +26,7 @@ def load(rel):
     p = rel if os.path.isabs(rel) else os.path.join(PY, rel)
     return json.load(open(p)) if os.path.exists(p) else None
 calib = load(a.calib); res = load(a.results); rob = load(a.robust); extra = load(a.extra); coh2 = load(a.cohorts2)
-jac = load(a.jacobian); diag = load(a.diag)
+jac = load(a.jacobian); diag = load(a.diag); alt = load(a.calib_alt)
 L = []
 L.append("# Final model results: 1940s cohort calibration, trend experiments, mechanism\n")
 L.append("All numbers are produced by scripts in `Code26/python/scripts`; the files cited are in "
@@ -48,6 +49,29 @@ if calib:
               "cons drop at H job loss rec (%)", "mean assets/monthly HH inc", "share e at cap"]:
         if k in m:
             L.append(f"| {k} | {m[k]:.4f} |")
+    L.append("")
+# ---- alternative calibration (persistent cost shock) side by side
+if calib and alt:
+    L.append("### 1a. Persistent cost-of-work shock: calibration side by side\n")
+    L.append(f"Source: `{a.calib_alt}` (objective {alt['obj']:.3f}, {alt.get('n_eval', '?')} evaluations, "
+             f"{'100' if not alt.get('coarse', True) else '27'} types; fixed fields {alt.get('fixed', {})}). "
+             "The shock keeps its value from one month to the next with probability rho_kT (0 in the iid model); "
+             "see `FINAL_MODEL.md`.\n")
+    L.append("| parameter | iid shock | persistent shock |\n|---|---|---|")
+    for k in sorted(set(calib["x"]) | set(alt["x"]), key=lambda n: (n not in calib["x"], n)):
+        f = lambda d: f"{d['x'][k]:.4f}" if k in d["x"] else "-"
+        L.append(f"| {k} | {f(calib)} | {f(alt)} |")
+    L.append("\n| target | data | iid shock | persistent shock |\n|---|---|---|---|")
+    ma = alt.get("moments", {})
+    for k, tv in TARGETS.items():
+        sc = 1.0 if "pts" in k else tv
+        L.append(f"| {k} | {tv:.4f} | {m.get(k, np.nan):.4f} ({100 * (m.get(k, np.nan) - tv) / sc:+.0f}%) | "
+                 f"{ma.get(k, np.nan):.4f} ({100 * (ma.get(k, np.nan) - tv) / sc:+.0f}%) |")
+    L.append("\n| untargeted moment | iid shock | persistent shock |\n|---|---|---|")
+    for k in ["U rate", "wife share exp", "cons drop at H job loss exp (%)", "cons drop at H job loss rec (%)",
+              "mean assets/monthly HH inc"]:
+        if k in m and k in ma:
+            L.append(f"| {k} | {m[k]:.4f} | {ma[k]:.4f} |")
     L.append("")
 # ---- identification: local elasticities and the type-cell structure of the career taxonomy
 if jac and "elasticities" in jac:
