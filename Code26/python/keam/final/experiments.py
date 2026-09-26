@@ -39,8 +39,9 @@ def returns_scaled(p: FinalParams, scale: float) -> FinalParams:
     return p.replace(gam_e=p.gam_e * scale)
 
 
-def size_to_employment(make, p, cfg, target_E, lo, hi, tol=0.004, maxit=8, n_jobs=None):
-    """Find the scale such that E/pop hits target_E (bisection, few evaluations)."""
+def size_to_employment(make, p, cfg, target_E, lo, hi, tol=0.002, maxit=12, n_jobs=None):
+    """Find the scale such that E/pop hits target_E (bisection on a common simulation seed;
+    12 steps resolve the scale to 2^-12 of the bracket, tolerance 0.2 pp of employment)."""
     cache = {}
 
     def f(s):

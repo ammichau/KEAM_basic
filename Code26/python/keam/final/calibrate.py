@@ -38,17 +38,19 @@ WEIGHT.update({"E/pop": 3.0, "hours|E": 2.0, "quit/m exp": 2.0, "quit/m rec": 2.
 PARAM_NAMES = ["mu", "kbar_max", "km_max", "tau_w", "lam_f0", "lam_u0", "lam_u1", "ybar_h", "sd_kT"]
 BOUNDS = {"mu": (0.2, 5.0), "kbar_max": (0.005, 1.0), "km_max": (1.0, 15.0), "tau_w": (0.4, 1.2),
           "lam_f0": (0.05, 0.9), "lam_u0": (0.003, 0.05), "lam_u1": (0.003, 0.08), "ybar_h": (0.0, 0.6),
-          "sd_kT": (0.001, 0.6), "delta_e": (0.001, 0.008)}
-OPTIONAL_PARAMS = ["delta_e"]
+          "sd_kT": (0.001, 0.6), "delta_e": (0.001, 0.008), "lam_f_ratio": (0.5, 1.0)}
+OPTIONAL_PARAMS = ["delta_e", "lam_f_ratio"]
 
 
 def apply_params(base: FinalParams, x: dict) -> FinalParams:
+    r_f = x.get("lam_f_ratio", 0.85)      # recession job-finding efficiency relative to expansion
     kw = dict(mu=x["mu"], kbar_max=x["kbar_max"], km_max=x["km_max"], tau_w=x["tau_w"],
-              lam_f=(x["lam_f0"], 0.85 * x["lam_f0"]), lam_u=(x["lam_u0"], x["lam_u1"]),
+              lam_f=(x["lam_f0"], r_f * x["lam_f0"]), lam_u=(x["lam_u0"], x["lam_u1"]),
               ybar_h=x["ybar_h"], sd_kT=x["sd_kT"])
-    kw.update({n: x[n] for n in OPTIONAL_PARAMS if n in x})
+    kw.update({n: x[n] for n in OPTIONAL_PARAMS if n in x and n in FinalParams.__dataclass_fields__})
     # carry through any other calibrated field of FinalParams (e.g. home_young_mult, nu_h, z_h, alpha_h)
-    kw.update({k: v for k, v in x.items() if k in FinalParams.__dataclass_fields__ and k not in kw})
+    kw.update({k: v for k, v in x.items() if k in FinalParams.__dataclass_fields__ and k not in kw
+               and k not in ("lam_f", "lam_u")})
     return base.replace(**kw)
 
 
