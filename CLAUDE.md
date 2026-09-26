@@ -74,15 +74,45 @@ lower cost of work) make it more cyclical, a closing wage gap less so. Reference
 
 ## Plan (execute autonomously, commit and push after each step)
 
-Work on branch `claude/hopeful-ride-vbnou4`. Use all cores (`KEAM_NJOBS` = number of cores).
+Work on branch `claude/hopeful-ride-vbnou4`. Use all cores (`export KEAM_NJOBS=$(nproc)`). Setup:
+`git pull origin claude/hopeful-ride-vbnou4; cd Code26/python; pip install numpy scipy pandas openpyxl xlrd`.
+The cloud session (4 cores) stopped its compute on 2026-09-26 22:40 UTC so that the workstation can
+run the remaining agenda without file conflicts; the tagged outputs ls, ui, om7, v3, v4 are final.
 
-1. `cd Code26/python && pip install numpy scipy pandas openpyxl xlrd`.
-2. (done) Refined cohort accounting: `scripts/cohorts_refined.py`.
-3. (done) Calibration polish and full results pipeline for it (`scripts/run_pipeline.sh <calib> <tag>`).
-4. (done) `scripts/figures.py` -> `Code26/python/output/figures/` (quit probability, search, hours by
-   state over experience averaged over types; refined cohort trend; mechanism decomposition).
-   `scripts/irf_careers.py` -> fig6/fig7: impulse responses by career type on the NBER dates.
-5. Keep `RESULTS.md` and the PR description current.
+Goal: settle the 1940s-cohort calibration and measure the split of the recession fall in married
+women's quits between precautionary labor supply (husband's cyclical risk) and job hoarding (the
+wife's cyclical job finding). Author priority: a data-disciplined version in which precautionary
+labor supply has a role at least comparable to hoarding. The women's UE-rate cyclicality target
+(sd of the log rate 0.0686; men 0.0765, matched by the husband's rates) is in `calibrate.py` TARGETS.
+
+1. Version 4c: recession UI cut and a 20% job-finding fall.
+   `python3 -u scripts/calibrate_ls.py --x0 output/final_calib_v4_full.json --fixed ui_rec_mult=0.5
+   --set lam_f_ratio=0.80 --bound lam_f_ratio:0.8:0.8000001 --max-nfev 6 --diff-step 0.04 --tag v4c_full`
+   then `python3 scripts/calib_table.py output/final_calib_v4c_full.json > output/final_calib_v4c_full.md`
+   and `python3 -u scripts/channels.py --calib output/final_calib_v4c_full.json --tag v4c`.
+2. Version 5: log utility (gamma = 1, balanced growth), same assumptions as 4c, from the rescaled start
+   `output/x0_gamma1.json`: coarse Nelder-Mead, full-grid polish, channel decomposition.
+   `python3 -u scripts/calibrate_childcare.py --fixed gamma=1 --fixed ui_rec_mult=0.5 --x0 output/x0_gamma1.json
+   --extra alpha_h,e_max,kappa_h_power --maxfev 250 --tag v5_coarse`
+   `python3 -u scripts/calibrate_ls.py --x0 output/final_calib_v5_coarse.json --fixed gamma=1.0 --fixed ui_rec_mult=0.5
+   --set lam_f_ratio=0.80 --bound lam_f_ratio:0.8:0.8000001 --max-nfev 6 --diff-step 0.04 --tag v5_full`
+   `python3 -u scripts/channels.py --calib output/final_calib_v5_full.json --tag v5`
+   If the coarse stage ends above objective 0.5, run a second Nelder-Mead round from its result
+   (`--x0 output/final_calib_v5_coarse.json --tag v5_coarse2`) before the polish.
+3. Carry forward the lowest-objective version among v4c and v5 whose precautionary share is within 10
+   points of the hoarding share; prefer v5 if it fits acceptably (objective below 0.3, cyclical moments
+   within 15%) because of the balanced-growth argument, and say so. Run
+   `bash scripts/run_pipeline.sh output/final_calib_<tag>_full.json <tag>`, then regenerate RESULTS.md:
+   `python3 scripts/write_results.py --calib output/final_calib_<tag>_full.json --calib-prev output/final_calib_ls_full.json
+   --results output/final_results_<tag>.json --extra output/extra_experiments_<tag>.json --cohorts2 output/cohorts_refined_<tag>.json
+   --robust output/robustness_final_<tag>.json --figdir output/figures_<tag>
+   --calib-alt "adopted iid=output/final_calib_ls_full.json,version 3=output/final_calib_v3_full.json,version 4=output/final_calib_v4_full.json,version 4c=output/final_calib_v4c_full.json,version 5 (log utility)=output/final_calib_v5_full.json,recession UI cut=output/final_calib_ui_full.json,7 wage types=output/final_calib_om7_full.json"
+   --channels "<tag>=output/channels_<tag>.json,adopted=output/channels_ls.json,version 4=output/channels_v4.json,version 4c=output/channels_v4c.json,version 5=output/channels_v5.json,UI cut=output/channels_ui.json"`
+   (drop files that do not exist). Update the state section above and the PR description.
+4. Report (RESULTS.md section 6 and the reply): a table of all versions (objective, the 13 targets'
+   deviations, precaution and hoarding shares, recession employment drop with and without cyclical
+   husband risk); whether log utility preserves the precautionary channel and what it does to the fit;
+   which parameters and targets govern the split (section 4b).
 
 ## Conventions
 
