@@ -54,6 +54,14 @@ lower cost of work) make it more cyclical, a closing wage gap less so. Reference
    `channels.py --variants quick` for the ui, om7 and v3 versions (`output/channels_<tag>.*`).
    Author priority: a version in which precautionary labor supply has a role at least comparable
    to job hoarding; then identify the parameters/targets that govern the split.
+   Versions so far (RESULTS.md 1a/4b; objective with 12 targets unless noted; precaution / hoarding shares
+   of the recession quit drop): adopted `ls` 0.120, 19/39; `ui` (UI cut) 0.144, 29/34; `om7` (7 wage types)
+   0.135, 21/38; `v3` (UI cut + 10% job-finding fall) 0.113, 29/25; `v4` (UI cut + job-finding fall
+   calibrated to the author's UE-rate cyclicality target sd log UE = 0.0686, 13 targets) 0.256, the
+   least-squares run left the fall at 15% (model sd 0.056); `v5` = v4 with log utility (gamma = 1,
+   balanced growth; author request) queued after v4 (`output/chain_v5.out`). The UE-cyclicality data
+   imply a job-finding fall of about 18-20%, so precaution above hoarding (v3) is not supported by it;
+   near parity (ui/v4) is what the data allow.
 6. Known limitations / next steps (see RESULTS.md section 7):
    - DONE: `scripts/cohorts_refined.py` solves the cost scale and tau_w jointly per cohort
      (`output/cohorts_refined_full.md`, RESULTS.md section 3b); the raw-ratio version in
