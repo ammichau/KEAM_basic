@@ -66,13 +66,24 @@ def size_to_employment(make, p, cfg, target_E, lo, hi, tol=0.002, maxit=12, n_jo
     return mid, cache[mid], cache
 
 
+def acyclical_husband(p: FinalParams) -> FinalParams:
+    """Husband's job-loss and job-finding rates and his unemployment income at their expansion values in
+    both aggregate states (the precautionary channel switched off)."""
+    return p.replace(lamH_loss=(p.lamH_loss[0], p.lamH_loss[0]), lamH_find=(p.lamH_find[0], p.lamH_find[0]),
+                     ui_rec_mult=1.0)
+
+
+def acyclical_finding(p: FinalParams) -> FinalParams:
+    """The wife's job-finding efficiency at its expansion value in both states (job hoarding switched off)."""
+    return p.replace(lam_f=(p.lam_f[0], p.lam_f[0]))
+
+
 def counterfactuals(p: FinalParams, cfg: SimConfigFinal, n_jobs=None):
     out = {}
     out["baseline"] = run(p, cfg, n_jobs)[0]
     # acyclical husband job-loss risk (expansion values in both states)
-    out["acyclical husband risk"] = run(p.replace(lamH_loss=(p.lamH_loss[0], p.lamH_loss[0]),
-                                                  lamH_find=(p.lamH_find[0], p.lamH_find[0])), cfg, n_jobs)[0]
-    out["acyclical job finding"] = run(p.replace(lam_f=(p.lam_f[0], p.lam_f[0])), cfg, n_jobs)[0]
+    out["acyclical husband risk"] = run(acyclical_husband(p), cfg, n_jobs)[0]
+    out["acyclical job finding"] = run(acyclical_finding(p), cfg, n_jobs)[0]
     out["no recession wage cut"] = run(p.replace(phi_rec=1.0, phi_rec_H=1.0), cfg, n_jobs)[0]
     out["acyclical own job loss"] = run(p.replace(lam_u=(p.lam_u[0], p.lam_u[0])), cfg, n_jobs)[0]
     return out
