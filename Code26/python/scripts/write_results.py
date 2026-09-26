@@ -16,6 +16,8 @@ ap.add_argument("--results", default="output/final_results_full.json")
 ap.add_argument("--robust", default="output/robustness_final.json")
 ap.add_argument("--extra", default="output/extra_experiments_full.json")
 ap.add_argument("--cohorts2", default="output/cohorts_refined_full.json")
+ap.add_argument("--figdir", default="output/figures", help="figure directory relative to Code26/python")
+ap.add_argument("--calib-prev", default="", help="the Nelder-Mead point the calibration was polished from (noted in section 1)")
 ap.add_argument("--jacobian", default="output/jacobian_final.json")
 ap.add_argument("--calib-alt", default="output/final_calib_rho_coarse.json", help="second calibration (persistent shock) shown side by side")
 ap.add_argument("--diag", default="output/diag_careers.json")
@@ -37,6 +39,13 @@ if calib:
     m = calib.get("moments", {})
     L.append(f"Source: `{a.calib}` (objective {calib['obj']:.3f}, {calib.get('n_eval', '?')} evaluations, "
              f"{'100' if not calib.get('coarse', True) else '27'} types).\n")
+    prev = load(a.calib_prev) if a.calib_prev else None
+    if prev:
+        L.append(f"Least-squares polish (`scripts/calibrate_ls.py`, scipy trust-region reflective with bounds, finite-difference "
+                 f"Jacobian on a common simulation seed) of the Nelder-Mead point `{a.calib_prev}` (objective {prev['obj']:.3f}). "
+                 "The polish matches the quit rates, hours and the recession employment drop more closely and gives up on the "
+                 "never-working and career shares, which the identification section below shows cannot be moved together "
+                 "with the employment rate.\n")
     L.append("| parameter | value |\n|---|---|")
     for k, v in calib["x"].items():
         L.append(f"| {k} | {v:.4f} |")
@@ -224,9 +233,9 @@ if calib and res:
                  f"{coh2[n2[0]]['m']['share Career']:.2f} to {coh2[n2[-1]]['m']['share Career']:.2f}. This is the cohort result to use; "
                  f"the raw-ratio version above is superseded.")
     L.append("")
-figdir = os.path.join(PY, "output", "figures")
+figdir = os.path.join(PY, a.figdir)
 if os.path.isdir(figdir) and os.listdir(figdir):
-    L.append("## 7. Figures (`Code26/python/output/figures`, from `scripts/figures.py`)\n")
+    L.append(f"## 7. Figures (`Code26/python/{a.figdir}`, from `scripts/figures.py`)\n")
     for name, cap in [("fig1_quit", "Quit probability of an employed woman over experience, by husband state and aggregate state (representative type, ages 40-54)."),
                       ("fig2_search", "Search intensity of a non-employed woman over experience, by state."),
                       ("fig3_hours", "Hours of an employed woman over experience, by state."),
@@ -235,7 +244,7 @@ if os.path.isdir(figdir) and os.listdir(figdir):
                       ("fig6_irf_employment", "Employment by career type after a recession starts (NBER dates, deviation from the six pre-recession months, average over the 1973-2007 recessions; `scripts/irf_careers.py`)."),
                       ("fig7_irf_quits", "Quits by career type after a recession starts (same construction).")]:
         if os.path.exists(os.path.join(figdir, name + ".png")):
-            L.append(f"![{cap}](Code26/python/output/figures/{name}.png)\n\n*{cap}*\n")
+            L.append(f"![{cap}](Code26/python/{a.figdir}/{name}.png)\n\n*{cap}*\n")
 L.append("## 8. What is fragile\n")
 L.append("* The never-working (NiLF) share is the least well fitted target; it depends on the home-production "
          "curvature in productivity (α_h) and the hours scaling of the fixed cost.\n"
