@@ -16,6 +16,8 @@ ap.add_argument("--results", default="output/final_results_full.json")
 ap.add_argument("--robust", default="output/robustness_final.json")
 ap.add_argument("--extra", default="output/extra_experiments_full.json")
 ap.add_argument("--cohorts2", default="output/cohorts_refined_full.json")
+ap.add_argument("--jacobian", default="output/jacobian_final.json")
+ap.add_argument("--diag", default="output/diag_careers.json")
 ap.add_argument("--out", default=os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "..", "RESULTS.md"))
 a = ap.parse_args()
 HERE = os.path.dirname(os.path.abspath(__file__)); PY = os.path.join(HERE, "..")
@@ -23,6 +25,7 @@ def load(rel):
     p = rel if os.path.isabs(rel) else os.path.join(PY, rel)
     return json.load(open(p)) if os.path.exists(p) else None
 calib = load(a.calib); res = load(a.results); rob = load(a.robust); extra = load(a.extra); coh2 = load(a.cohorts2)
+jac = load(a.jacobian); diag = load(a.diag)
 L = []
 L.append("# Final model results: 1940s cohort calibration, trend experiments, mechanism\n")
 L.append("All numbers are produced by scripts in `Code26/python/scripts`; the files cited are in "
@@ -46,6 +49,27 @@ if calib:
         if k in m:
             L.append(f"| {k} | {m[k]:.4f} |")
     L.append("")
+# ---- identification: local elasticities and the type-cell structure of the career taxonomy
+if jac and "elasticities" in jac:
+    L.append("### 1b. Identification: local elasticities of the targeted moments\n")
+    L.append(f"Source: `{a.jacobian}` (`scripts/jacobian_final.py`; one-sided +{100*jac['step']:.0f}% steps on the 100-type "
+             "grid, common simulation seed). Entries are the percent change of the moment per percent change of the "
+             "parameter; for the recession employment drop, percentage points per percent. Entries of at least 0.5 "
+             "in absolute value are in bold.\n")
+    jk = list(TARGETS.keys()); short = {"E/pop": "E/pop", "hours|E": "hours", "share Lifecycle": "LC", "share PT": "PT",
+        "share Career": "Career", "share NiLF": "NiLF", "quit/m exp": "quit exp", "quit/m rec": "quit rec",
+        "E->nonE/m exp": "E->N exp", "E->nonE/m rec": "E->N rec", "dE/pop rec-exp (pts)": "dE (pts)",
+        "wage gap (hourly ratio)": "wage gap"}
+    L.append("| parameter | " + " | ".join(short[k] for k in jk) + " |\n|---|" + "---|" * len(jk))
+    for n, row in jac["elasticities"].items():
+        cells = [("**{:+.2f}**" if abs(row[k]) >= 0.5 else "{:+.2f}").format(row[k]) for k in jk]
+        L.append(f"| {n} | " + " | ".join(cells) + " |")
+    L.append("")
+if diag and "by_cell" in diag:
+    L.append("The never-working share is the lowest wage-type cell of the five-point grid (20% of women, mean 140-180 "
+             "hours a year, all classified as never working) plus the part of the second cell (mean 450-680 hours) "
+             "that averages under 400 hours; simulation-seed noise in the four career shares is under 1 point "
+             f"(`{a.diag}`, `scripts/diag_careers.py`).\n")
 KEYS = ["E/pop", "hours|E", "U rate", "quit/m exp", "quit/m rec", "E->nonE/m exp", "E->nonE/m rec",
         "dE/pop rec-exp (pts)", "wife share exp", "wife share rec", "wage gap (hourly ratio)",
         "share Lifecycle", "share PT", "share Career", "share NiLF", "HH income rec/exp - 1 (%)",
