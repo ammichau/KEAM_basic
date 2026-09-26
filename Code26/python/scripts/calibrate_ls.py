@@ -24,6 +24,7 @@ ap.add_argument("--bound", action="append", default=[])
 ap.add_argument("--coarse", action="store_true", help="27-type grid (default: 100 types)")
 ap.add_argument("--fixed", action="append", default=[], help="fix a FinalParams field (not calibrated): name=value (repeatable)")
 ap.add_argument("--set", action="append", default=[])
+ap.add_argument("--resume", action="store_true", help="replay the evaluations already in the log (same tag) instead of recomputing them")
 a = ap.parse_args()
 HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.join(HERE, "..")
 C.BOUNDS.update({"home_young_mult": (1.0, 3.0), "nu_h": (0.3, 0.8), "z_h": (0.3, 0.6), "alpha_h": (0.05, 1.5),
@@ -42,18 +43,32 @@ base = FinalParams(n_omega=3, n_kbar=3, n_km=3) if a.coarse else FinalParams()
 for kv in a.fixed:
     n, v = kv.split("="); base = base.replace(**{n: type(getattr(base, n))(float(v))})
 cfg = SimConfigFinal(N=60, n_cohorts=90)
-log = os.path.join(ROOT, "output", f"final_calib_{a.tag}.log"); open(log, "w").close()
+log = os.path.join(ROOT, "output", f"final_calib_{a.tag}.log")
+cache = {}
+if a.resume and os.path.exists(log):
+    for line in open(log):
+        if line.startswith("{"):
+            r = json.loads(line); cache[tuple(round(r["x"][n], 10) for n in names)] = r
+    print(f"resuming: {len(cache)} cached evaluations in {log}", flush=True)
+else:
+    open(log, "w").close()
 hist = []; t0 = time.time()
 keys = list(C.TARGETS.keys()); w = np.sqrt([C.WEIGHT[k] for k in keys])
 
 
 def resid(z):
     x = dict(zip(names, [float(v) for v in z]))
+    key = tuple(round(x[n], 10) for n in names)
+    if key in cache:                    # replay (the log stores the full-precision deviations)
+        r0 = cache.pop(key)
+        parts = r0["dev"]; obj = r0["obj"]; m = r0.get("m", {})
+        hist.append(dict(n=len(hist) + 1, t=round(time.time() - t0), obj=obj, x=x, m=m, dev=parts, replayed=True))
+        return w * np.array([parts[k] for k in keys])
     m, _, _ = run(C.apply_params(base, x), cfg)
     obj, parts = C.objective_from_moments(m)
     r = w * np.array([parts[k] for k in keys])
     hist.append(dict(n=len(hist) + 1, t=round(time.time() - t0), obj=obj, x=x, m={k: float(v) for k, v in m.items()},
-                     dev={k: round(v, 3) for k, v in parts.items()}))
+                     dev={k: float(v) for k, v in parts.items()}))
     with open(log, "a") as f:
         f.write(json.dumps({k: v for k, v in hist[-1].items() if k != "m"}) + "\n")
     return r
@@ -62,6 +77,8 @@ def resid(z):
 sol = least_squares(resid, z0, bounds=(lo, hi), method="trf", diff_step=a.diff_step, x_scale=hi - lo,
                     max_nfev=a.max_nfev, ftol=1e-6, xtol=1e-6, gtol=1e-6)
 best = min(hist, key=lambda h: h["obj"])
+if not best.get("m"):
+    mb, _, _ = run(C.apply_params(base, best["x"]), cfg); best["m"] = {k: float(v) for k, v in mb.items()}
 out = dict(x=best["x"], obj=best["obj"], moments=best["m"], targets=C.TARGETS, n_eval=len(hist),
            seconds=time.time() - t0, coarse=a.coarse, names=names,
            fixed={kv.split('=')[0]: float(kv.split('=')[1]) for kv in a.fixed}, status=int(sol.status), message=sol.message)
