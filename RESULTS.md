@@ -50,6 +50,52 @@ Source: `output/final_calib_full.json` (objective 0.149, 60 evaluations, 100 typ
 | mean assets/monthly HH inc | 1.4722 |
 | share e at cap | 0.2488 |
 
+### 1a. Persistent cost-of-work shock: calibration side by side
+
+Source: `output/final_calib_rho_coarse.json` (objective 0.238, 120 evaluations, calibrated on 27 types, moments below re-evaluated on the 100-type grid; fixed fields {'n_kT': 3.0}). The shock keeps its value from one month to the next with probability rho_kT (0 in the iid model); see `FINAL_MODEL.md`.
+
+| parameter | iid shock | persistent shock |
+|---|---|---|
+| alpha_h | 0.2505 | 0.2925 |
+| e_max | 1.9685 | 1.6089 |
+| home_young_mult | 1.8119 | 1.6673 |
+| kappa_h_power | 0.2866 | 0.3100 |
+| kbar_max | 0.0172 | 0.0057 |
+| km_max | 5.8765 | 6.4321 |
+| lam_f0 | 0.3910 | 0.3965 |
+| lam_u0 | 0.0169 | 0.0226 |
+| lam_u1 | 0.0196 | 0.0262 |
+| mu | 0.9086 | 0.8380 |
+| nu_h | 0.6876 | 0.6652 |
+| sd_kT | 0.2897 | 0.3021 |
+| tau_w | 0.7571 | 0.7801 |
+| ybar_h | 0.0660 | 0.0663 |
+| z_h | 0.4517 | 0.4354 |
+| rho_kT | - | 0.5904 |
+
+| target | data | iid shock | persistent shock |
+|---|---|---|---|
+| E/pop | 0.6200 | 0.6644 (+7%) | 0.6592 (+6%) |
+| hours|E | 0.4000 | 0.4141 (+4%) | 0.4454 (+11%) |
+| share Lifecycle | 0.3100 | 0.3038 (-2%) | 0.2963 (-4%) |
+| share PT | 0.2800 | 0.2531 (-10%) | 0.2631 (-6%) |
+| share Career | 0.1900 | 0.1833 (-4%) | 0.1929 (+2%) |
+| share NiLF | 0.2200 | 0.2598 (+18%) | 0.2477 (+13%) |
+| quit/m exp | 0.0340 | 0.0311 (-8%) | 0.0327 (-4%) |
+| quit/m rec | 0.0280 | 0.0237 (-15%) | 0.0252 (-10%) |
+| E->nonE/m exp | 0.0500 | 0.0485 (-3%) | 0.0557 (+11%) |
+| E->nonE/m rec | 0.0480 | 0.0431 (-10%) | 0.0510 (+6%) |
+| dE/pop rec-exp (pts) | -1.7000 | -1.5984 (+10%) | -2.0625 (-36%) |
+| wage gap (hourly ratio) | 0.7100 | 0.7477 (+5%) | 0.7490 (+5%) |
+
+| untargeted moment | iid shock | persistent shock |
+|---|---|---|
+| U rate | 0.0459 | 0.1180 |
+| wife share exp | 0.3370 | 0.3521 |
+| cons drop at H job loss exp (%) | -5.0354 | -4.6244 |
+| cons drop at H job loss rec (%) | -7.1846 | -6.9890 |
+| mean assets/monthly HH inc | 1.4722 | 1.4726 |
+
 ### 1b. Identification: local elasticities of the targeted moments
 
 Source: `output/jacobian_final.json` (`scripts/jacobian_final.py`; one-sided +5% steps on the 100-type grid, common simulation seed). Entries are the percent change of the moment per percent change of the parameter; for the recession employment drop, percentage points per percent. Entries of at least 0.5 in absolute value are in bold.

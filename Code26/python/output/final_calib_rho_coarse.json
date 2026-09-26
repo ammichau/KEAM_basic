@@ -84,5 +84,33 @@
   "n_kT": 3.0
  },
  "status": 0,
- "message": "The maximum number of function evaluations is exceeded."
+ "message": "The maximum number of function evaluations is exceeded.",
+ "moments_full": {
+  "E/pop": 0.6591879765939211,
+  "E/pop exp": 0.6631792668723767,
+  "E/pop rec": 0.642554417586578,
+  "dE/pop rec-exp (pts)": -2.0624849285798663,
+  "hours|E": 0.44535060916498176,
+  "U rate": 0.117982876242571,
+  "quit/m exp": 0.032663426466221876,
+  "quit/m rec": 0.025150658614168594,
+  "E->nonE/m exp": 0.05571257712082701,
+  "E->nonE/m rec": 0.05095423559399953,
+  "wife share exp": 0.3520696267246425,
+  "wife share rec": 0.3550789628920789,
+  "HH income rec/exp - 1 (%)": -15.819270540254715,
+  "wage gap (hourly ratio)": 0.7489898562976133,
+  "wage gap (FTE earnings ratio)": 0.5991918850380906,
+  "share Lifecycle": 0.29625,
+  "share Career": 0.19291666666666665,
+  "share PT": 0.263125,
+  "share NiLF": 0.24770833333333334,
+  "n careers": 4800.0,
+  "cons drop at H job loss exp (%)": -4.624432325363159,
+  "cons drop at H job loss rec (%)": -6.988959759473801,
+  "mean assets/monthly HH inc": 1.4726249035235577,
+  "share e at cap": 0.3123716027178257,
+  "share rec months": 0.1935185185185185
+ },
+ "obj_full": 0.23844504735703448
 }

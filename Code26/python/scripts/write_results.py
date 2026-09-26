@@ -17,7 +17,7 @@ ap.add_argument("--robust", default="output/robustness_final.json")
 ap.add_argument("--extra", default="output/extra_experiments_full.json")
 ap.add_argument("--cohorts2", default="output/cohorts_refined_full.json")
 ap.add_argument("--jacobian", default="output/jacobian_final.json")
-ap.add_argument("--calib-alt", default="output/final_calib_rho_full.json", help="second calibration (persistent shock) shown side by side")
+ap.add_argument("--calib-alt", default="output/final_calib_rho_coarse.json", help="second calibration (persistent shock) shown side by side")
 ap.add_argument("--diag", default="output/diag_careers.json")
 ap.add_argument("--out", default=os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "..", "RESULTS.md"))
 a = ap.parse_args()
@@ -53,8 +53,10 @@ if calib:
 # ---- alternative calibration (persistent cost shock) side by side
 if calib and alt:
     L.append("### 1a. Persistent cost-of-work shock: calibration side by side\n")
-    L.append(f"Source: `{a.calib_alt}` (objective {alt['obj']:.3f}, {alt.get('n_eval', '?')} evaluations, "
-             f"{'100' if not alt.get('coarse', True) else '27'} types; fixed fields {alt.get('fixed', {})}). "
+    grid_note = (f"calibrated on {'100' if not alt.get('coarse', True) else '27'} types"
+                 + (", moments below re-evaluated on the 100-type grid" if "moments_full" in alt else ""))
+    L.append(f"Source: `{a.calib_alt}` (objective {alt.get('obj_full', alt['obj']):.3f}, {alt.get('n_eval', '?')} evaluations, "
+             f"{grid_note}; fixed fields {alt.get('fixed', {})}). "
              "The shock keeps its value from one month to the next with probability rho_kT (0 in the iid model); "
              "see `FINAL_MODEL.md`.\n")
     L.append("| parameter | iid shock | persistent shock |\n|---|---|---|")
@@ -62,7 +64,7 @@ if calib and alt:
         f = lambda d: f"{d['x'][k]:.4f}" if k in d["x"] else "-"
         L.append(f"| {k} | {f(calib)} | {f(alt)} |")
     L.append("\n| target | data | iid shock | persistent shock |\n|---|---|---|---|")
-    ma = alt.get("moments", {})
+    ma = alt.get("moments_full", alt.get("moments", {}))
     for k, tv in TARGETS.items():
         sc = 1.0 if "pts" in k else tv
         L.append(f"| {k} | {tv:.4f} | {m.get(k, np.nan):.4f} ({100 * (m.get(k, np.nan) - tv) / sc:+.0f}%) | "
