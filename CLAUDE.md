@@ -48,7 +48,11 @@ lower cost of work) make it more cyclical, a closing wage gap less so. Reference
      `scripts/calibrate_childcare.py` calibrates it jointly with nu_h, z_h (and `--extra alpha_h`).
      Round 2 (`output/final_calib_childcare2.json/.md`, 27 types): objective 0.21, all targets
      within 10% except NiLF 29% (target 22%) and the wage gap 0.82 (target 0.71). Round 3 with
-     alpha_h calibrated is running in the cloud (`output/final_calib_childcare3.*`).
+     alpha_h calibrated: objective 0.19 (`childcare3`). Round 4 added e_max and kappa_h_power (hours-
+     scaled fixed cost, `FinalParams.kappa_h_power`) with tau_w <= 0.78: objective 0.14
+     (`output/final_calib_childcare4.md`), wage gap on target, NiLF +26% the only miss > 13%.
+     A 100-type polish from round 4 is running in the cloud (`output/final_calib_full.*`);
+     then `run_final.py --full`, `robustness_final.py`, `write_results.py` -> RESULTS.md.
    - The SMM initial simplex was fixed (parameters starting at a bound midpoint were frozen).
    - The routine/trigger channel does NOT deliver into a CLI remote-control session; the
      workstation session must be given its job by the author in the Claude Code app.
