@@ -22,6 +22,7 @@ ap.add_argument("--jacobian", default="output/jacobian_final.json")
 ap.add_argument("--calib-alt", default="output/final_calib_rho_coarse.json", help="alternative calibrations shown side by side: comma-separated label=file (or file)")
 ap.add_argument("--channels", default="output/channels_ls.json", help="channel decomposition (scripts/channels.py); comma-separated label=file")
 ap.add_argument("--diag", default="output/diag_careers.json")
+ap.add_argument("--versions", default="output/versions_summary.json", help="all-versions table (scripts/versions_table.py)")
 ap.add_argument("--out", default=os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "..", "RESULTS.md"))
 a = ap.parse_args()
 HERE = os.path.dirname(os.path.abspath(__file__)); PY = os.path.join(HERE, "..")
@@ -261,6 +262,17 @@ if calib and res:
                  f"{coh2[n2[0]]['m']['share Lifecycle']:.2f} to {coh2[n2[-1]]['m']['share Lifecycle']:.2f} and the career share from "
                  f"{coh2[n2[0]]['m']['share Career']:.2f} to {coh2[n2[-1]]['m']['share Career']:.2f}. This is the cohort result to use; "
                  f"the raw-ratio version above is superseded.")
+    L.append("")
+vers = load(a.versions)
+if vers:
+    L.append("### 6a. All calibrated versions (`scripts/versions_table.py`, `" + a.versions + "`)\n")
+    L.append(open(os.path.join(PY, a.versions.replace(".json", ".md"))).read())
+    ok = [r for r in vers if r["precaution"] is not None]
+    for r in ok:
+        L.append(f"* **{r['label']}** (`final_calib_{r['tag']}_full.json`, fixed {r['fixed']}, recession job-finding ratio "
+                 f"{r['lam_f_ratio']:.2f}): objective {r['obj']:.3f}; precaution {100 * r['precaution']:.0f}% vs hoarding "
+                 f"{100 * r['hoarding']:.0f}% of the recession quit drop ({r['gap']:+.2f} points); recession employment drop "
+                 f"{r['dE']:+.2f} points, {r['dE_acycH']:+.2f} without cyclical husband risk.")
     L.append("")
 figdir = os.path.join(PY, a.figdir)
 if os.path.isdir(figdir) and os.listdir(figdir):
