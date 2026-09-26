@@ -43,7 +43,11 @@ the table at the end lists what is calibrated.
   in recessions (0.5: replacement 15% instead of 30%, standing in for longer unemployment spells).
   At the adopted parameters this alone lowers the recession quit rate from 2.50% to 2.27% and the
   recession employment drop from 1.69 to 1.11 points (`output/eval_ui_direct.out`); the
-  recalibrated version is `output/final_calib_ui_full.*`.
+  recalibrated version is `output/final_calib_ui_full.*`. **Version 3** (`output/final_calib_v3_full.*`,
+  objective 0.113, the best fit so far) combines the recession UI cut with a 10% fall in the wife's
+  job-finding efficiency in recessions (λ_f(rec) = 0.90 λ_f(exp) instead of 0.85) and a calibrated
+  recession rise in her own job-loss rate; in it precautionary labor supply accounts for 29% of the
+  recession quit drop and job hoarding for 25% (`output/channels_v3.md`).
 * **Assets:** c + a' = income + a, a' ≥ 0, gross return 1 (net rate zero). The asset grid has
   20 points on [0, 15] (about ten months of household income) with more points near zero;
   a' is chosen on the grid, policies are interpolated bilinearly in (e, a) in the simulation.
