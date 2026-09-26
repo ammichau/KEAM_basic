@@ -1,7 +1,7 @@
 """Moments of the simulated final model, computed on calendar months inside a window."""
 from __future__ import annotations
 import numpy as np
-from .simulate import FinalSim
+from .simulate import FinalSim, stationary
 
 HOURS_PER_YEAR = 4000.0    # 16 hours/day endowment: h = 0.4 is 1,600 hours (paper p.23)
 
@@ -45,6 +45,24 @@ def moments_final(sim: FinalSim, window=None) -> dict:
     out["U rate"] = ratio(U, E + U, sel)
     out["quit/m exp"] = ratio(Q, E_prev, exp_); out["quit/m rec"] = ratio(Q, E_prev, rec)
     out["E->nonE/m exp"] = ratio(EN, E_prev, exp_); out["E->nonE/m rec"] = ratio(EN, E_prev, rec)
+    # job finding: entries into employment per non-employed (all) and per unemployed searcher (s >= s_bar)
+    stat_prev = np.full_like(sim.stat, 0); stat_prev[:, 1:] = sim.stat[:, :-1]
+    U_prev = (stat_prev == 1); N_prev = (emp_prev == 0); N_prev[:, 0] = False
+    entry = (sim.emp == 1) & N_prev
+    UE = _monthly_sums(sim, entry & U_prev); NE = _monthly_sums(sim, entry)
+    Us = _monthly_sums(sim, U_prev); Ns = _monthly_sums(sim, N_prev)
+    out["UE/m exp"] = ratio(UE, Us, exp_); out["UE/m rec"] = ratio(UE, Us, rec)
+    out["NE/m exp"] = ratio(NE, Ns, exp_); out["NE/m rec"] = ratio(NE, Ns, rec)
+    # cyclicality as a standard deviation of the log rate under the two-state aggregate process:
+    # |log(rate_rec / rate_exp)| sqrt(pi_exp pi_rec)  (data: 0.0686 for women's UE rate, 0.0765 for men's)
+    piz = stationary(p.piz); wz = float(np.sqrt(piz[0] * piz[1]))
+    sdlog = lambda a, b: float(abs(np.log(max(a, 1e-12) / max(b, 1e-12))) * wz)
+    out["sd log UE (women)"] = sdlog(out["UE/m rec"], out["UE/m exp"])
+    out["sd log NE (women)"] = sdlog(out["NE/m rec"], out["NE/m exp"])
+    hprev = np.full_like(sim.hstat, 0); hprev[:, 1:] = sim.hstat[:, :-1]
+    hU_prev = (hprev == 2); hU_prev[:, 0] = False
+    HUE = _monthly_sums(sim, (sim.hstat == 1) & hU_prev); HU = _monthly_sums(sim, hU_prev)
+    out["sd log UE (husband)"] = sdlog(ratio(HUE, HU, rec), ratio(HUE, HU, exp_))
     out["wife share exp"] = float(IW[exp_].sum() / (IW[exp_] + IH[exp_]).sum())
     out["wife share rec"] = float(IW[rec].sum() / (IW[rec] + IH[rec]).sum())
     out["HH income rec/exp - 1 (%)"] = 100 * (ratio(IW + IH, pop, rec) / ratio(IW + IH, pop, exp_) - 1)

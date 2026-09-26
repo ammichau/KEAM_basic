@@ -26,6 +26,7 @@ TARGETS = {
     "share Lifecycle": 0.31, "share PT": 0.28, "share Career": 0.19, "share NiLF": 0.22,
     "quit/m exp": 0.034, "quit/m rec": 0.028, "E->nonE/m exp": 0.050, "E->nonE/m rec": 0.048,
     "dE/pop rec-exp (pts)": -1.7, "wage gap (hourly ratio)": 0.71,
+    "sd log UE (women)": 0.0686,   # cyclicality of the women's UE rate (author's data; men 0.0765)
 }
 # NOT targeted (model outputs on slides p.36-37): unemployment rate, wife's share of income.
 # scale for each target (deviation divided by this); percentage-point moments use absolute scales
@@ -33,7 +34,7 @@ SCALE = {k: v for k, v in TARGETS.items()}
 SCALE["dE/pop rec-exp (pts)"] = 1.0
 WEIGHT = {k: 1.0 for k in TARGETS}
 WEIGHT.update({"E/pop": 3.0, "hours|E": 2.0, "quit/m exp": 2.0, "quit/m rec": 2.0, "wage gap (hourly ratio)": 2.0,
-               "share Lifecycle": 1.5})
+               "share Lifecycle": 1.5, "sd log UE (women)": 2.0})
 
 PARAM_NAMES = ["mu", "kbar_max", "km_max", "tau_w", "lam_f0", "lam_u0", "lam_u1", "ybar_h", "sd_kT"]
 BOUNDS = {"mu": (0.2, 5.0), "kbar_max": (0.005, 1.0), "km_max": (1.0, 15.0), "tau_w": (0.4, 1.2),

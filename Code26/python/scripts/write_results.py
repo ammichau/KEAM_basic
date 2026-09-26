@@ -46,7 +46,7 @@ L.append("All numbers are produced by scripts in `Code26/python/scripts`; the fi
 # ---- calibration
 L.append("## 1. Calibration of the 1940s cohort\n")
 if calib:
-    m = calib.get("moments", {})
+    m = calib.get("moments_full", calib.get("moments", {}))
     L.append(f"Source: `{a.calib}` (objective {calib['obj']:.3f}, {calib.get('n_eval', '?')} evaluations, "
              f"{'100' if not calib.get('coarse', True) else '27'} types).\n")
     prev = load(a.calib_prev) if a.calib_prev else None
