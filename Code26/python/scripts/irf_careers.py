@@ -27,7 +27,7 @@ plt.rcParams.update({"font.size": 10, "axes.edgecolor": GRID, "axes.linewidth": 
 
 p = apply_params(FinalParams(), json.load(open(os.path.join(PY, a.calib)))["x"])
 sol = solve_all(p)
-cfg = SimConfigFinal(N=100, n_cohorts=65, zmode="nber", seed=2024)
+cfg = SimConfigFinal(N=300, n_cohorts=65, zmode="nber", seed=2024)
 sim = simulate_final(p, sol, cfg)
 L, T = cfg.L, sim.T
 m0, m1, _ = p.age_months
@@ -51,13 +51,15 @@ for g, mask in groups.items():
     pop = monthly(np.ones_like(sim.emp), mask); E = monthly(sim.emp, mask)
     Ep = monthly(emp_prev, mask); Q = monthly(sim.quit * emp_prev, mask)
     e_rate = E / np.maximum(pop, 1); q_rate = Q / np.maximum(Ep, 1)
+    k3 = np.ones(3) / 3.0                                # 3-month centred moving average
+    e_rate = np.convolve(e_rate, k3, mode='same'); q_rate = np.convolve(q_rate, k3, mode='same')
     e_dev = []; q_dev = []
     for s in starts:
         if s - pre < 0 or s + post >= T: continue
         e_base = e_rate[s - pre: s].mean(); q_base = q_rate[s - pre: s].mean()
         e_dev.append(100 * (e_rate[s - pre: s + post + 1] - e_base)); q_dev.append(100 * (q_rate[s - pre: s + post + 1] - q_base))
     irf[g] = dict(emp=np.mean(e_dev, axis=0).tolist(), quit=np.mean(q_dev, axis=0).tolist(), n_women=int(mask.sum()))
-irf["_meta"] = dict(recession_starts=[int(s) for s in starts], pre=pre, post=post, note="deviation from the mean of the 6 months before the recession start, averaged over recessions 1973-2007; percentage points")
+irf["_meta"] = dict(recession_starts=[int(s) for s in starts], pre=pre, post=post, note="deviation from the mean of the 6 months before the recession start, averaged over recessions 1973-2007; 3-month centred moving average; percentage points")
 json.dump(irf, open(os.path.join(PY, "output", "irf_careers.json"), "w"), indent=1)
 h = np.arange(-pre, post + 1)
 
@@ -71,7 +73,7 @@ def fig(key, ylabel, title, name):
     ax.grid(True, axis="y", color=GRID, linewidth=1); ax.set_axisbelow(True)
     for s_ in ("top", "right"): ax.spines[s_].set_visible(False)
     ax.tick_params(length=0)
-    f.text(0.01, 0.005, f"baseline calibration on the NBER dates; average over {len(starts)} recessions; deviation from the 6 pre-recession months", color=INK2, fontsize=7.5)
+    f.text(0.01, 0.005, f"NBER dates, {len(starts)} recessions; deviation from the 6 pre-recession months; 3-month moving average", color=INK2, fontsize=7.5)
     f.tight_layout(); f.savefig(os.path.join(OUT, name + ".png"), dpi=160); f.savefig(os.path.join(OUT, name + ".svg")); plt.close(f)
 
 fig("emp", "employment rate, pp deviation", "Employment by career type after a recession starts", "fig6_irf_employment")
