@@ -162,6 +162,17 @@ if calib and res:
              f"Caveat: tau_w is scaled by the raw data ratio, so the measured wage gap in the model rises to "
              f"{coh[ck[-1]]['wage gap (hourly ratio)']:.2f} by the last cohort (data 0.77); the next refinement is to solve "
              f"tau_w per cohort to hit the measured gap jointly with the cost residual.")
+    if coh2:
+        n2 = list(coh2)
+        L.append(f"* Refined cohort accounting (cost scale and tau_w solved jointly, section 3b): cost scale "
+                 f"{', '.join(n + ': x' + format(coh2[n]['cost_scale'], '.2f') for n in n2)}; "
+                 f"tau_w {', '.join(format(coh2[n]['tau_w'], '.3f') for n in n2)}; the recession employment drop goes from "
+                 f"{coh2[n2[0]]['m']['dE/pop rec-exp (pts)']:+.2f} to {coh2[n2[-1]]['m']['dE/pop rec-exp (pts)']:+.2f} points "
+                 f"({100 * (coh2[n2[-1]]['m']['dE/pop rec-exp (pts)'] / coh2[n2[0]]['m']['dE/pop rec-exp (pts)'] - 1):+.0f}%), the expansion "
+                 f"quit rate from {coh2[n2[0]]['m']['quit/m exp']:.4f} to {coh2[n2[-1]]['m']['quit/m exp']:.4f}, the life-cycle share from "
+                 f"{coh2[n2[0]]['m']['share Lifecycle']:.2f} to {coh2[n2[-1]]['m']['share Lifecycle']:.2f} and the career share from "
+                 f"{coh2[n2[0]]['m']['share Career']:.2f} to {coh2[n2[-1]]['m']['share Career']:.2f}. This is the cohort result to use; "
+                 f"the raw-ratio version above is superseded.")
     L.append("")
 L.append("## 7. What is fragile\n")
 L.append("* The never-working (NiLF) share is the least well fitted target; it depends on the home-production "
