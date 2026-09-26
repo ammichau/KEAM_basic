@@ -41,6 +41,7 @@ class FinalParams:
     scar_end: float = 1.0 / 40.0         # R -> E (mean scar 3.3 years)
     scar_loss_mult: float = 2.5          # R -> U relative to E -> U
     ym_share: tuple = (1.0, 0.85, 0.30)  # income share by husband state E / R / U (30% replacement)
+    ui_rec_mult: float = 1.0             # multiplier on the U-state share in recessions (0.5: replacement 15%)
     yH_age: tuple = (0.89, 1.0, 0.94)    # husband income by wife's age group (paper Table 2)
     yH_scale: float = 1.0                # scaled in the compensated wage-gap experiment
     # ---------------- ageing / retirement / aggregate (monthly) ----------------
@@ -126,8 +127,10 @@ class FinalParams:
     def y_husband(self):
         """Husband income by (age group, state, Z): (3, 3, 2)."""
         phi = np.array([1.0, self.phi_rec_H])
+        share = np.tile(np.asarray(self.ym_share, float)[:, None], (1, 2))          # (state, Z)
+        share[2, 1] *= self.ui_rec_mult                                             # UI replacement in recessions
         return (self.yH_scale * np.asarray(self.yH_age)[:, None, None]
-                * np.asarray(self.ym_share)[None, :, None] * phi[None, None, :])
+                * share[None, :, :] * phi[None, None, :])
 
     def replace(self, **kw):
         return replace(self, **kw)

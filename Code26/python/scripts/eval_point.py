@@ -14,14 +14,17 @@ ap = argparse.ArgumentParser()
 ap.add_argument("--calib", required=True)
 ap.add_argument("--coarse", action="store_true")
 ap.add_argument("--save", action="store_true")
+ap.add_argument("--fixed", action="append", default=[], help="override a FinalParams field: name=value (repeatable)")
 a = ap.parse_args()
 HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.join(HERE, "..")
 path = a.calib if os.path.isabs(a.calib) else os.path.join(ROOT, a.calib)
 calib = json.load(open(path))
 base = FinalParams(n_omega=3, n_kbar=3, n_km=3) if a.coarse else FinalParams()
+for kv in a.fixed:
+    n, v = kv.split("="); base = base.replace(**{n: type(getattr(base, n))(float(v))})
 p = C.params_from_calib(calib, base)
 t0 = time.time(); m, _, _ = run(p, SimConfigFinal(N=60, n_cohorts=90)); obj, parts = C.objective_from_moments(m)
-print(f"{a.calib}: {'coarse' if a.coarse else 'full'} grid, objective {obj:.4f} ({time.time() - t0:.0f}s)")
+print(f"{a.calib}: {'coarse' if a.coarse else 'full'} grid, fixed {a.fixed}, objective {obj:.4f} ({time.time() - t0:.0f}s)")
 for k, tv in C.TARGETS.items():
     print(f"  {k:28s} model {m[k]:8.4f} target {tv:8.4f} dev {parts[k]:+.3f}")
 for k in ["U rate", "wife share exp", "cons drop at H job loss exp (%)", "mean assets/monthly HH inc"]:
