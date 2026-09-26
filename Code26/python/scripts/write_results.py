@@ -14,13 +14,14 @@ ap = argparse.ArgumentParser()
 ap.add_argument("--calib", default="output/final_calib_full.json")
 ap.add_argument("--results", default="output/final_results_full.json")
 ap.add_argument("--robust", default="output/robustness_final.json")
+ap.add_argument("--extra", default="output/extra_experiments_full.json")
 ap.add_argument("--out", default=os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "..", "RESULTS.md"))
 a = ap.parse_args()
 HERE = os.path.dirname(os.path.abspath(__file__)); PY = os.path.join(HERE, "..")
 def load(rel):
     p = rel if os.path.isabs(rel) else os.path.join(PY, rel)
     return json.load(open(p)) if os.path.exists(p) else None
-calib = load(a.calib); res = load(a.results); rob = load(a.robust)
+calib = load(a.calib); res = load(a.results); rob = load(a.robust); extra = load(a.extra)
 L = []
 L.append("# Final model results: 1940s cohort calibration, trend experiments, mechanism\n")
 L.append("All numbers are produced by scripts in `Code26/python/scripts`; the files cited are in "
@@ -69,6 +70,15 @@ if res:
     for k, v in res["experiments"].items():
         L.append(f"| {k} | {gap(v):+.3f} | {v['dE/pop rec-exp (pts)']:+.3f} | {v['E/pop']:.3f} |")
     L.append("")
+    if extra:
+        L.append("Supplementary experiments (`" + a.extra + "`): child-care cost scaled toward zero "
+                 f"(x{extra['scales']['childcare']:.2f} of the excess home productivity at 25-39) and all cost "
+                 f"components scaled jointly (x{extra['scales']['cost_all']:.2f}).\n")
+        L.append(table({"baseline": extra["baseline"], **extra["experiments"]}))
+        L.append("| experiment | quit gap | ΔE/pop rec-exp (pts) | E/pop |\n|---|---|---|---|")
+        for k, v in extra["experiments"].items():
+            L.append(f"| {k} | {gap(v):+.3f} | {v['dE/pop rec-exp (pts)']:+.3f} | {v['E/pop']:.3f} |")
+        L.append("")
     L.append("## 3. Cohort accounting\n")
     L.append("τ_w and γ_e follow the slides (p.35) relative to 1940 (wage gap 0.71, 0.74, 0.77, 0.76, 0.77; γ_e 0.50, 0.55, "
              "0.58, 0.68, 0.69), with the husband's income compensated; the cost of work is scaled to reproduce each "
