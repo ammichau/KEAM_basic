@@ -22,33 +22,34 @@ lower cost of work) make it more cyclical, a closing wage gap less so. Reference
    cost shock, child-care home-productivity multiplier at 25-39, hours-scaled fixed cost).
    Specification: `FINAL_MODEL.md`. Author decisions: monthly period, 30% replacement rate for
    the husband's unemployment income, compensated wage-gap experiment, assets.
-3. DONE (cloud, 4 cores, 2026-09-26): 1940s-cohort calibration on the 100-type grid
-   (`output/final_calib_full.json/.md`, objective 0.15; all targets within 10% except NiLF
-   +18% and the recession quit rate -15%), results (`output/final_results_full.md/.json`),
-   supplementary experiments (`output/extra_experiments_full.*`), robustness
-   (`output/robustness_final.*`) and the write-up `RESULTS.md` at the repository root.
-   Calibration history: `output/final_calib_childcare{2,3,4}.md`; scans `output/explore_*.json`.
-4. IN PROGRESS (2026-09-26): the iid-shock calibration cannot lower the employment rate (+7%) and
-   the never-working share (+18%) together because its ever-working women return from
-   non-employment too fast (`output/jacobian_final.md`, `output/diag_careers.md`). A persistent
-   cost-of-work shock (`rho_kT`, `keam/final/solve.py`, nests the iid model at 0; verified to
-   1e-9 against the previous solver) was calibrated on the coarse grid
-   (`output/final_calib_rho_coarse.json`, objective 0.125 on 27 types) but re-evaluates at 0.238
-   on the 100-type grid (never-working +13%, hours +11%, recession employment drop -2.06,
-   unemployment rate 12%; RESULTS.md section 1a). Not adopted. Current step: least-squares polish
-   of the iid model on the 100-type grid (`scripts/calibrate_ls.py --x0 output/final_calib_full.json
-   --max-nfev 5 --tag ls_full`, output `final_calib_ls_full.json`); if it improves on 0.149, run
-   `bash scripts/run_pipeline.sh output/final_calib_ls_full.json ls` and point `write_results.py`
-   at the new files (its `--calib/--results/--extra/--cohorts2/--robust` arguments).
+3. DONE (cloud, 4 cores, 2026-09-26): 1940s-cohort calibration on the 100-type grid. The adopted
+   calibration is the least-squares polish `output/final_calib_ls_full.json/.md` (objective 0.120;
+   `scripts/calibrate_ls.py`, polished from the Nelder-Mead point `output/final_calib_full.json`,
+   objective 0.149). Quit rates, hours and the recession employment drop are on target; the
+   never-working share is +22%, part-time and career shares about -10%. All results use the `ls`
+   tag: `output/final_results_ls.*`, `extra_experiments_ls.*`, `cohorts_refined_ls.*`,
+   `robustness_final_ls.*`, `figures_ls/`, `irf_careers_ls.json`; `RESULTS.md` is assembled with
+   `python scripts/write_results.py --calib output/final_calib_ls_full.json --calib-prev
+   output/final_calib_full.json --results output/final_results_ls.json --extra
+   output/extra_experiments_ls.json --cohorts2 output/cohorts_refined_ls.json --robust
+   output/robustness_final_ls.json --figdir output/figures_ls`. The earlier (unpolished) outputs
+   without the tag are kept for reference. Calibration history: `output/final_calib_childcare{2,3,4}.md`.
+4. EXPLORED, NOT ADOPTED (2026-09-26): the identification analysis (`output/jacobian_final.md`,
+   `output/diag_careers.md`, RESULTS.md 1b) shows the never-working share and the employment rate
+   cannot be lowered together. A persistent cost-of-work shock (`rho_kT` in `keam/final/solve.py`,
+   nests the iid model at 0, verified to 1e-9 against the previous solver) was calibrated on the
+   coarse grid (`output/final_calib_rho_coarse.json`, 0.125 on 27 types) but re-evaluates at 0.238
+   on 100 types (RESULTS.md 1a). Candidates left: a finer wage-type grid (n_omega 7-9) or a permanent
+   home-productivity type; a calibrated recession job-finding ratio (`lam_f_ratio`, bounds in
+   `calibrate.py`) fixes the recession quit rate but drives the job-finding fall toward zero.
 5. Known limitations / next steps (see RESULTS.md section 7):
    - DONE: `scripts/cohorts_refined.py` solves the cost scale and tau_w jointly per cohort
      (`output/cohorts_refined_full.md`, RESULTS.md section 3b); the raw-ratio version in
      `run_final.py` is superseded for the cohort narrative;
    - the "cost of work" experiment on the permanent cost alone needs a 90% cut; the
      supplementary child-care and all-costs versions are the relevant ones;
-   - NiLF share still 18% too high; candidates: alpha_h upper range, s_bar-independent
-     participation definition, or a permanent home-productivity type;
-   - bisection resolution in `size_to_employment` (8 steps) is coarse; raise `maxit`;
+   - NiLF share still 22% too high (see state item 4 for the diagnosis and candidates);
+   - DONE: bisection in `size_to_employment` now 12 steps, tolerance 0.2 pp;
    - the routine/trigger channel does not deliver into a CLI remote-control session.
 
 ## Plan (execute autonomously, commit and push after each step)
@@ -57,9 +58,7 @@ Work on branch `claude/hopeful-ride-vbnou4`. Use all cores (`KEAM_NJOBS` = numbe
 
 1. `cd Code26/python && pip install numpy scipy pandas openpyxl xlrd`.
 2. (done) Refined cohort accounting: `scripts/cohorts_refined.py`.
-3. Improve the NiLF fit: persistent cost shock (state item 4). After the full-grid calibration,
-   regenerate results with `run_final.py --full`, `extra_experiments.py`, `robustness_final.py`,
-   `cohorts_refined.py`, `figures.py`, `irf_careers.py`, `write_results.py` (all take `--calib`).
+3. (done) Calibration polish and full results pipeline for it (`scripts/run_pipeline.sh <calib> <tag>`).
 4. (done) `scripts/figures.py` -> `Code26/python/output/figures/` (quit probability, search, hours by
    state over experience averaged over types; refined cohort trend; mechanism decomposition).
    `scripts/irf_careers.py` -> fig6/fig7: impulse responses by career type on the NBER dates.
