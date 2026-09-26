@@ -30,6 +30,8 @@ class FinalSolution:
 
 
 def u(c, gamma):
+    if abs(gamma - 1.0) < 1e-12:          # log utility (balanced-growth preferences)
+        return np.log(c)
     return np.power(c, 1.0 - gamma) / (1.0 - gamma)
 
 
