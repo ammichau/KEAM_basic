@@ -5,3 +5,4 @@ output/*.log
 .venv/
 output/*.out
 output/*.pid
+output/*.done
