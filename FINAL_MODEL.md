@@ -15,8 +15,14 @@ the table at the end lists what is calibrated.
   truncated normal on [0, κ̄_max] on 5 points; κ_m is uniform on [1, κ_m,max] on 4 points.
   100 types with equal weights.
 * **States:** experience e ∈ [0, 2], assets a ≥ 0, husband x_m ∈ {E, R, U}, aggregate
-  Z ∈ {expansion, recession}, employment status, and an iid transitory cost shock κ_T
-  (5-point discrete normal with sd σ_κ) drawn at the start of each month.
+  Z ∈ {expansion, recession}, employment status, and a cost-of-work shock κ_T (discrete
+  normal with sd σ_κ) realised at the start of each month, before the quit decision. In the
+  iid version (`rho_kT = 0`, 5 nodes) the shock is redrawn every month; in the persistent
+  version (`rho_kT = ρ_κ > 0`, 3 nodes) it keeps its value with probability ρ_κ and is
+  otherwise redrawn, so a bad spell lasts 1/(1−ρ_κ) months on average and the current node
+  is a state variable of both value functions (`keam/final/solve.py`). The persistent version
+  is under calibration (`scripts/calibrate_ls.py`, `output/final_calib_rho_*`); the results in
+  `RESULTS.md` use the iid version unless stated.
 * **Preferences:** u(c) − µ h^{1+η}/(1+η) − κ_τ − κ_T when employed, u(c) when not;
   u = c^{1−γ}/(1−γ), γ = 2, η = 1.4, β = 0.99. κ_τ = κ̄ κ_m at ages 25-39 and κ̄ afterwards.
 * **Wage:** w = φ(Z) τ_w ω (1 + γ_e e^ξ) with γ_e = 0.5, ξ = 0.8, φ(rec) = 0.88.
@@ -83,7 +89,8 @@ equivalent monthly earnings to the employed husband's monthly income.
 |---|---|---|
 | µ | hours disutility | hours of employed 0.40 |
 | κ̄_max, κ_m,max | cost of work levels | career shares (LC 31, PT 28, career 19, NiLF 22) |
-| σ_κ | transitory cost shock | monthly quit rates 3.4% / 2.8% |
+| σ_κ | cost-of-work shock | monthly quit rates 3.4% / 2.8% |
+| ρ_κ (persistent version) | persistence of the cost shock | employment among ever-working women (E/pop jointly with the never-working share) |
 | τ_w | wage penalty | wage gap 0.71 |
 | λ_f | job-finding efficiency | employment 0.62 |
 | λ_u(exp), λ_u(rec) | exogenous loss | E→nonE 5.0% / 4.8% |
