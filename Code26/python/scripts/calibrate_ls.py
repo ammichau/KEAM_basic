@@ -21,6 +21,7 @@ ap.add_argument("--max-nfev", type=int, default=6)
 ap.add_argument("--diff-step", type=float, default=0.04)
 ap.add_argument("--tag", type=str, default="ls")
 ap.add_argument("--bound", action="append", default=[])
+ap.add_argument("--coarse", action="store_true", help="27-type grid (default: 100 types)")
 ap.add_argument("--fixed", action="append", default=[], help="fix a FinalParams field (not calibrated): name=value (repeatable)")
 ap.add_argument("--set", action="append", default=[])
 a = ap.parse_args()
@@ -37,7 +38,7 @@ for kv in a.set:
 names = list(x0.keys())
 lo = np.array([C.BOUNDS[n][0] for n in names]); hi = np.array([C.BOUNDS[n][1] for n in names])
 z0 = np.clip(np.array([x0[n] for n in names]), lo + 1e-9, hi - 1e-9)
-base = FinalParams()
+base = FinalParams(n_omega=3, n_kbar=3, n_km=3) if a.coarse else FinalParams()
 for kv in a.fixed:
     n, v = kv.split("="); base = base.replace(**{n: type(getattr(base, n))(float(v))})
 cfg = SimConfigFinal(N=60, n_cohorts=90)
@@ -62,7 +63,8 @@ sol = least_squares(resid, z0, bounds=(lo, hi), method="trf", diff_step=a.diff_s
                     max_nfev=a.max_nfev, ftol=1e-6, xtol=1e-6, gtol=1e-6)
 best = min(hist, key=lambda h: h["obj"])
 out = dict(x=best["x"], obj=best["obj"], moments=best["m"], targets=C.TARGETS, n_eval=len(hist),
-           seconds=time.time() - t0, coarse=False, names=names, status=int(sol.status), message=sol.message)
+           seconds=time.time() - t0, coarse=a.coarse, names=names,
+           fixed={kv.split('=')[0]: float(kv.split('=')[1]) for kv in a.fixed}, status=int(sol.status), message=sol.message)
 json.dump(out, open(os.path.join(ROOT, "output", f"final_calib_{a.tag}.json"), "w"), indent=1)
 print("best objective", round(best["obj"], 4), "after", len(hist), "evaluations;", sol.message)
 for k, v in best["x"].items():
