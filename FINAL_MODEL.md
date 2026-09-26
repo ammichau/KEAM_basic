@@ -39,6 +39,11 @@ the table at the end lists what is calibrated.
   (2.4% in recessions); U→R 35% (28%); R→E 2.5% (scar lasts 3.3 years on average); R→U
   2.5 times the E→U rate. Income y_H(τ) × (1, 0.85, 0.30) by state, y_H = (0.89, 1.0, 0.94)
   by the wife's age group, times φ_H(Z) with φ_H(rec) = 0.88 (assumed equal to the wife's).
+  Variant under evaluation (author request, 2026-09-26): `ui_rec_mult` multiplies the U-state share
+  in recessions (0.5: replacement 15% instead of 30%, standing in for longer unemployment spells).
+  At the adopted parameters this alone lowers the recession quit rate from 2.50% to 2.27% and the
+  recession employment drop from 1.69 to 1.11 points (`output/eval_ui_direct.out`); the
+  recalibrated version is `output/final_calib_ui_full.*`.
 * **Assets:** c + a' = income + a, a' ≥ 0, gross return 1 (net rate zero). The asset grid has
   20 points on [0, 15] (about ten months of household income) with more points near zero;
   a' is chosen on the grid, policies are interpolated bilinearly in (e, a) in the simulation.
