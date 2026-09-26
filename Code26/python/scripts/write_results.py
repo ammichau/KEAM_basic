@@ -21,6 +21,8 @@ ap.add_argument("--calib-prev", default="", help="the Nelder-Mead point the cali
 ap.add_argument("--jacobian", default="output/jacobian_final.json")
 ap.add_argument("--calib-alt", default="output/final_calib_rho_coarse.json", help="alternative calibrations shown side by side: comma-separated label=file (or file)")
 ap.add_argument("--channels", default="output/channels_ls.json", help="channel decomposition (scripts/channels.py); comma-separated label=file")
+ap.add_argument("--jacobian-channels", default="output/jacobian_channels_v4.json", help="sensitivity of the split (scripts/jacobian_channels.py)")
+ap.add_argument("--figdir-channels", default="output/figures_channels")
 ap.add_argument("--diag", default="output/diag_careers.json")
 ap.add_argument("--versions", default="output/versions_summary.json", help="all-versions table (scripts/versions_table.py)")
 ap.add_argument("--out", default=os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "..", "RESULTS.md"))
@@ -40,6 +42,7 @@ def load_named(spec):
             out.append((label or os.path.basename(f).replace(".json", ""), f, d))
     return out
 alts = load_named(a.calib_alt); chans = load_named(a.channels)
+jch = load(a.jacobian_channels)
 L = []
 L.append("# Final model results: 1940s cohort calibration, trend experiments, mechanism\n")
 L.append("All numbers are produced by scripts in `Code26/python/scripts`; the files cited are in "
@@ -201,6 +204,26 @@ if chans:
                 L.append(f"| {name} | {r['E']:.3f} | {r['quit_exp']:.4f} | {r['quit_rec']:.4f} | {r['gap']:+.2f} | {r['precaution']:.0%} | "
                          f"{r['hoarding']:.0%} | {r['both_off']:.0%} | {r['dE']:+.2f} | {r['dE_acycH']:+.2f} |")
             L.append("")
+if jch and "points" in jch and len(jch["points"]) > 1:
+    b = jch["points"]["base"]; step = jch["step"]
+    L.append("### 4c. What moves the split: local sensitivity of the two shares\n")
+    L.append(f"Source: `{a.jacobian_channels}` (`scripts/jacobian_channels.py`; +{100*step:.0f}% steps on `{jch['calib']}`, other "
+             f"parameters fixed). Baseline: precaution {b['precaution']:.0%}, hoarding {b['hoarding']:.0%}, quit gap {b['gap']:+.2f} points, "
+             f"sd log UE {b['sdUE']:.4f}, recession employment drop {b['dE']:+.2f} ({b['dE_acycH']:+.2f} without cyclical husband risk). "
+             "Entries are changes per +1% of the named quantity: shares and the recession quit rate in percentage points, "
+             "the quit gap and the employment drop in percentage points of the rate, sd log UE in units.\n")
+    L.append("| quantity perturbed | precaution share | hoarding share | quit gap | sd log UE | dE | dE acyc. husband | quit rec |\n|---|---|---|---|---|---|---|---|")
+    for name, r in jch["points"].items():
+        if name == "base":
+            continue
+        d = lambda k, sc: (r[k] - b[k]) * sc / (100 * step)
+        L.append(f"| {name} | {d('precaution', 100):+.2f} | {d('hoarding', 100):+.2f} | {d('gap', 1):+.3f} | {d('sdUE', 1):+.4f} | "
+                 f"{d('dE', 1):+.3f} | {d('dE_acycH', 1):+.3f} | {d('quit_rec', 100):+.3f} |")
+    L.append("")
+    for name, cap in [("fig8_channels_by_version", "Precautionary labor supply versus job hoarding by calibration version (`scripts/figures_channels.py`)."),
+                      ("fig9_channel_sensitivity", "Sensitivity of the two shares to the cyclical parameters (`scripts/jacobian_channels.py`).")]:
+        if os.path.exists(os.path.join(PY, a.figdir_channels, name + ".png")):
+            L.append(f"![{cap}](Code26/python/{a.figdir_channels}/{name}.png)\n\n*{cap}*\n")
 if rob:
     L.append("## 5. Robustness (calibrated parameters held fixed)\n")
     L.append(f"Source: `{a.robust}`.\n")
