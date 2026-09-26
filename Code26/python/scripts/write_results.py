@@ -181,7 +181,9 @@ if os.path.isdir(figdir) and os.listdir(figdir):
                       ("fig2_search", "Search intensity of a non-employed woman over experience, by state."),
                       ("fig3_hours", "Hours of an employed woman over experience, by state."),
                       ("fig4_cohorts", "Refined cohort accounting: recession employment drop and monthly quit rates by cohort."),
-                      ("fig5_mechanism", "Decomposition of the recession fall in quits across counterfactuals.")]:
+                      ("fig5_mechanism", "Decomposition of the recession fall in quits across counterfactuals."),
+                      ("fig6_irf_employment", "Employment by career type after a recession starts (NBER dates, deviation from the six pre-recession months, average over the 1973-2007 recessions; `scripts/irf_careers.py`)."),
+                      ("fig7_irf_quits", "Quits by career type after a recession starts (same construction).")]:
         if os.path.exists(os.path.join(figdir, name + ".png")):
             L.append(f"![{cap}](Code26/python/output/figures/{name}.png)\n\n*{cap}*\n")
 L.append("## 8. What is fragile\n")

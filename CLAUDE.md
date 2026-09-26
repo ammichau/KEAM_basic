@@ -50,7 +50,7 @@ Work on branch `claude/hopeful-ride-vbnou4`. Use all cores (`KEAM_NJOBS` = numbe
    `robustness_final.py`, `write_results.py`.
 4. (done) `scripts/figures.py` -> `Code26/python/output/figures/` (quit probability, search, hours by
    state over experience averaged over types; refined cohort trend; mechanism decomposition).
-   Still to do: impulse responses by career type (paper Fig. 8-9) from the simulated panel.
+   `scripts/irf_careers.py` -> fig6/fig7: impulse responses by career type on the NBER dates.
 5. Keep `RESULTS.md` and the PR description current.
 
 ## Conventions

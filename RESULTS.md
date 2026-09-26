@@ -227,6 +227,14 @@ Source: `output/robustness_final.json`.
 
 *Decomposition of the recession fall in quits across counterfactuals.*
 
+![Employment by career type after a recession starts (NBER dates, deviation from the six pre-recession months, average over the 1973-2007 recessions; `scripts/irf_careers.py`).](Code26/python/output/figures/fig6_irf_employment.png)
+
+*Employment by career type after a recession starts (NBER dates, deviation from the six pre-recession months, average over the 1973-2007 recessions; `scripts/irf_careers.py`).*
+
+![Quits by career type after a recession starts (same construction).](Code26/python/output/figures/fig7_irf_quits.png)
+
+*Quits by career type after a recession starts (same construction).*
+
 ## 8. What is fragile
 
 * The never-working (NiLF) share is the least well fitted target; it depends on the home-production curvature in productivity (α_h) and the hours scaling of the fixed cost.
