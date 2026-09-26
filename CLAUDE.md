@@ -42,7 +42,19 @@ lower cost of work) make it more cyclical, a closing wage gap less so. Reference
    on 100 types (RESULTS.md 1a). Candidates left: a finer wage-type grid (n_omega 7-9) or a permanent
    home-productivity type; a calibrated recession job-finding ratio (`lam_f_ratio`, bounds in
    `calibrate.py`) fixes the recession quit rate but drives the job-finding fall toward zero.
-5. Known limitations / next steps (see RESULTS.md section 7):
+5. IN PROGRESS (2026-09-26, author request): (a) recession UI cut `ui_rec_mult=0.5`
+   (`output/final_calib_ui_full.*`, objective 0.144, never-working share +25%: does not help); (b) 7
+   wage-type points (`output/final_calib_om7_full.*`, 140 types, objective 0.135, never-working +20%:
+   does not help); (c) channel decomposition `scripts/channels.py` (`output/channels_ls.md`,
+   RESULTS.md 4b): precaution rises with the cyclicality of the husband's risk (job loss, finding,
+   UI in recessions), hoarding with the size of the wife's job-finding fall and recession
+   persistence; the recession employment drop target is generated mainly by the job-finding fall.
+   (d) Version 3 under calibration: UI cut plus a 10% job-finding fall (`lam_f_ratio` 0.90 via a
+   degenerate bound, own job loss in recessions free), `output/final_calib_v3_full.*`, then
+   `channels.py --variants quick` for the ui, om7 and v3 versions (`output/channels_<tag>.*`).
+   Author priority: a version in which precautionary labor supply has a role at least comparable
+   to job hoarding; then identify the parameters/targets that govern the split.
+6. Known limitations / next steps (see RESULTS.md section 7):
    - DONE: `scripts/cohorts_refined.py` solves the cost scale and tau_w jointly per cohort
      (`output/cohorts_refined_full.md`, RESULTS.md section 3b); the raw-ratio version in
      `run_final.py` is superseded for the cohort narrative;
