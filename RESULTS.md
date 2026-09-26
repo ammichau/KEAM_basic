@@ -205,7 +205,29 @@ Source: `output/robustness_final.json`.
 * Cohort accounting with the data's wage-gap and returns-to-experience paths (household income compensated): the residual cost scale is 1940: x1.00, 1950: x1.77, 1960: x1.77, 1970: x1.77, 1980: x2.00; the recession employment drop goes from -1.60 to -1.05 points and the expansion quit rate from 0.0311 to 0.0183. Caveat: tau_w is scaled by the raw data ratio, so the measured wage gap in the model rises to 0.98 by the last cohort (data 0.77); the next refinement is to solve tau_w per cohort to hit the measured gap jointly with the cost residual.
 * Refined cohort accounting (cost scale and tau_w solved jointly, section 3b): cost scale 1940: x1.00, 1950: x1.19, 1960: x0.75, 1970: x0.09, 1980: x0.33; tau_w 0.757, 0.758, 0.759, 0.706, 0.711; the recession employment drop goes from -1.60 to -2.24 points (+40%), the expansion quit rate from 0.0311 to 0.0239, the life-cycle share from 0.30 to 0.19 and the career share from 0.18 to 0.34. This is the cohort result to use; the raw-ratio version above is superseded.
 
-## 7. What is fragile
+## 7. Figures (`Code26/python/output/figures`, from `scripts/figures.py`)
+
+![Quit probability of an employed woman over experience, by husband state and aggregate state (representative type, ages 40-54).](Code26/python/output/figures/fig1_quit.png)
+
+*Quit probability of an employed woman over experience, by husband state and aggregate state (representative type, ages 40-54).*
+
+![Search intensity of a non-employed woman over experience, by state.](Code26/python/output/figures/fig2_search.png)
+
+*Search intensity of a non-employed woman over experience, by state.*
+
+![Hours of an employed woman over experience, by state.](Code26/python/output/figures/fig3_hours.png)
+
+*Hours of an employed woman over experience, by state.*
+
+![Refined cohort accounting: recession employment drop and monthly quit rates by cohort.](Code26/python/output/figures/fig4_cohorts.png)
+
+*Refined cohort accounting: recession employment drop and monthly quit rates by cohort.*
+
+![Decomposition of the recession fall in quits across counterfactuals.](Code26/python/output/figures/fig5_mechanism.png)
+
+*Decomposition of the recession fall in quits across counterfactuals.*
+
+## 8. What is fragile
 
 * The never-working (NiLF) share is the least well fitted target; it depends on the home-production curvature in productivity (α_h) and the hours scaling of the fixed cost.
 * The experience cap e_max is calibrated; the wage gap among employed wives is largely the experience premium at the cap, so the returns-to-experience experiment interacts with it.

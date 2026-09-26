@@ -174,7 +174,17 @@ if calib and res:
                  f"{coh2[n2[0]]['m']['share Career']:.2f} to {coh2[n2[-1]]['m']['share Career']:.2f}. This is the cohort result to use; "
                  f"the raw-ratio version above is superseded.")
     L.append("")
-L.append("## 7. What is fragile\n")
+figdir = os.path.join(PY, "output", "figures")
+if os.path.isdir(figdir) and os.listdir(figdir):
+    L.append("## 7. Figures (`Code26/python/output/figures`, from `scripts/figures.py`)\n")
+    for name, cap in [("fig1_quit", "Quit probability of an employed woman over experience, by husband state and aggregate state (representative type, ages 40-54)."),
+                      ("fig2_search", "Search intensity of a non-employed woman over experience, by state."),
+                      ("fig3_hours", "Hours of an employed woman over experience, by state."),
+                      ("fig4_cohorts", "Refined cohort accounting: recession employment drop and monthly quit rates by cohort."),
+                      ("fig5_mechanism", "Decomposition of the recession fall in quits across counterfactuals.")]:
+        if os.path.exists(os.path.join(figdir, name + ".png")):
+            L.append(f"![{cap}](Code26/python/output/figures/{name}.png)\n\n*{cap}*\n")
+L.append("## 8. What is fragile\n")
 L.append("* The never-working (NiLF) share is the least well fitted target; it depends on the home-production "
          "curvature in productivity (α_h) and the hours scaling of the fixed cost.\n"
          "* The experience cap e_max is calibrated; the wage gap among employed wives is largely the experience "

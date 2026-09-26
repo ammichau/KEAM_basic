@@ -48,9 +48,9 @@ Work on branch `claude/hopeful-ride-vbnou4`. Use all cores (`KEAM_NJOBS` = numbe
 3. Improve the NiLF fit (see limitations) and re-run `calibrate_childcare.py --full` from
    `output/final_calib_full.json`; regenerate results with `run_final.py`, `extra_experiments.py`,
    `robustness_final.py`, `write_results.py`.
-4. Figures for the paper: quit thresholds by state over experience (slides p.22), search
-   intensity (p.23), impulse responses by career type (paper Fig. 8-9); write
-   `scripts/figures.py` (matplotlib) and save to `Code26/python/output/figures/`.
+4. (done) `scripts/figures.py` -> `Code26/python/output/figures/` (quit probability, search, hours by
+   state over experience averaged over types; refined cohort trend; mechanism decomposition).
+   Still to do: impulse responses by career type (paper Fig. 8-9) from the simulated panel.
 5. Keep `RESULTS.md` and the PR description current.
 
 ## Conventions
