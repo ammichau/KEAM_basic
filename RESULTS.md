@@ -52,51 +52,54 @@ Least-squares polish (`scripts/calibrate_ls.py`, scipy trust-region reflective w
 | mean assets/monthly HH inc | 1.4074 |
 | share e at cap | 0.2448 |
 
-### 1a. Persistent cost-of-work shock: calibration side by side
+### 1a. Alternative calibrations side by side
 
-Source: `output/final_calib_rho_coarse.json` (objective 0.238, 120 evaluations, calibrated on 27 types, moments below re-evaluated on the 100-type grid; fixed fields {'n_kT': 3.0}). The shock keeps its value from one month to the next with probability rho_kT (0 in the iid model); see `FINAL_MODEL.md`.
+* **recession UI cut**: `output/final_calib_ui_full.json` (objective 0.144, 50 evaluations, calibrated on 100 types; fixed fields {'ui_rec_mult': 0.5}).
+* **persistent shock**: `output/final_calib_rho_coarse.json` (objective 0.238, 120 evaluations, calibrated on 27 types, moments re-evaluated on the 100-type grid; fixed fields {'n_kT': 3.0}).
 
-| parameter | iid shock | persistent shock |
-|---|---|---|
-| alpha_h | 0.2492 | 0.2925 |
-| e_max | 1.9665 | 1.6089 |
-| home_young_mult | 1.8226 | 1.6673 |
-| kappa_h_power | 0.2873 | 0.3100 |
-| kbar_max | 0.0161 | 0.0057 |
-| km_max | 6.1120 | 6.4321 |
-| lam_f0 | 0.4011 | 0.3965 |
-| lam_u0 | 0.0169 | 0.0226 |
-| lam_u1 | 0.0200 | 0.0262 |
-| mu | 0.9289 | 0.8380 |
-| nu_h | 0.6875 | 0.6652 |
-| sd_kT | 0.2919 | 0.3021 |
-| tau_w | 0.7493 | 0.7801 |
-| ybar_h | 0.0583 | 0.0663 |
-| z_h | 0.4528 | 0.4354 |
-| rho_kT | - | 0.5904 |
+Fixed fields: `rho_kT` is the monthly probability that the cost-of-work shock keeps its value (0 in the iid model); `ui_rec_mult` multiplies the husband's unemployment income share in recessions; `n_omega` is the number of wage-type points. See `FINAL_MODEL.md`.
 
-| target | data | iid shock | persistent shock |
+| parameter | adopted | recession UI cut | persistent shock |
 |---|---|---|---|
-| E/pop | 0.6200 | 0.6641 (+7%) | 0.6592 (+6%) |
-| hours|E | 0.4000 | 0.4097 (+2%) | 0.4454 (+11%) |
-| share Lifecycle | 0.3100 | 0.3085 (-0%) | 0.2963 (-4%) |
-| share PT | 0.2800 | 0.2502 (-11%) | 0.2631 (-6%) |
-| share Career | 0.1900 | 0.1719 (-10%) | 0.1929 (+2%) |
-| share NiLF | 0.2200 | 0.2694 (+22%) | 0.2477 (+13%) |
-| quit/m exp | 0.0340 | 0.0332 (-2%) | 0.0327 (-4%) |
-| quit/m rec | 0.0280 | 0.0250 (-11%) | 0.0252 (-10%) |
-| E->nonE/m exp | 0.0500 | 0.0505 (+1%) | 0.0557 (+11%) |
-| E->nonE/m rec | 0.0480 | 0.0447 (-7%) | 0.0510 (+6%) |
-| dE/pop rec-exp (pts) | -1.7000 | -1.6887 (+1%) | -2.0625 (-36%) |
-| wage gap (hourly ratio) | 0.7100 | 0.7382 (+4%) | 0.7490 (+5%) |
+| mu | 0.9289 | 0.9325 | 0.8380 |
+| kbar_max | 0.0161 | 0.0159 | 0.0057 |
+| km_max | 6.1120 | 6.1052 | 6.4321 |
+| tau_w | 0.7493 | 0.7482 | 0.7801 |
+| lam_f0 | 0.4011 | 0.4005 | 0.3965 |
+| lam_u0 | 0.0169 | 0.0168 | 0.0226 |
+| lam_u1 | 0.0200 | 0.0212 | 0.0262 |
+| ybar_h | 0.0583 | 0.0639 | 0.0663 |
+| sd_kT | 0.2919 | 0.2936 | 0.3021 |
+| home_young_mult | 1.8226 | 1.8208 | 1.6673 |
+| nu_h | 0.6875 | 0.6878 | 0.6652 |
+| z_h | 0.4528 | 0.4535 | 0.4354 |
+| alpha_h | 0.2492 | 0.2578 | 0.2925 |
+| e_max | 1.9665 | 1.9668 | 1.6089 |
+| kappa_h_power | 0.2873 | 0.2875 | 0.3100 |
+| rho_kT | - | - | 0.5904 |
 
-| untargeted moment | iid shock | persistent shock |
-|---|---|---|
-| U rate | 0.0447 | 0.1180 |
-| wife share exp | 0.3319 | 0.3521 |
-| cons drop at H job loss exp (%) | -5.0741 | -4.6244 |
-| cons drop at H job loss rec (%) | -7.2569 | -6.9890 |
-| mean assets/monthly HH inc | 1.4074 | 1.4726 |
+| target | data | adopted | recession UI cut | persistent shock |
+|---|---|---|---|---|
+| E/pop | 0.6200 | 0.6641 (+7%) | 0.6589 (+6%) | 0.6592 (+6%) |
+| hours|E | 0.4000 | 0.4097 (+2%) | 0.4066 (+2%) | 0.4454 (+11%) |
+| share Lifecycle | 0.3100 | 0.3085 (-0%) | 0.3031 (-2%) | 0.2963 (-4%) |
+| share PT | 0.2800 | 0.2502 (-11%) | 0.2612 (-7%) | 0.2631 (-6%) |
+| share Career | 0.1900 | 0.1719 (-10%) | 0.1600 (-16%) | 0.1929 (+2%) |
+| share NiLF | 0.2200 | 0.2694 (+22%) | 0.2756 (+25%) | 0.2477 (+13%) |
+| quit/m exp | 0.0340 | 0.0332 (-2%) | 0.0341 (+0%) | 0.0327 (-4%) |
+| quit/m rec | 0.0280 | 0.0250 (-11%) | 0.0245 (-12%) | 0.0252 (-10%) |
+| E->nonE/m exp | 0.0500 | 0.0505 (+1%) | 0.0512 (+2%) | 0.0557 (+11%) |
+| E->nonE/m rec | 0.0480 | 0.0447 (-7%) | 0.0456 (-5%) | 0.0510 (+6%) |
+| dE/pop rec-exp (pts) | -1.7000 | -1.6887 (+1%) | -1.7242 (-2%) | -2.0625 (-36%) |
+| wage gap (hourly ratio) | 0.7100 | 0.7382 (+4%) | 0.7352 (+4%) | 0.7490 (+5%) |
+
+| untargeted moment | adopted | recession UI cut | persistent shock |
+|---|---|---|---|
+| U rate | 0.0447 | 0.0445 | 0.1180 |
+| wife share exp | 0.3319 | 0.3270 | 0.3521 |
+| cons drop at H job loss exp (%) | -5.0741 | -5.0871 | -4.6244 |
+| cons drop at H job loss rec (%) | -7.2569 | -8.5456 | -6.9890 |
+| mean assets/monthly HH inc | 1.4074 | 1.4181 | 1.4726 |
 
 ### 1b. Identification: local elasticities of the targeted moments
 
@@ -252,6 +255,16 @@ Decomposition of the baseline quit gap (share removed when each channel is switc
 | acyclical job finding | -0.501 | +39% |
 | no recession wage cut | -0.832 | -1% |
 | acyclical own job loss | -0.849 | -3% |
+
+### 4b. Precautionary labor supply versus job hoarding: what governs the split
+
+Source: `scripts/channels.py`. Quit gap = recession minus expansion monthly quit rate (points). Precaution share = fall in the gap when the husband's risk (job loss, job finding, recession UI cut) is made acyclical; hoarding share = fall when the wife's job-finding efficiency is made acyclical; both off = fall when both are. Parameters are held at the calibrated values within each block; only the named ingredient changes.
+
+**adopted calibration** (`output/channels_ls.json`)
+
+| variant | E/pop | quit exp | quit rec | gap | precaution | hoarding | both off | dE base | dE acyc. husband |
+|---|---|---|---|---|---|---|---|---|---|
+| baseline | 0.664 | 0.0332 | 0.0250 | -0.82 | 19% | 39% | 52% | -1.69 | -2.23 |
 
 ## 5. Robustness (calibrated parameters held fixed)
 

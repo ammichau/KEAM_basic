@@ -184,23 +184,23 @@ if res:
         if k in cf:
             g = gap(cf[k]); L.append(f"| {k} | {g:+.3f} | {100 * (base_gap - g) / base_gap if base_gap else np.nan:+.0f}% |")
     L.append("")
+if chans:
+        L.append("### 4b. Precautionary labor supply versus job hoarding: what governs the split\n")
+        L.append("Source: `scripts/channels.py`. Quit gap = recession minus expansion monthly quit rate (points). "
+                 "Precaution share = fall in the gap when the husband's risk (job loss, job finding, recession UI cut) is "
+                 "made acyclical; hoarding share = fall when the wife's job-finding efficiency is made acyclical; both off = "
+                 "fall when both are. Parameters are held at the calibrated values within each block; only the named "
+                 "ingredient changes.\n")
+        for label, f, ch in chans:
+            L.append(f"**{label}** (`{f}`)\n")
+            L.append("| variant | E/pop | quit exp | quit rec | gap | precaution | hoarding | both off | dE base | dE acyc. husband |\n"
+                     "|---|---|---|---|---|---|---|---|---|---|")
+            for name, r in ch.items():
+                L.append(f"| {name} | {r['E']:.3f} | {r['quit_exp']:.4f} | {r['quit_rec']:.4f} | {r['gap']:+.2f} | {r['precaution']:.0%} | "
+                         f"{r['hoarding']:.0%} | {r['both_off']:.0%} | {r['dE']:+.2f} | {r['dE_acycH']:+.2f} |")
+            L.append("")
 if rob:
-    if chans:
-    L.append("### 4b. Precautionary labor supply versus job hoarding: what governs the split\n")
-    L.append("Source: `scripts/channels.py`. Quit gap = recession minus expansion monthly quit rate (points). "
-             "Precaution share = fall in the gap when the husband's risk (job loss, job finding, recession UI cut) is "
-             "made acyclical; hoarding share = fall when the wife's job-finding efficiency is made acyclical; both off = "
-             "fall when both are. Parameters are held at the calibrated values within each block; only the named "
-             "ingredient changes.\n")
-    for label, f, ch in chans:
-        L.append(f"**{label}** (`{f}`)\n")
-        L.append("| variant | E/pop | quit exp | quit rec | gap | precaution | hoarding | both off | dE base | dE acyc. husband |\n"
-                 "|---|---|---|---|---|---|---|---|---|---|")
-        for name, r in ch.items():
-            L.append(f"| {name} | {r['E']:.3f} | {r['quit_exp']:.4f} | {r['quit_rec']:.4f} | {r['gap']:+.2f} | {r['precaution']:.0%} | "
-                     f"{r['hoarding']:.0%} | {r['both_off']:.0%} | {r['dE']:+.2f} | {r['dE_acycH']:+.2f} |")
-        L.append("")
-L.append("## 5. Robustness (calibrated parameters held fixed)\n")
+    L.append("## 5. Robustness (calibrated parameters held fixed)\n")
     L.append(f"Source: `{a.robust}`.\n")
     names = list(rob)
     L.append("| variant | E/pop | quit gap | ΔE/pop rec-exp | acyclical husband risk: quit gap | RoE experiment: E/pop | RoE: quit gap |\n|---|---|---|---|---|---|---|")
