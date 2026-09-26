@@ -48,6 +48,15 @@ the table at the end lists what is calibrated.
   job-finding efficiency in recessions (λ_f(rec) = 0.90 λ_f(exp) instead of 0.85) and a calibrated
   recession rise in her own job-loss rate; in it precautionary labor supply accounts for 29% of the
   recession quit drop and job hoarding for 25% (`output/channels_v3.md`).
+* **Job-finding cyclicality target (author's data, 2026-09-26).** The standard deviation of the
+  cyclical component of the UE rate is 0.0765 for men and 0.0686 for women. Under the two-state
+  aggregate process the model counterpart is |log(UE_rec / UE_exp)| √(π_exp π_rec), computed from the
+  simulated UE rate of unemployed searchers (`keam/final/moments.py`, "sd log UE (women)"; the
+  husband's analogue reproduces the men's number with the assumed 0.35 / 0.28 finding rates). The
+  measured rate falls less than the efficiency λ_f because search rises in recessions, so matching
+  0.0686 needs an efficiency fall of roughly 25%. Versions: **v4** (target added, fall calibrated;
+  the least-squares run left it at 15%), **v4b** (fall fixed at 25%), **v5** (v4b's assumptions with
+  log utility, γ = 1, for a balanced growth path; `u(c) = log c` in `keam/final/solve.py`).
 * **Assets:** c + a' = income + a, a' ≥ 0, gross return 1 (net rate zero). The asset grid has
   20 points on [0, 15] (about ten months of household income) with more points near zero;
   a' is chosen on the grid, policies are interpolated bilinearly in (e, a) in the simulation.
