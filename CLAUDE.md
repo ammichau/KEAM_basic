@@ -32,11 +32,14 @@ lower cost of work) make it more cyclical, a closing wage gap less so. Reference
    the never-working share (+18%) together because its ever-working women return from
    non-employment too fast (`output/jacobian_final.md`, `output/diag_careers.md`). A persistent
    cost-of-work shock (`rho_kT`, `keam/final/solve.py`, nests the iid model at 0; verified to
-   1e-9 against the previous solver) is being calibrated: coarse grid first
-   (`scripts/calibrate_ls.py --coarse --fixed n_kT=3 --extra rho_kT --tag rho_coarse`), then a
-   full-grid polish (`--tag rho_full`, 100 types, about 180 s per evaluation), then the results
-   pipeline with `--calib output/final_calib_rho_full.json`. Keep the iid results until the
-   persistent version is complete; report both.
+   1e-9 against the previous solver) was calibrated on the coarse grid
+   (`output/final_calib_rho_coarse.json`, objective 0.125 on 27 types) but re-evaluates at 0.238
+   on the 100-type grid (never-working +13%, hours +11%, recession employment drop -2.06,
+   unemployment rate 12%; RESULTS.md section 1a). Not adopted. Current step: least-squares polish
+   of the iid model on the 100-type grid (`scripts/calibrate_ls.py --x0 output/final_calib_full.json
+   --max-nfev 5 --tag ls_full`, output `final_calib_ls_full.json`); if it improves on 0.149, run
+   `bash scripts/run_pipeline.sh output/final_calib_ls_full.json ls` and point `write_results.py`
+   at the new files (its `--calib/--results/--extra/--cohorts2/--robust` arguments).
 5. Known limitations / next steps (see RESULTS.md section 7):
    - DONE: `scripts/cohorts_refined.py` solves the cost scale and tau_w jointly per cohort
      (`output/cohorts_refined_full.md`, RESULTS.md section 3b); the raw-ratio version in
