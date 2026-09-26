@@ -19,7 +19,8 @@ ap.add_argument("--cohorts2", default="output/cohorts_refined_full.json")
 ap.add_argument("--figdir", default="output/figures", help="figure directory relative to Code26/python")
 ap.add_argument("--calib-prev", default="", help="the Nelder-Mead point the calibration was polished from (noted in section 1)")
 ap.add_argument("--jacobian", default="output/jacobian_final.json")
-ap.add_argument("--calib-alt", default="output/final_calib_rho_coarse.json", help="second calibration (persistent shock) shown side by side")
+ap.add_argument("--calib-alt", default="output/final_calib_rho_coarse.json", help="alternative calibrations shown side by side: comma-separated label=file (or file)")
+ap.add_argument("--channels", default="output/channels_ls.json", help="channel decomposition (scripts/channels.py); comma-separated label=file")
 ap.add_argument("--diag", default="output/diag_careers.json")
 ap.add_argument("--out", default=os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "..", "RESULTS.md"))
 a = ap.parse_args()
@@ -28,7 +29,16 @@ def load(rel):
     p = rel if os.path.isabs(rel) else os.path.join(PY, rel)
     return json.load(open(p)) if os.path.exists(p) else None
 calib = load(a.calib); res = load(a.results); rob = load(a.robust); extra = load(a.extra); coh2 = load(a.cohorts2)
-jac = load(a.jacobian); diag = load(a.diag); alt = load(a.calib_alt)
+jac = load(a.jacobian); diag = load(a.diag)
+def load_named(spec):
+    out = []
+    for item in [x for x in spec.split(",") if x]:
+        label, _, f = item.rpartition("=") if "=" in item else ("", "", item)
+        d = load(f)
+        if d:
+            out.append((label or os.path.basename(f).replace(".json", ""), f, d))
+    return out
+alts = load_named(a.calib_alt); chans = load_named(a.channels)
 L = []
 L.append("# Final model results: 1940s cohort calibration, trend experiments, mechanism\n")
 L.append("All numbers are produced by scripts in `Code26/python/scripts`; the files cited are in "
@@ -59,30 +69,33 @@ if calib:
         if k in m:
             L.append(f"| {k} | {m[k]:.4f} |")
     L.append("")
-# ---- alternative calibration (persistent cost shock) side by side
-if calib and alt:
-    L.append("### 1a. Persistent cost-of-work shock: calibration side by side\n")
-    grid_note = (f"calibrated on {'100' if not alt.get('coarse', True) else '27'} types"
-                 + (", moments below re-evaluated on the 100-type grid" if "moments_full" in alt else ""))
-    L.append(f"Source: `{a.calib_alt}` (objective {alt.get('obj_full', alt['obj']):.3f}, {alt.get('n_eval', '?')} evaluations, "
-             f"{grid_note}; fixed fields {alt.get('fixed', {})}). "
-             "The shock keeps its value from one month to the next with probability rho_kT (0 in the iid model); "
-             "see `FINAL_MODEL.md`.\n")
-    L.append("| parameter | iid shock | persistent shock |\n|---|---|---|")
-    for k in sorted(set(calib["x"]) | set(alt["x"]), key=lambda n: (n not in calib["x"], n)):
+# ---- alternative calibrations side by side
+if calib and alts:
+    L.append("### 1a. Alternative calibrations side by side\n")
+    for label, f, alt in alts:
+        grid_note = (f"calibrated on {'100' if not alt.get('coarse', True) else '27'} types"
+                     + (", moments re-evaluated on the 100-type grid" if "moments_full" in alt else ""))
+        L.append(f"* **{label}**: `{f}` (objective {alt.get('obj_full', alt['obj']):.3f}, {alt.get('n_eval', '?')} evaluations, "
+                 f"{grid_note}; fixed fields {alt.get('fixed', {})}).")
+    L.append("\nFixed fields: `rho_kT` is the monthly probability that the cost-of-work shock keeps its value (0 in the "
+             "iid model); `ui_rec_mult` multiplies the husband's unemployment income share in recessions; `n_omega` is "
+             "the number of wage-type points. See `FINAL_MODEL.md`.\n")
+    names = ["adopted"] + [lb for lb, _, _ in alts]
+    L.append("| parameter | " + " | ".join(names) + " |\n|---|" + "---|" * len(names))
+    keys = list(calib["x"]) + [k for _, _, d in alts for k in d["x"] if k not in calib["x"]]
+    seen = set(); keys = [k for k in keys if not (k in seen or seen.add(k))]
+    for k in keys:
         f = lambda d: f"{d['x'][k]:.4f}" if k in d["x"] else "-"
-        L.append(f"| {k} | {f(calib)} | {f(alt)} |")
-    L.append("\n| target | data | iid shock | persistent shock |\n|---|---|---|---|")
-    ma = alt.get("moments_full", alt.get("moments", {}))
+        L.append(f"| {k} | {f(calib)} | " + " | ".join(f(d) for _, _, d in alts) + " |")
+    L.append("\n| target | data | " + " | ".join(names) + " |\n|---|---|" + "---|" * len(names))
+    mom = [m] + [d.get("moments_full", d.get("moments", {})) for _, _, d in alts]
     for k, tv in TARGETS.items():
         sc = 1.0 if "pts" in k else tv
-        L.append(f"| {k} | {tv:.4f} | {m.get(k, np.nan):.4f} ({100 * (m.get(k, np.nan) - tv) / sc:+.0f}%) | "
-                 f"{ma.get(k, np.nan):.4f} ({100 * (ma.get(k, np.nan) - tv) / sc:+.0f}%) |")
-    L.append("\n| untargeted moment | iid shock | persistent shock |\n|---|---|---|")
+        L.append(f"| {k} | {tv:.4f} | " + " | ".join(f"{mm.get(k, np.nan):.4f} ({100 * (mm.get(k, np.nan) - tv) / sc:+.0f}%)" for mm in mom) + " |")
+    L.append("\n| untargeted moment | " + " | ".join(names) + " |\n|---|" + "---|" * len(names))
     for k in ["U rate", "wife share exp", "cons drop at H job loss exp (%)", "cons drop at H job loss rec (%)",
               "mean assets/monthly HH inc"]:
-        if k in m and k in ma:
-            L.append(f"| {k} | {m[k]:.4f} | {ma[k]:.4f} |")
+        L.append(f"| {k} | " + " | ".join(f"{mm.get(k, np.nan):.4f}" for mm in mom) + " |")
     L.append("")
 # ---- identification: local elasticities and the type-cell structure of the career taxonomy
 if jac and "elasticities" in jac:
@@ -172,7 +185,22 @@ if res:
             g = gap(cf[k]); L.append(f"| {k} | {g:+.3f} | {100 * (base_gap - g) / base_gap if base_gap else np.nan:+.0f}% |")
     L.append("")
 if rob:
-    L.append("## 5. Robustness (calibrated parameters held fixed)\n")
+    if chans:
+    L.append("### 4b. Precautionary labor supply versus job hoarding: what governs the split\n")
+    L.append("Source: `scripts/channels.py`. Quit gap = recession minus expansion monthly quit rate (points). "
+             "Precaution share = fall in the gap when the husband's risk (job loss, job finding, recession UI cut) is "
+             "made acyclical; hoarding share = fall when the wife's job-finding efficiency is made acyclical; both off = "
+             "fall when both are. Parameters are held at the calibrated values within each block; only the named "
+             "ingredient changes.\n")
+    for label, f, ch in chans:
+        L.append(f"**{label}** (`{f}`)\n")
+        L.append("| variant | E/pop | quit exp | quit rec | gap | precaution | hoarding | both off | dE base | dE acyc. husband |\n"
+                 "|---|---|---|---|---|---|---|---|---|---|")
+        for name, r in ch.items():
+            L.append(f"| {name} | {r['E']:.3f} | {r['quit_exp']:.4f} | {r['quit_rec']:.4f} | {r['gap']:+.2f} | {r['precaution']:.0%} | "
+                     f"{r['hoarding']:.0%} | {r['both_off']:.0%} | {r['dE']:+.2f} | {r['dE_acycH']:+.2f} |")
+        L.append("")
+L.append("## 5. Robustness (calibrated parameters held fixed)\n")
     L.append(f"Source: `{a.robust}`.\n")
     names = list(rob)
     L.append("| variant | E/pop | quit gap | ΔE/pop rec-exp | acyclical husband risk: quit gap | RoE experiment: E/pop | RoE: quit gap |\n|---|---|---|---|---|---|---|")
