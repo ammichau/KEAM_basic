@@ -15,13 +15,14 @@ ap.add_argument("--calib", default="output/final_calib_full.json")
 ap.add_argument("--results", default="output/final_results_full.json")
 ap.add_argument("--robust", default="output/robustness_final.json")
 ap.add_argument("--extra", default="output/extra_experiments_full.json")
+ap.add_argument("--cohorts2", default="output/cohorts_refined_full.json")
 ap.add_argument("--out", default=os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "..", "RESULTS.md"))
 a = ap.parse_args()
 HERE = os.path.dirname(os.path.abspath(__file__)); PY = os.path.join(HERE, "..")
 def load(rel):
     p = rel if os.path.isabs(rel) else os.path.join(PY, rel)
     return json.load(open(p)) if os.path.exists(p) else None
-calib = load(a.calib); res = load(a.results); rob = load(a.robust); extra = load(a.extra)
+calib = load(a.calib); res = load(a.results); rob = load(a.robust); extra = load(a.extra); coh2 = load(a.cohorts2)
 L = []
 L.append("# Final model results: 1940s cohort calibration, trend experiments, mechanism\n")
 L.append("All numbers are produced by scripts in `Code26/python/scripts`; the files cited are in "
@@ -84,6 +85,20 @@ if res:
              "0.58, 0.68, 0.69), with the husband's income compensated; the cost of work is scaled to reproduce each "
              "cohort's employment rate (0.62, 0.67, 0.71, 0.73, 0.72).\n")
     L.append(table(res["cohorts"]))
+    if coh2:
+        L.append("### 3b. Cohort accounting, refined: cost scale and τ_w solved jointly\n")
+        L.append(f"Source: `{a.cohorts2}`. For each cohort the cost scale and τ_w (husband's income compensated) are solved "
+                 "so that the cohort's employment rate and its measured within-couple wage gap (data ratio applied to the "
+                 "model's 1940 gap) both match, given the cohort's γ_e.\n")
+        names2 = list(coh2)
+        L.append("| | " + " | ".join(names2) + " |\n|---|" + "---|" * len(names2))
+        L.append("| cost scale | " + " | ".join(f"{coh2[n]['cost_scale']:.3f}" for n in names2) + " |")
+        L.append("| τ_w | " + " | ".join(f"{coh2[n]['tau_w']:.3f}" for n in names2) + " |")
+        for k in ["E/pop", "wage gap (hourly ratio)", "quit/m exp", "quit/m rec", "dE/pop rec-exp (pts)", "wife share exp",
+                  "share Lifecycle", "share PT", "share Career", "share NiLF", "cons drop at H job loss rec (%)"]:
+            L.append(f"| {k} | " + " | ".join(f"{coh2[n]['m'].get(k, np.nan):.4f}" for n in names2) + " |")
+        L.append("| residual (|ΔE|+|Δgap|) | " + " | ".join(f"{coh2[n].get('resid', 0.0):.4f}" for n in names2) + " |")
+        L.append("")
     L.append("## 4. Mechanism counterfactuals (baseline parameters)\n")
     cf = res["counterfactuals"]
     L.append("| counterfactual | quit exp | quit rec | quit gap (pts) | ΔE/pop rec-exp (pts) | E/pop |\n|---|---|---|---|---|---|")
