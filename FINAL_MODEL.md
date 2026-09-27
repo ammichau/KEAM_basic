@@ -81,6 +81,12 @@ the table at the end lists what is calibrated.
   decision. At the log-utility calibration (v5b) with γ = 2 imposed, the precautionary share rises
   from 7% to 22% (hoarding 50%; `output/channels_v5b_kpr2.md`); version 7 recalibrates this
   specification (`output/final_calib_v7_full.*`).
+  With `kT_mult = True` (2026-09-27) the transitory shock is treated like the fixed costs: employment in a
+  month with shock κ_T is taxed proportionally, u = [c·ψ(h)·exp(−(κ + κ_T))]^{1−γ}/(1−γ), so that the
+  participation comparison V^E − V^N is scale-invariant (balanced growth). The shock is drawn at the start
+  of the month, before the quit/accept decision, and the employed woman's value carries today's node; with
+  an iid shock the continuation and V^N do not depend on it. At γ = 1 this is identical to the additive
+  shock (`output/verify_kT_mult.md`). Version 9 (`output/final_calib_v9_full.*`) is calibrated with it.
 * **Assets:** c + a' = income + a, a' ≥ 0, gross return 1 (net rate zero). The asset grid has
   20 points on [0, 15] (about ten months of household income) with more points near zero;
   a' is chosen on the grid, policies are interpolated bilinearly in (e, a) in the simulation.

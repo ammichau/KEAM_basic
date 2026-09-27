@@ -197,6 +197,15 @@ labor supply has a role at least comparable to hoarding. The women's UE-rate cyc
      `channels.py --tag v4e`, `jacobian_channels.py --tag v4e`, and `bash scripts/run_pipeline.sh
      output/final_calib_v4e_full.json v4e`; regenerate RESULTS.md with v4e as the main calibration and v7c as
      the balanced-growth alternative; mark the pre-fix versions as superseded in 1a/6a.
+   - WORKSTATION (2026-09-27, author request): v4e is running as above; in addition **v9** = KPR with a
+     scale-invariant transitory cost shock (`kT_mult=True`: kappa_T is a one-month proportional consumption
+     tax inside the aggregator, like kbar and km, which already were; nests the additive model exactly at
+     gamma = 1, `output/verify_kT_mult.md`), from v7b with the fixed simulator:
+     `calibrate_ls.py --x0 output/final_calib_v7b_full.json --fixed kpr=1 --fixed gamma=2.0 --fixed ui_rec_mult=0.5
+     --fixed kT_mult=1 --set lam_f_ratio=0.80 --bound lam_f_ratio:0.8:0.8000001 --max-nfev 10 --diff-step 0.04 --tag v9_full`.
+     The author wants the full results (moments vs data, cohorts, decompositions) for v9 and for the best
+     separable gamma = 2 version (v4e); both pipelines run on the workstation. Tags v4e and v9 are the
+     workstation's; please do not write them from the cloud.
    New moments for discriminating the two preference specifications (added 2026-09-27, `moments.py`):
    the wife's employment and hours 12 months after the husband's job loss relative to the 12 months
    before (event study), by aggregate state at the loss, and wife employment / hours by the husband's state.
