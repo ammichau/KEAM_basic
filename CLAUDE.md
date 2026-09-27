@@ -34,7 +34,8 @@ lower cost of work) make it more cyclical, a closing wage gap less so. Reference
    the husband's unemployment income, compensated wage-gap experiment, assets.
 3. CURRENT (2026-09-27, corrected simulator): carried-forward calibration is **version 4e** (separable CRRA
    gamma 2, `output/final_calib_v4e_full.*`, objective 0.139; full pipeline with the `v4e` tag; RESULTS.md main),
-   with **version 7c** (KPR, `final_calib_v7c_full.*`, objective 0.076, no pipeline yet) as the balanced-growth
+   with **version 7c** (KPR, `final_calib_v7c_full.*`, objective 0.076; full pipeline running on the cloud since
+   2026-09-27 18:45 UTC, `output/pipeline_v7c.out`; the workstation is running version 9's pipeline) as the balanced-growth
    alternative. RESULTS.md regeneration command: as below with `v4e` in place of `v4c`, `--calib-prev
    output/final_calib_v4c_full.json`, `--jacobian-channels "version 4e (...)=output/jacobian_channels_v4e.json,..."`,
    `--calib-alt` led by v7c, `--channels` led by v4e and v7c, pre-fix versions labelled "(pre-fix)".
