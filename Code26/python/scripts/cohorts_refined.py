@@ -21,6 +21,9 @@ ap.add_argument("--coarse", action="store_true")
 ap.add_argument("--n-jobs", type=int, default=0)
 ap.add_argument("--max-eval", type=int, default=22)
 ap.add_argument("--tag", default="", help="output name suffix (default: full or coarse)")
+ap.add_argument("--e-mode", default="level", choices=["level", "relative"],
+                help="employment targets: the data levels (default) or the model's 1940 rate plus the data's change "
+                     "since 1940 (consistent with the wage gap, which is always scaled relative to the model's 1940 value)")
 a = ap.parse_args()
 if a.n_jobs:
     os.environ["KEAM_NJOBS"] = str(a.n_jobs)
@@ -44,6 +47,8 @@ for c, (gap, ge, E) in COH.items():
         continue
     gap_target = gap0 * gap / COH[1940][0]        # keep the model's 1940 level, apply the data's ratio
     pc = p.replace(gam_e=p.gam_e * ge / COH[1940][1])
+    if a.e_mode == "relative":
+        E = base_m["E/pop"] + (E - COH[1940][2])
     cache = {}; best = [None]
     def residual(x):
         s_cost, g_tau = max(float(x[0]), 0.0), float(x[1])      # the cost scale cannot be negative (corner at 0)
@@ -68,7 +73,7 @@ for c, (gap, ge, E) in COH.items():
         pass
     err, s_cost, g_tau, m = best[0]
     out[str(c)] = dict(m={k: float(v) for k, v in m.items() if isinstance(v, (int, float, np.floating))},
-                       cost_scale=s_cost, tau_scale=g_tau, tau_w=p.tau_w * g_tau, gap_target=gap_target,
+                       E_target=E, cost_scale=s_cost, tau_scale=g_tau, tau_w=p.tau_w * g_tau, gap_target=gap_target,
                        resid=err, n_eval=len(cache), corner=bool(s_cost <= 0.0))
     print(f"{c}: cost x{s_cost:.3f}, tau_w {p.tau_w * g_tau:.3f}, |resid| {err:.4f} after {len(cache)} evaluations", flush=True)
 
@@ -80,6 +85,7 @@ md = ["### Cohort accounting, refined: cost scale and tau_w solved jointly for e
       "| cohort | " + " | ".join(names) + " |", "|---|" + "---|" * len(names),
       "| cost scale | " + " | ".join(f"{out[n]['cost_scale']:.3f}" + (" (corner)" if out[n].get("corner") else "") for n in names) + " |",
       "| tau_w | " + " | ".join(f"{out[n]['tau_w']:.3f}" for n in names) + " |",
+      "| E/pop target | " + " | ".join(f"{out[n].get('E_target', out[n]['m']['E/pop']):.4f}" for n in names) + f" | ({a.e_mode})",
       "| gamma_e | " + " | ".join(f"{p.gam_e * COH[int(n)][1] / COH[1940][1]:.3f}" for n in names) + " |"]
 for k in KEYS:
     md.append(f"| {k} | " + " | ".join(f"{out[n]['m'].get(k, np.nan):.4f}" for n in names) + " |")
