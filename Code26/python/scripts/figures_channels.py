@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 
 ap = argparse.ArgumentParser()
 ap.add_argument("--versions", default="adopted iid (15% fall, UI 30%)=ls;7 wage types=om7;recession UI cut=ui;"
-                                      "v3: UI cut + 10% fall=v3;v4: UI cut + UE target=v4;v4c: UI cut + 20% fall=v4c;v5: log utility=v5")
+                                      "v3: UI cut + 10% fall=v3;v4: UI cut + UE target=v4;v4c: UI cut + 20% fall=v4c;v5b: log utility=v5b;v5b + Epstein-Zin RRA 5=v5b_rra5;v5b + Epstein-Zin RRA 10=v5b_rra10")
 ap.add_argument("--jacobian", default="v4")
 a = ap.parse_args()
 HERE = os.path.dirname(os.path.abspath(__file__)); PY = os.path.join(HERE, ".."); OUT = os.path.join(PY, "output", "figures_channels")
