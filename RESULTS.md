@@ -60,14 +60,14 @@ Least-squares polish (`scripts/calibrate_ls.py`, scipy trust-region reflective w
 * **version 3**: `output/final_calib_v3_full.json` (objective 0.759, 53 evaluations, calibrated on 100 types, moments re-evaluated on the 100-type grid; fixed fields {'ui_rec_mult': 0.5}).
 * **version 4**: `output/final_calib_v4_full.json` (objective 0.256, 53 evaluations, calibrated on 100 types; fixed fields {'ui_rec_mult': 0.5}).
 * **version 6 (persistent shock)**: `output/final_calib_v6_full.json` (objective 0.260, 74 evaluations, calibrated on 100 types; fixed fields {'ui_rec_mult': 0.5, 'n_kT': 3.0}).
-* ** gamma 2)**: `output/final_calib_v7_full.json` (objective 0.311, 70 evaluations, calibrated on 100 types; fixed fields {'kpr': 1.0, 'gamma': 2.0, 'ui_rec_mult': 0.5}).
+* **version 7 (KPR gamma 2)**: `output/final_calib_v7_full.json` (objective 0.311, 70 evaluations, calibrated on 100 types; fixed fields {'kpr': 1.0, 'gamma': 2.0, 'ui_rec_mult': 0.5}).
 * **version 5b (log utility)**: `output/final_calib_v5b_full.json` (objective 0.306, 120 evaluations, calibrated on 100 types; fixed fields {'gamma': 1.0, 'ui_rec_mult': 0.5}).
 * **recession UI cut**: `output/final_calib_ui_full.json` (objective 0.307, 50 evaluations, calibrated on 100 types, moments re-evaluated on the 100-type grid; fixed fields {'ui_rec_mult': 0.5}).
 * **7 wage types**: `output/final_calib_om7_full.json` (objective 0.343, 50 evaluations, calibrated on 100 types, moments re-evaluated on the 100-type grid; fixed fields {'n_omega': 7.0}).
 
 Fixed fields: `rho_kT` is the monthly probability that the cost-of-work shock keeps its value (0 in the iid model); `ui_rec_mult` multiplies the husband's unemployment income share in recessions; `n_omega` is the number of wage-type points. See `FINAL_MODEL.md`.
 
-| parameter | adopted | adopted iid (ls) | version 3 | version 4 | version 6 (persistent shock) |  gamma 2) | version 5b (log utility) | recession UI cut | 7 wage types |
+| parameter | adopted | adopted iid (ls) | version 3 | version 4 | version 6 (persistent shock) | version 7 (KPR gamma 2) | version 5b (log utility) | recession UI cut | 7 wage types |
 |---|---|---|---|---|---|---|---|---|---|
 | mu | 0.9235 | 0.9289 | 0.9256 | 0.9125 | 1.0191 | 1.6567 | 1.4454 | 0.9325 | 0.9139 |
 | kbar_max | 0.0144 | 0.0161 | 0.0143 | 0.0168 | 0.0243 | 0.0353 | 0.0429 | 0.0159 | 0.0152 |
@@ -87,7 +87,7 @@ Fixed fields: `rho_kT` is the monthly probability that the cost-of-work shock ke
 | lam_f_ratio | 0.8000 | - | 0.9000 | 0.8500 | 0.8000 | 0.8000 | 0.8000 | - | - |
 | rho_kT | - | - | - | - | 0.3307 | - | - | - | - |
 
-| target | data | adopted | adopted iid (ls) | version 3 | version 4 | version 6 (persistent shock) |  gamma 2) | version 5b (log utility) | recession UI cut | 7 wage types |
+| target | data | adopted | adopted iid (ls) | version 3 | version 4 | version 6 (persistent shock) | version 7 (KPR gamma 2) | version 5b (log utility) | recession UI cut | 7 wage types |
 |---|---|---|---|---|---|---|---|---|---|---|
 | E/pop | 0.6200 | 0.6737 (+9%) | 0.6641 (+7%) | 0.6668 (+8%) | 0.6658 (+7%) | 0.6593 (+6%) | 0.6299 (+2%) | 0.6187 (-0%) | 0.6589 (+6%) | 0.6697 (+8%) |
 | hours|E | 0.4000 | 0.4077 (+2%) | 0.4097 (+2%) | 0.4085 (+2%) | 0.4145 (+4%) | 0.4096 (+2%) | 0.4295 (+7%) | 0.4404 (+10%) | 0.4066 (+2%) | 0.4112 (+3%) |
@@ -103,7 +103,7 @@ Fixed fields: `rho_kT` is the monthly probability that the cost-of-work shock ke
 | wage gap (hourly ratio) | 0.7100 | 0.7308 (+3%) | 0.7382 (+4%) | 0.7363 (+4%) | 0.7427 (+5%) | 0.7643 (+8%) | 0.9048 (+27%) | 0.8239 (+16%) | 0.7352 (+4%) | 0.7415 (+4%) |
 | sd log UE (women) | 0.0686 | 0.0686 (-0%) | 0.0408 (-41%) | 0.0296 (-57%) | 0.0562 (-18%) | 0.0724 (+5%) | 0.0657 (-4%) | 0.0767 (+12%) | 0.0490 (-29%) | 0.0465 (-32%) |
 
-| untargeted moment | adopted | adopted iid (ls) | version 3 | version 4 | version 6 (persistent shock) |  gamma 2) | version 5b (log utility) | recession UI cut | 7 wage types |
+| untargeted moment | adopted | adopted iid (ls) | version 3 | version 4 | version 6 (persistent shock) | version 7 (KPR gamma 2) | version 5b (log utility) | recession UI cut | 7 wage types |
 |---|---|---|---|---|---|---|---|---|---|
 | U rate | 0.0441 | 0.0447 | 0.0447 | 0.0457 | 0.0396 | 0.0503 | 0.0606 | 0.0445 | 0.0434 |
 | wife share exp | 0.3316 | 0.3319 | 0.3316 | 0.3360 | 0.3346 | 0.3864 | 0.3611 | 0.3270 | 0.3354 |

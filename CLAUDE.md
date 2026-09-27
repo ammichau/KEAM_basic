@@ -36,7 +36,9 @@ lower cost of work) make it more cyclical, a closing wage gap less so. Reference
    --calib output/final_calib_v4c_full.json --calib-prev output/final_calib_v4_full.json --results output/final_results_v4c.json
    --extra output/extra_experiments_v4c.json --cohorts2 output/cohorts_refined_v4c.json --robust output/robustness_final_v4c.json
    --figdir output/figures_v4c --jacobian-channels output/jacobian_channels_v4c.json --calib-alt "..." --channels "..."`
-   (the label=file lists are in the commit that regenerated RESULTS.md). The previous adopted calibration
+   (labels must not contain commas; the current lists: --calib-alt "adopted iid (ls)=...ls_full.json,version 3=...v3,
+   version 4=...v4,version 6 (persistent shock)=...v6,version 7 (KPR gamma 2)=...v7,version 5b (log utility)=...v5b,
+   recession UI cut=...ui,7 wage types=...om7" and --channels with v4c, ls, v4, v6, v7, v5b, v5b_rra10, v5b_kpr2, ui). The previous adopted calibration
    `ls` (objective 0.120 on 12 targets, 0.449 on 13) and its tagged outputs are kept.
 4. EXPLORED, NOT ADOPTED (2026-09-26): the identification analysis (`output/jacobian_final.md`,
    `output/diag_careers.md`, RESULTS.md 1b) shows the never-working share and the employment rate
