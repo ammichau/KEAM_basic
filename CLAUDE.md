@@ -177,7 +177,11 @@ labor supply has a role at least comparable to hoarding. The women's UE-rate cyc
    (`n_zh`, `zh_spread`; `keam/final/params.py` `make_types4`, solver and simulator carry the multiplier).
    On the coarse grid at the v7b parameters, `zh_spread` 0.3 with `n_zh` 2 brings the never-working share
    to 0.22 and the career shares near the data at fixed parameters (FINAL_MODEL.md). Calibrations:
-   - version 8 (cloud, running): KPR v7b assumptions + the type, `zh_spread` free:
+   - version 8 (cloud) was stopped by the simulator fix; superseded by version 8c (cloud, running): the
+     type on top of v7c (corrected simulator): `--x0 output/final_calib_v7c_full.json --fixed kpr=1 --fixed gamma=2.0
+     --fixed ui_rec_mult=0.5 --fixed n_zh=2 --set lam_f_ratio=0.80 --bound lam_f_ratio:0.8:0.8000001 --extra zh_spread
+     --set zh_spread=0.3 --bound zh_spread:0.0:0.8 --max-nfev 6 --diff-step 0.04 --tag v8c_full`, then channels quick.
+   - (old) version 8: KPR v7b assumptions + the type, `zh_spread` free:
      `python3 -u scripts/calibrate_ls.py --x0 output/final_calib_v7b_full.json --fixed kpr=1 --fixed gamma=2.0
      --fixed ui_rec_mult=0.5 --fixed n_zh=2 --set lam_f_ratio=0.80 --bound lam_f_ratio:0.8:0.8000001
      --extra zh_spread --set zh_spread=0.3 --bound zh_spread:0.0:0.8 --max-nfev 6 --diff-step 0.04 --tag v8_full`
