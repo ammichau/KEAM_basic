@@ -54,6 +54,12 @@ lower cost of work) make it more cyclical, a closing wage gap less so. Reference
    `channels.py --variants quick` for the ui, om7 and v3 versions (`output/channels_<tag>.*`).
    Author priority: a version in which precautionary labor supply has a role at least comparable
    to job hoarding; then identify the parameters/targets that govern the split.
+   Log utility (gamma = 1, balanced growth): precaution falls to 7-9% of the quit drop and hoarding
+   rises to 55-56%, both recalibrated (v5) and imposed at the v4c parameters (`channels_v4c_gamma1`).
+   Balanced growth and precaution conflict through gamma; the way to keep both is Epstein-Zin
+   preferences (unit intertemporal elasticity, risk aversion 2+), a moderate solver change not built.
+   Version 4c (UI cut, 20% job-finding fall, UE cyclicality matched): precaution 31%, hoarding 44%,
+   but the recession quit drop is overstated (34% versus 18%), which motivates version 6.
    Versions so far (RESULTS.md 1a/4b; objective with 12 targets unless noted; precaution / hoarding shares
    of the recession quit drop): adopted `ls` 0.120, 19/39; `ui` (UI cut) 0.144, 29/34; `om7` (7 wage types)
    0.135, 21/38; `v3` (UI cut + 10% job-finding fall) 0.113, 29/25; `v4` (UI cut + job-finding fall
