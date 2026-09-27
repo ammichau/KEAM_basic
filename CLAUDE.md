@@ -213,6 +213,12 @@ labor supply has a role at least comparable to hoarding. The women's UE-rate cyc
      The author wants the full results (moments vs data, cohorts, decompositions) for v9 and for the best
      separable gamma = 2 version (v4e); both pipelines run on the workstation. Tags v4e and v9 are the
      workstation's; please do not write them from the cloud.
+   Added-worker levers at v7c (`output/awe_levers_v7c.md`): no assets -> entry ratio 1.00, precaution 18%;
+   husband spells 4-5 months -> 1.02, 21%; assets capped at 3 months -> 1.01, 16%. Neither moves the entry
+   response: insurance runs through retention (quits), entry is decided by type. An added-worker effect of
+   the observed size needs women near the participation margin (persistent cost shocks or a finer type
+   continuum around the margin); candidate next test: persistent shock (`rho_kT`, n_kT 3) on top of v7c
+   with the entry ratio 1.60 as a 14th target.
    Added-worker moments after Guner, Kulikova and Valladares-Esteban (RED 2025, "Does the added worker
    effect matter?"; data: a wife's monthly labor-force entry probability is 60% higher in the month her
    husband moves from employment to unemployment; aggregate participation +0.72 pp, employment +0.65 pp):
