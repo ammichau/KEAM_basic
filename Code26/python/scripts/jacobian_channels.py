@@ -36,7 +36,7 @@ PERT = {
     "job-finding efficiency level (lam_f0)": lambda p, s: p.replace(lam_f=(p.lam_f[0] * (1 + s), p.lam_f[1] * (1 + s))),
     "cost-shock sd (sd_kT)": lambda p, s: p.replace(sd_kT=p.sd_kT * (1 + s)),
     "recession wage cut (1 - phi_rec)": lambda p, s: p.replace(phi_rec=1 - (1 - p.phi_rec) * (1 + s), phi_rec_H=1 - (1 - p.phi_rec_H) * (1 + s)),
-    "recession persistence (piz[1,1])": lambda p, s: p.replace(piz=np.array([[p.piz[0, 0], p.piz[0, 1]], [1 - p.piz[1, 1] * (1 + s), p.piz[1, 1] * (1 + s)]])),
+    "expected recession duration (1 / exit probability)": lambda p, s: p.replace(piz=np.array([[p.piz[0, 0], p.piz[0, 1]], [p.piz[1, 0] / (1 + s), 1 - p.piz[1, 0] / (1 + s)]])),
     "asset limit a_max": lambda p, s: p.replace(a_max=p.a_max * (1 + s)),
     "risk aversion gamma": lambda p, s: p.replace(gamma=p.gamma * (1 + s)),
 }
