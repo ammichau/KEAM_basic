@@ -98,7 +98,10 @@ labor supply has a role at least comparable to hoarding. The women's UE-rate cyc
    --set lam_f_ratio=0.80 --bound lam_f_ratio:0.8:0.8000001 --max-nfev 6 --diff-step 0.04 --tag v5_full`
    `python3 -u scripts/channels.py --calib output/final_calib_v5_full.json --tag v5`
    If the coarse stage ends above objective 0.5, run a second Nelder-Mead round from its result
-   (`--x0 output/final_calib_v5_coarse.json --tag v5_coarse2`) before the polish.
+   (`--x0 output/final_calib_v5_coarse.json --tag v5_coarse2`) before the polish. The first full-grid
+   polish stopped at the evaluation limit (objective 0.396, never-working +34%, wage gap +15%): run a
+   second polish from it (`--x0 output/final_calib_v5_full.json --tag v5b_full --max-nfev 8`, same fixed
+   fields and lam_f_ratio bound) and use v5b for the channel decomposition and the comparison.
 3. Carry forward the lowest-objective version among v4c and v5 whose precautionary share is within 10
    points of the hoarding share; prefer v5 if it fits acceptably (objective below 0.3, cyclical moments
    within 15%) because of the balanced-growth argument, and say so. Run
