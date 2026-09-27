@@ -57,6 +57,17 @@ the table at the end lists what is calibrated.
   0.0686 needs an efficiency fall of roughly 25%. Versions: **v4** (target added, fall calibrated;
   the least-squares run left it at 15%), **v4b** (fall fixed at 25%), **v5** (v4b's assumptions with
   log utility, γ = 1, for a balanced growth path; `u(c) = log c` in `keam/final/solve.py`).
+* **Epstein-Zin option (2026-09-27).** `ez_rra` > 1 with γ = 1 gives Epstein-Zin preferences with unit
+  intertemporal elasticity and relative risk aversion `ez_rra`: next-period risks (husband's state,
+  aggregate state, cost shock, own job loss, job finding, ageing) enter through the certainty
+  equivalent −(1/θ) log E exp(−θ V) with θ = (ez_rra − 1)(1 − β), the log form of
+  V = c^(1−β) [E V'^(1−α)]^(β/(1−α)); mortality acts as discounting. Nests expected utility at
+  `ez_rra` = 1 (checked to 1e-9). Finding: at the log-utility calibration (v5b) the precautionary
+  share of the recession quit drop stays at 7-9% for risk aversion 1, 2, 5 and 10
+  (`output/channels_v5b_rra{2,5,10}.md`), so the channel is governed by the intertemporal
+  elasticity (period-utility curvature, γ = 2 gives 0.5), not by risk aversion. Balanced growth
+  with a precautionary labor-supply channel therefore needs non-separable consumption-hours
+  preferences of the King-Plosser-Rebelo class (u = [c g(h)]^(1−γ)/(1−γ)), not implemented.
 * **Assets:** c + a' = income + a, a' ≥ 0, gross return 1 (net rate zero). The asset grid has
   20 points on [0, 15] (about ten months of household income) with more points near zero;
   a' is chosen on the grid, policies are interpolated bilinearly in (e, a) in the simulation.

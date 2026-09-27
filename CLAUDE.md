@@ -60,8 +60,12 @@ lower cost of work) make it more cyclical, a closing wage gap less so. Reference
    to job hoarding; then identify the parameters/targets that govern the split.
    Log utility (gamma = 1, balanced growth): precaution falls to 7-9% of the quit drop and hoarding
    rises to 55-56%, both recalibrated (v5) and imposed at the v4c parameters (`channels_v4c_gamma1`).
-   Balanced growth and precaution conflict through gamma; the way to keep both is Epstein-Zin
-   preferences (unit intertemporal elasticity, risk aversion 2+), a moderate solver change not built.
+   Balanced growth and precaution conflict through gamma. Epstein-Zin with unit intertemporal
+   elasticity is implemented (`ez_rra`, `keam/final/solve.py`) and does NOT restore it: precaution
+   stays 7-9% at risk aversion 2, 5 and 10 (`output/channels_v5b_rra*.md`). The channel is driven
+   by the intertemporal elasticity, so balanced growth with precaution needs King-Plosser-Rebelo
+   non-separable preferences (u = [c g(h)]^(1-gamma)/(1-gamma), costs as consumption equivalents):
+   a flow-utility change in `solve_type`, not built; ask the author first.
    Version 4c (UI cut, 20% job-finding fall, UE cyclicality matched): precaution 31%, hoarding 44%,
    but the recession quit drop is overstated (34% versus 18%), which motivates version 6.
    Versions so far (RESULTS.md 1a/4b; objective with 12 targets unless noted; precaution / hoarding shares
