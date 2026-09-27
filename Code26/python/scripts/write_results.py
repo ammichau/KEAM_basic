@@ -290,13 +290,6 @@ vers = load(a.versions)
 if vers:
     L.append("### 6a. All calibrated versions (`scripts/versions_table.py`, `" + a.versions + "`)\n")
     L.append(open(os.path.join(PY, a.versions.replace(".json", ".md"))).read())
-    ok = [r for r in vers if r["precaution"] is not None]
-    for r in ok:
-        L.append(f"* **{r['label']}** (`final_calib_{r['tag']}_full.json`, fixed {r['fixed']}, recession job-finding ratio "
-                 f"{r['lam_f_ratio']:.2f}): objective {r['obj']:.3f}; precaution {100 * r['precaution']:.0f}% vs hoarding "
-                 f"{100 * r['hoarding']:.0f}% of the recession quit drop ({r['gap']:+.2f} points); recession employment drop "
-                 f"{r['dE']:+.2f} points, {r['dE_acycH']:+.2f} without cyclical husband risk.")
-    L.append("")
 figdir = os.path.join(PY, a.figdir)
 if os.path.isdir(figdir) and os.listdir(figdir):
     L.append(f"## 7. Figures (`Code26/python/{a.figdir}`, from `scripts/figures.py`)\n")
