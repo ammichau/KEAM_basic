@@ -357,8 +357,8 @@ if calib:
         if "v4c" in r4:
             L.append(f"* The precaution / hoarding split rests on γ = 2: it is {100 * r4['v4c']['precaution']:.0f}% / "
                      f"{100 * r4['v4c']['hoarding']:.0f}% in version 4c, and log utility (balanced growth) cuts precaution to "
-                     "single digits (section 6a). Keeping both needs preferences that separate risk aversion from the "
-                     "intertemporal elasticity (Epstein-Zin), which the solver does not have.")
+                     "single digits (section 6a). Keeping balanced growth and precaution together needs non-separable "
+                     "King-Plosser-Rebelo preferences (`kpr=True` in `keam/final/solve.py`; version 7, calibrated separately).")
     L.append("")
 open(a.out, "w").write("\n".join(L))
 print("wrote", a.out)
