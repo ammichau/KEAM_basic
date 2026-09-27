@@ -56,10 +56,10 @@ if calib:
     prev = load(a.calib_prev) if a.calib_prev else None
     if prev:
         L.append(f"Least-squares polish (`scripts/calibrate_ls.py`, scipy trust-region reflective with bounds, finite-difference "
-                 f"Jacobian on a common simulation seed) of the Nelder-Mead point `{a.calib_prev}` (objective {prev['obj']:.3f}). "
-                 "The polish matches the quit rates, hours and the recession employment drop more closely and gives up on the "
-                 "never-working and career shares, which the identification section below shows cannot be moved together "
-                 "with the employment rate.\n")
+                 f"Jacobian on a common simulation seed) started from `{a.calib_prev}` (objective {prev['obj']:.3f} as recorded "
+                 f"in that file; fixed fields {prev.get('fixed', {})}); fixed fields here {calib.get('fixed', {})}. "
+                 "The never-working and career shares are the targets given up; the identification section below shows they "
+                 "cannot be moved together with the employment rate.\n")
     L.append("| parameter | value |\n|---|---|")
     for k, v in calib["x"].items():
         L.append(f"| {k} | {v:.4f} |")
@@ -220,6 +220,34 @@ if jch and "points" in jch and len(jch["points"]) > 1:
         L.append(f"| {name} | {d('precaution', 100):+.2f} | {d('hoarding', 100):+.2f} | {d('gap', 1):+.3f} | {d('sdUE', 1):+.4f} | "
                  f"{d('dE', 1):+.3f} | {d('dE_acycH', 1):+.3f} | {d('quit_rec', 100):+.3f} |")
     L.append("")
+    # what pins each perturbed quantity in the calibration (FINAL_MODEL.md, calibrate.py TARGETS)
+    DISC = {"job-finding fall in recessions": "the women's UE-rate cyclicality target (sd log UE 0.0686)",
+            "UI cut in recessions": "assumed (ui_rec_mult 0.5, standing in for longer spells); not targeted",
+            "husband job-loss rate in recessions": "external (CPS men's E→U cyclicality)",
+            "husband job-finding rate in recessions": "external (0.35 / 0.28; reproduces the men's sd log UE 0.0765)",
+            "husband job-loss rate (both states)": "external (CPS men's E→U rate)",
+            "UI replacement (both states)": "author decision (30%)",
+            "wife own job loss in recessions": "the recession E→nonE target (4.8%)",
+            "job-finding efficiency level": "the employment-rate target (0.62)",
+            "cost-shock sd": "the monthly quit-rate targets (3.4% / 2.8%)",
+            "recession wage cut": "external (φ(rec) = 0.88)",
+            "asset limit": "grid choice; not targeted",
+            "risk aversion": "externally set (γ = 2); γ = 1 removes most of the precautionary share (section 6a)",
+            "expected recession duration": "the aggregate chain (NBER frequencies)"}
+    rel = []
+    for name, r in jch["points"].items():
+        if name == "base":
+            continue
+        dd = ((r["precaution"] - b["precaution"]) - (r["hoarding"] - b["hoarding"])) * 100 / (100 * step)
+        if np.isfinite(dd):
+            rel.append((dd, name, next((v for k, v in DISC.items() if name.startswith(k)), "")))
+    rel.sort()
+    L.append("Ranking by the effect on precaution minus hoarding (percentage points per +1%), with what disciplines the "
+             "quantity in the calibration:\n")
+    L.append("| quantity | Δ(precaution − hoarding) per +1% | disciplined by |\n|---|---|---|")
+    for dd, name, disc in sorted(rel, key=lambda t: -t[0]):
+        L.append(f"| {name} | {dd:+.2f} | {disc} |")
+    L.append("")
     for name, cap in [("fig8_channels_by_version", "Precautionary labor supply versus job hoarding by calibration version (`scripts/figures_channels.py`)."),
                       ("fig9_channel_sensitivity", "Sensitivity of the two shares to the cyclical parameters (`scripts/jacobian_channels.py`).")]:
         if os.path.exists(os.path.join(PY, a.figdir_channels, name + ".png")):
@@ -317,5 +345,20 @@ L.append("* The never-working (NiLF) share is the least well fitted target. Sect
          "micro data beyond the quit and exit rates.\n"
          "* Career shares are computed on annual hours over ages 25-54 from the model's 4,000-hour endowment; the "
          "data taxonomy uses reported annual hours.\n")
+if calib:
+    mc = calib.get("moments_full", calib.get("moments", {}))
+    qd = 1 - mc["quit/m rec"] / mc["quit/m exp"]; qd_data = 1 - TARGETS["quit/m rec"] / TARGETS["quit/m exp"]
+    L.append(f"* The recession fall in the quit rate is {100 * qd:.0f}% in the model against {100 * qd_data:.0f}% in the "
+             f"data (recession quit rate {mc['quit/m rec']:.4f}, target {TARGETS['quit/m rec']:.3f}): with the UE-rate "
+             "cyclicality matched, quits driven by a one-month cost draw respond too strongly to re-entry prospects. "
+             "If the excess response is hoarding, the hoarding share is overstated by the same margin.")
+    if vers and vers.get("rows"):
+        r4 = {r["tag"]: r for r in vers["rows"]}
+        if "v4c" in r4:
+            L.append(f"* The precaution / hoarding split rests on γ = 2: it is {100 * r4['v4c']['precaution']:.0f}% / "
+                     f"{100 * r4['v4c']['hoarding']:.0f}% in version 4c, and log utility (balanced growth) cuts precaution to "
+                     "single digits (section 6a). Keeping both needs preferences that separate risk aversion from the "
+                     "intertemporal elasticity (Epstein-Zin), which the solver does not have.")
+    L.append("")
 open(a.out, "w").write("\n".join(L))
 print("wrote", a.out)
