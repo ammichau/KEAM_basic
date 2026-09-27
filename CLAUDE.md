@@ -229,6 +229,12 @@ labor supply has a role at least comparable to hoarding. The women's UE-rate cyc
    --set lam_f_ratio=0.80 --bound lam_f_ratio:0.8:0.8000001 --extra rho_kT --set rho_kT=0.3 --bound rho_kT:0.0:0.9
    --extra-target 'AWE: LF entry ratio (H E->U / stays E)=1.60:1.0' --max-nfev 6 --tag v10_full`; objective
    on 14 targets, not comparable with the 13-target ones), then `channels.py --tag v10 --variants quick`.
+   OUTCOME: stopped after 34 evaluations (best 0.249): no parameter moved the entry ratio (deviation -0.39 to
+   -0.41 throughout). A direct scan of the persistence at v7c (`output/awe_rho_scan_v7c.json`): rho 0.5 / 0.7 /
+   0.85 gives entry ratios 0.91 / 0.66 / 0.86, i.e. persistence LOWERS the response (a wife out with a bad
+   shock stays out when the husband loses his job) and raises the never-working share. Persistent shocks are
+   not the route to the added-worker effect. What is left: heterogeneity at the participation margin (a
+   continuum or many more wage-type points) so that some women are close to indifferent; not tried.
    Added-worker moments after Guner, Kulikova and Valladares-Esteban (RED 2025, "Does the added worker
    effect matter?"; data: a wife's monthly labor-force entry probability is 60% higher in the month her
    husband moves from employment to unemployment; aggregate participation +0.72 pp, employment +0.65 pp):
