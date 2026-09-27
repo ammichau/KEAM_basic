@@ -87,6 +87,10 @@ lower cost of work) make it more cyclical, a closing wage gap less so. Reference
    channel split in `channels_v7b.md`. If the author wants balanced growth, run the full pipeline for
    v7b on the workstation (`bash scripts/run_pipeline.sh output/final_calib_v7b_full.json v7b`) and
    make it the main calibration in RESULTS.md.
+   Sensitivity of the split at v7b (`jacobian_channels_v7b.md`, RESULTS.md 4c): under KPR the husband-side
+   levers move precaution less (recession job loss +0.14 pp per 1%, UI cut +0.02) and the cost-shock sd
+   (-0.56) and the job-finding level (-0.47) dominate; hoarding rises with the job-finding fall (+0.34)
+   and recession duration (+0.28); gamma lowers both shares (-0.36 / -0.37).
    Versions so far (RESULTS.md 1a/4b; objective with 12 targets unless noted; precaution / hoarding shares
    of the recession quit drop): adopted `ls` 0.120, 19/39; `ui` (UI cut) 0.144, 29/34; `om7` (7 wage types)
    0.135, 21/38; `v3` (UI cut + 10% job-finding fall) 0.113, 29/25; `v4` (UI cut + job-finding fall

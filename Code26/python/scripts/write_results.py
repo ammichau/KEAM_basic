@@ -42,7 +42,7 @@ def load_named(spec):
             out.append((label or os.path.basename(f).replace(".json", ""), f, d))
     return out
 alts = load_named(a.calib_alt); chans = load_named(a.channels)
-jch = load(a.jacobian_channels)
+jchs = load_named(a.jacobian_channels)
 L = []
 L.append("# Final model results: 1940s cohort calibration, trend experiments, mechanism\n")
 L.append("All numbers are produced by scripts in `Code26/python/scripts`; the files cited are in "
@@ -204,10 +204,12 @@ if chans:
                 L.append(f"| {name} | {r['E']:.3f} | {r['quit_exp']:.4f} | {r['quit_rec']:.4f} | {r['gap']:+.2f} | {r['precaution']:.0%} | "
                          f"{r['hoarding']:.0%} | {r['both_off']:.0%} | {r['dE']:+.2f} | {r['dE_acycH']:+.2f} |")
             L.append("")
-if jch and "points" in jch and len(jch["points"]) > 1:
-    b = jch["points"]["base"]; step = jch["step"]
+if jchs:
     L.append("### 4c. What moves the split: local sensitivity of the two shares\n")
-    L.append(f"Source: `{a.jacobian_channels}` (`scripts/jacobian_channels.py`; +{100*step:.0f}% steps on `{jch['calib']}`, other "
+for jlabel, jfile, jch in jchs:
+  if "points" in jch and len(jch["points"]) > 1:
+    b = jch["points"]["base"]; step = jch["step"]
+    L.append(f"**{jlabel}**: `{jfile}` (`scripts/jacobian_channels.py`; +{100*step:.0f}% steps on `{jch['calib']}`, other "
              f"parameters fixed). Baseline: precaution {b['precaution']:.0%}, hoarding {b['hoarding']:.0%}, quit gap {b['gap']:+.2f} points, "
              f"sd log UE {b['sdUE']:.4f}, recession employment drop {b['dE']:+.2f} ({b['dE_acycH']:+.2f} without cyclical husband risk). "
              "Entries are changes per +1% of the named quantity: shares and the recession quit rate in percentage points, "
@@ -248,6 +250,7 @@ if jch and "points" in jch and len(jch["points"]) > 1:
     for dd, name, disc in sorted(rel, key=lambda t: -t[0]):
         L.append(f"| {name} | {dd:+.2f} | {disc} |")
     L.append("")
+if jchs:
     for name, cap in [("fig8_channels_by_version", "Precautionary labor supply versus job hoarding by calibration version (`scripts/figures_channels.py`)."),
                       ("fig9_channel_sensitivity", "Sensitivity of the two shares to the cyclical parameters (`scripts/jacobian_channels.py`).")]:
         if os.path.exists(os.path.join(PY, a.figdir_channels, name + ".png")):
