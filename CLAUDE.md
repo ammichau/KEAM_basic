@@ -82,8 +82,9 @@ lower cost of work) make it more cyclical, a closing wage gap less so. Reference
    near parity (ui/v4) is what the data allow.
    DONE (workstation, 2026-09-26): v4c (above); v5 log utility coarse NM 0.193 (27 types) -> full polish
    0.396 -> second polish v5b 0.306 (`final_calib_v5b_full.*`; wage gap +16%, NiLF +28%, sd log UE +12%),
-   precaution 7% / hoarding 62% (`channels_v5b.md`). v6 (persistent shock, plan item 5) was started
-   after v5b (`output/calibrate_v6_full.out`, then `channels_v6`).
+   precaution 7% / hoarding 62% (`channels_v5b.md`). v6 (persistent shock, plan item 5): objective 0.260,
+   rho_kT 0.33, U rate 0.040, precaution 29% / hoarding 48%, recession quit drop still 32% (data 18%):
+   does not fix the overstated quit response and fits worse than v4c (`final_calib_v6_full.*`, `channels_v6.md`).
 6. Known limitations / next steps (see RESULTS.md section 7):
    - DONE: `scripts/cohorts_refined.py` solves the cost scale and tau_w jointly per cohort
      (`output/cohorts_refined_full.md`, RESULTS.md section 3b); the raw-ratio version in

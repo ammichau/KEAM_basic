@@ -10,6 +10,7 @@ Objective: weighted sum of squared deviations over the 13 targets of `keam/final
 | version 4c | 0.171 | +9% | +2% | -0% | -8% | -12% | +21% | +1% | -19% | +6% | -8% | +0.05 | +3% | -0% | 0.80 | -1.16 | 31% | 44% | 66% | -1.65 | -2.88 |
 | version 5 (log utility) | 0.396 | -2% | +8% | -9% | -2% | -23% | +34% | -7% | -17% | +3% | -9% | -0.15 | +15% | +17% | 0.80 | -0.84 | 7% | 56% | 66% | -1.85 | -2.10 |
 | version 5b (log utility; 2nd polish) | 0.306 | -0% | +10% | +1% | -14% | -13% | +28% | -7% | -18% | +3% | -11% | -0.09 | +16% | +12% | 0.80 | -0.85 | 7% | 62% | 70% | -1.79 | -2.02 |
+| version 6 (persistent shock) | 0.260 | +6% | +2% | +15% | -19% | -23% | +22% | +3% | -15% | +7% | -2% | +0.09 | +8% | +5% | 0.80 | -1.11 | 29% | 48% | 71% | -1.61 | -2.93 |
 
 * version 4c: objective 0.171; precaution 31% vs hoarding 44% (13 points apart, rule: within 10); largest cyclical-moment deviation 19% (quit/m rec).
 * version 5b (log utility; 2nd polish): objective 0.306; precaution 7% vs hoarding 62% (54 points apart, rule: within 10); largest cyclical-moment deviation 18% (quit/m rec).
