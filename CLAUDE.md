@@ -222,7 +222,12 @@ labor supply has a role at least comparable to hoarding. The women's UE-rate cyc
    (`final_calib_v7c_full.*`); channel split precaution 16% / hoarding 47% (`channels_v7c.md`): the
    corrected husband process (6% unemployed instead of 10%, lower loss risk) halves the precautionary share
    relative to the pre-fix KPR versions. v4e (separable, workstation) objective 0.139, employment +10%,
-   never-working +16%, recession quit rate -16%; its channel split is pending. Added-worker entry ratio
+   never-working +16%, recession quit rate -16%; channel split precaution 16% / hoarding 51% (`channels_v4e.md`),
+   recession drop -1.76 / -2.91 without cyclical husband risk (offset 1.15 points; v7c: 1.67 / 1.62, none).
+   With the corrected husband process the precautionary share is 16% under both preference
+   specifications; what still separates them is the added-worker response in employment. The workstation's
+   version 9 (KPR with proportional fixed costs and a scale-invariant cost shock, `kT_mult`): objective
+   0.194, never-working +32%, not adopted. Added-worker entry ratio
    (data 1.60): v4e 1.11, v7c see `moments_full`. RESULTS.md carries a superseded-results note at the top
    until the v4e/v7c pipelines replace the v4c sections.
    New moments for discriminating the two preference specifications (added 2026-09-27, `moments.py`):
