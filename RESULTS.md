@@ -1,5 +1,12 @@
 # Final model results: 1940s cohort calibration, trend experiments, mechanism
 
+> **Simulator correction (2026-09-27).** Until commit `694af7f` the simulated husband never returned to
+> employment (he stayed in the scarred state with 15% lower income and 2.5 times the job-loss rate; the
+> solver used the correct transitions). All sections built on the version-4c pipeline (2, 3, 4, 5, 7) and
+> every version labelled "pre-fix" in 1a, 4b and 6a were computed with that simulator and are superseded.
+> Versions 4e (separable γ = 2) and 7c (KPR) are the recalibrations with the corrected simulator; their
+> full pipelines are being run on the workstation and this file will be regenerated from them.
+
 All numbers are produced by scripts in `Code26/python/scripts`; the files cited are in `Code26/python/output`. Model specification: `FINAL_MODEL.md`.
 
 ## 1. Calibration of the 1940s cohort
@@ -29,87 +36,86 @@ Least-squares polish (`scripts/calibrate_ls.py`, scipy trust-region reflective w
 
 | target | data | model | deviation |
 |---|---|---|---|
-| E/pop | 0.6200 | 0.6737 | +8.7% |
-| hours|E | 0.4000 | 0.4077 | +1.9% |
-| share Lifecycle | 0.3100 | 0.3085 | -0.5% |
-| share PT | 0.2800 | 0.2590 | -7.5% |
-| share Career | 0.1900 | 0.1673 | -12.0% |
-| share NiLF | 0.2200 | 0.2652 | +20.5% |
-| quit/m exp | 0.0340 | 0.0343 | +1.0% |
-| quit/m rec | 0.0280 | 0.0227 | -18.8% |
-| E->nonE/m exp | 0.0500 | 0.0530 | +5.9% |
-| E->nonE/m rec | 0.0480 | 0.0440 | -8.3% |
-| dE/pop rec-exp (pts) | -1.7000 | -1.6494 | +5.1% |
-| wage gap (hourly ratio) | 0.7100 | 0.7308 | +2.9% |
-| sd log UE (women) | 0.0686 | 0.0686 | -0.0% |
+| E/pop | 0.6200 | 0.6451 | +4.1% |
+| hours|E | 0.4000 | 0.3825 | -4.4% |
+| share Lifecycle | 0.3100 | 0.2452 | -20.9% |
+| share PT | 0.2800 | 0.3310 | +18.2% |
+| share Career | 0.1900 | 0.1033 | -45.6% |
+| share NiLF | 0.2200 | 0.3204 | +45.6% |
+| quit/m exp | 0.0340 | 0.0429 | +26.3% |
+| quit/m rec | 0.0280 | 0.0293 | +4.5% |
+| E->nonE/m exp | 0.0500 | 0.0616 | +23.2% |
+| E->nonE/m rec | 0.0480 | 0.0505 | +5.1% |
+| dE/pop rec-exp (pts) | -1.7000 | -1.9548 | -25.5% |
+| wage gap (hourly ratio) | 0.7100 | 0.6781 | -4.5% |
+| sd log UE (women) | 0.0686 | 0.0634 | -7.6% |
 
 | untargeted moment | model |
 |---|---|
-| U rate | 0.0441 |
-| wife share exp | 0.3316 |
-| wife share rec | 0.3480 |
-| HH income rec/exp - 1 (%) | -16.4267 |
-| cons drop at H job loss exp (%) | -5.0742 |
-| cons drop at H job loss rec (%) | -8.5594 |
-| mean assets/monthly HH inc | 1.4538 |
-| share e at cap | 0.2384 |
+| U rate | 0.0451 |
+| wife share exp | 0.2829 |
+| wife share rec | 0.2913 |
+| HH income rec/exp - 1 (%) | -15.6007 |
+| cons drop at H job loss exp (%) | -7.1733 |
+| cons drop at H job loss rec (%) | -10.5164 |
+| mean assets/monthly HH inc | 1.7457 |
+| share e at cap | 0.2068 |
 
 ### 1a. Alternative calibrations side by side
 
-* **adopted iid (ls)**: `output/final_calib_ls_full.json` (objective 0.449, 50 evaluations, calibrated on 100 types, moments re-evaluated on the 100-type grid; fixed fields {}).
-* **version 3**: `output/final_calib_v3_full.json` (objective 0.759, 53 evaluations, calibrated on 100 types, moments re-evaluated on the 100-type grid; fixed fields {'ui_rec_mult': 0.5}).
-* **version 4**: `output/final_calib_v4_full.json` (objective 0.256, 53 evaluations, calibrated on 100 types; fixed fields {'ui_rec_mult': 0.5}).
-* **version 6 (persistent shock)**: `output/final_calib_v6_full.json` (objective 0.260, 74 evaluations, calibrated on 100 types; fixed fields {'ui_rec_mult': 0.5, 'n_kT': 3.0}).
-* **version 7b (KPR gamma 2)**: `output/final_calib_v7b_full.json` (objective 0.118, 72 evaluations, calibrated on 100 types; fixed fields {'kpr': 1.0, 'gamma': 2.0, 'ui_rec_mult': 0.5}).
-* **version 5b (log utility)**: `output/final_calib_v5b_full.json` (objective 0.306, 120 evaluations, calibrated on 100 types; fixed fields {'gamma': 1.0, 'ui_rec_mult': 0.5}).
-* **recession UI cut**: `output/final_calib_ui_full.json` (objective 0.307, 50 evaluations, calibrated on 100 types, moments re-evaluated on the 100-type grid; fixed fields {'ui_rec_mult': 0.5}).
-* **7 wage types**: `output/final_calib_om7_full.json` (objective 0.343, 50 evaluations, calibrated on 100 types, moments re-evaluated on the 100-type grid; fixed fields {'n_omega': 7.0}).
+* **version 7c (KPR; corrected simulator)**: `output/final_calib_v7c_full.json` (objective 0.076, 104 evaluations, calibrated on 100 types, moments re-evaluated on the 100-type grid; fixed fields {'kpr': 1.0, 'gamma': 2.0, 'ui_rec_mult': 0.5}).
+* **version 4e (separable; corrected simulator)**: `output/final_calib_v4e_full.json` (objective 0.139, 72 evaluations, calibrated on 100 types, moments re-evaluated on the 100-type grid; fixed fields {'ui_rec_mult': 0.5}).
+* **adopted iid (pre-fix)**: `output/final_calib_ls_full.json` (objective 0.449, 50 evaluations, calibrated on 100 types, moments re-evaluated on the 100-type grid; fixed fields {}).
+* **version 4 (pre-fix)**: `output/final_calib_v4_full.json` (objective 0.256, 53 evaluations, calibrated on 100 types; fixed fields {'ui_rec_mult': 0.5}).
+* **version 6 persistent shock (pre-fix)**: `output/final_calib_v6_full.json` (objective 0.260, 74 evaluations, calibrated on 100 types; fixed fields {'ui_rec_mult': 0.5, 'n_kT': 3.0}).
+* **version 7b KPR (pre-fix)**: `output/final_calib_v7b_full.json` (objective 0.424, 72 evaluations, calibrated on 100 types, moments re-evaluated on the 100-type grid; fixed fields {'kpr': 1.0, 'gamma': 2.0, 'ui_rec_mult': 0.5}).
+* **version 5b log utility (pre-fix)**: `output/final_calib_v5b_full.json` (objective 0.306, 120 evaluations, calibrated on 100 types; fixed fields {'gamma': 1.0, 'ui_rec_mult': 0.5}).
 
 Fixed fields: `rho_kT` is the monthly probability that the cost-of-work shock keeps its value (0 in the iid model); `ui_rec_mult` multiplies the husband's unemployment income share in recessions; `n_omega` is the number of wage-type points. See `FINAL_MODEL.md`.
 
-| parameter | adopted | adopted iid (ls) | version 3 | version 4 | version 6 (persistent shock) | version 7b (KPR gamma 2) | version 5b (log utility) | recession UI cut | 7 wage types |
-|---|---|---|---|---|---|---|---|---|---|
-| mu | 0.9235 | 0.9289 | 0.9256 | 0.9125 | 1.0191 | 1.4997 | 1.4454 | 0.9325 | 0.9139 |
-| kbar_max | 0.0144 | 0.0161 | 0.0143 | 0.0168 | 0.0243 | 0.0194 | 0.0429 | 0.0159 | 0.0152 |
-| km_max | 6.8581 | 6.1120 | 6.0912 | 6.0882 | 6.6335 | 8.3853 | 6.8277 | 6.1052 | 6.1258 |
-| tau_w | 0.7393 | 0.7493 | 0.7461 | 0.7483 | 0.7700 | 0.7963 | 0.8325 | 0.7482 | 0.7503 |
-| lam_f0 | 0.4317 | 0.4011 | 0.3994 | 0.3975 | 0.4941 | 0.4675 | 0.3461 | 0.4005 | 0.4085 |
-| lam_u0 | 0.0182 | 0.0169 | 0.0166 | 0.0166 | 0.0179 | 0.0193 | 0.0199 | 0.0168 | 0.0169 |
-| lam_u1 | 0.0213 | 0.0200 | 0.0226 | 0.0223 | 0.0234 | 0.0199 | 0.0196 | 0.0212 | 0.0204 |
-| ybar_h | 0.0641 | 0.0583 | 0.0633 | 0.0626 | 0.0531 | 0.0706 | 0.0661 | 0.0639 | 0.0639 |
-| sd_kT | 0.2775 | 0.2919 | 0.2927 | 0.2905 | 0.2440 | 0.2179 | 0.4191 | 0.2936 | 0.2905 |
-| home_young_mult | 1.7836 | 1.8226 | 1.8156 | 1.8156 | 1.8361 | 2.3224 | 2.2227 | 1.8208 | 1.8260 |
-| nu_h | 0.6925 | 0.6875 | 0.6878 | 0.6857 | 0.7185 | 0.6633 | 0.6006 | 0.6878 | 0.6877 |
-| z_h | 0.4504 | 0.4528 | 0.4532 | 0.4524 | 0.4321 | 0.4950 | 0.5102 | 0.4535 | 0.4529 |
-| alpha_h | 0.3172 | 0.2492 | 0.2568 | 0.2636 | 0.3031 | 0.1372 | 0.3601 | 0.2578 | 0.2672 |
-| e_max | 2.0846 | 1.9665 | 1.9698 | 2.0519 | 2.1902 | 2.2874 | 2.2011 | 1.9668 | 1.9635 |
-| kappa_h_power | 0.3498 | 0.2873 | 0.2882 | 0.2875 | 0.2839 | 0.3789 | 0.3906 | 0.2875 | 0.2875 |
-| lam_f_ratio | 0.8000 | - | 0.9000 | 0.8500 | 0.8000 | 0.8000 | 0.8000 | - | - |
-| rho_kT | - | - | - | - | 0.3307 | - | - | - | - |
+| parameter | adopted | version 7c (KPR; corrected simulator) | version 4e (separable; corrected simulator) | adopted iid (pre-fix) | version 4 (pre-fix) | version 6 persistent shock (pre-fix) | version 7b KPR (pre-fix) | version 5b log utility (pre-fix) |
+|---|---|---|---|---|---|---|---|---|
+| mu | 0.9235 | 1.3628 | 0.8930 | 0.9289 | 0.9125 | 1.0191 | 1.4997 | 1.4454 |
+| kbar_max | 0.0144 | 0.0202 | 0.0226 | 0.0161 | 0.0168 | 0.0243 | 0.0194 | 0.0429 |
+| km_max | 6.8581 | 6.9240 | 6.8090 | 6.1120 | 6.0882 | 6.6335 | 8.3853 | 6.8277 |
+| tau_w | 0.7393 | 0.7825 | 0.7818 | 0.7493 | 0.7483 | 0.7700 | 0.7963 | 0.8325 |
+| lam_f0 | 0.4317 | 0.4965 | 0.4385 | 0.4011 | 0.3975 | 0.4941 | 0.4675 | 0.3461 |
+| lam_u0 | 0.0182 | 0.0195 | 0.0175 | 0.0169 | 0.0166 | 0.0179 | 0.0193 | 0.0199 |
+| lam_u1 | 0.0213 | 0.0203 | 0.0217 | 0.0200 | 0.0223 | 0.0234 | 0.0199 | 0.0196 |
+| ybar_h | 0.0641 | 0.0496 | 0.0547 | 0.0583 | 0.0626 | 0.0531 | 0.0706 | 0.0661 |
+| sd_kT | 0.2775 | 0.1699 | 0.2760 | 0.2919 | 0.2905 | 0.2440 | 0.2179 | 0.4191 |
+| home_young_mult | 1.7836 | 2.4926 | 1.7274 | 1.8226 | 1.8156 | 1.8361 | 2.3224 | 2.2227 |
+| nu_h | 0.6925 | 0.6380 | 0.6943 | 0.6875 | 0.6857 | 0.7185 | 0.6633 | 0.6006 |
+| z_h | 0.4504 | 0.5220 | 0.4472 | 0.4528 | 0.4524 | 0.4321 | 0.4950 | 0.5102 |
+| alpha_h | 0.3172 | 0.0545 | 0.3143 | 0.2492 | 0.2636 | 0.3031 | 0.1372 | 0.3601 |
+| e_max | 2.0846 | 2.0643 | 2.1668 | 1.9665 | 2.0519 | 2.1902 | 2.2874 | 2.2011 |
+| kappa_h_power | 0.3498 | 0.4293 | 0.3466 | 0.2873 | 0.2875 | 0.2839 | 0.3789 | 0.3906 |
+| lam_f_ratio | 0.8000 | 0.8000 | 0.8000 | - | 0.8500 | 0.8000 | 0.8000 | 0.8000 |
+| rho_kT | - | - | - | - | - | 0.3307 | - | - |
 
-| target | data | adopted | adopted iid (ls) | version 3 | version 4 | version 6 (persistent shock) | version 7b (KPR gamma 2) | version 5b (log utility) | recession UI cut | 7 wage types |
-|---|---|---|---|---|---|---|---|---|---|---|
-| E/pop | 0.6200 | 0.6737 (+9%) | 0.6641 (+7%) | 0.6668 (+8%) | 0.6658 (+7%) | 0.6593 (+6%) | 0.6614 (+7%) | 0.6187 (-0%) | 0.6589 (+6%) | 0.6697 (+8%) |
-| hours|E | 0.4000 | 0.4077 (+2%) | 0.4097 (+2%) | 0.4085 (+2%) | 0.4145 (+4%) | 0.4096 (+2%) | 0.4202 (+5%) | 0.4404 (+10%) | 0.4066 (+2%) | 0.4112 (+3%) |
-| share Lifecycle | 0.3100 | 0.3085 (-0%) | 0.3085 (-0%) | 0.2969 (-4%) | 0.3162 (+2%) | 0.3571 (+15%) | 0.2981 (-4%) | 0.3123 (+1%) | 0.3031 (-2%) | 0.3100 (+0%) |
-| share PT | 0.2800 | 0.2590 (-8%) | 0.2502 (-11%) | 0.2587 (-8%) | 0.2419 (-14%) | 0.2275 (-19%) | 0.2712 (-3%) | 0.2408 (-14%) | 0.2612 (-7%) | 0.2594 (-7%) |
-| share Career | 0.1900 | 0.1673 (-12%) | 0.1719 (-10%) | 0.1756 (-8%) | 0.1802 (-5%) | 0.1465 (-23%) | 0.1715 (-10%) | 0.1654 (-13%) | 0.1600 (-16%) | 0.1654 (-13%) |
-| share NiLF | 0.2200 | 0.2652 (+21%) | 0.2694 (+22%) | 0.2687 (+22%) | 0.2617 (+19%) | 0.2690 (+22%) | 0.2592 (+18%) | 0.2815 (+28%) | 0.2756 (+25%) | 0.2652 (+21%) |
-| quit/m exp | 0.0340 | 0.0343 (+1%) | 0.0332 (-2%) | 0.0329 (-3%) | 0.0322 (-5%) | 0.0350 (+3%) | 0.0342 (+1%) | 0.0316 (-7%) | 0.0341 (+0%) | 0.0330 (-3%) |
-| quit/m rec | 0.0280 | 0.0227 (-19%) | 0.0250 (-11%) | 0.0248 (-11%) | 0.0229 (-18%) | 0.0239 (-15%) | 0.0254 (-9%) | 0.0231 (-18%) | 0.0245 (-12%) | 0.0243 (-13%) |
-| E->nonE/m exp | 0.0500 | 0.0530 (+6%) | 0.0505 (+1%) | 0.0499 (-0%) | 0.0492 (-2%) | 0.0535 (+7%) | 0.0538 (+8%) | 0.0517 (+3%) | 0.0512 (+2%) | 0.0504 (+1%) |
-| E->nonE/m rec | 0.0480 | 0.0440 (-8%) | 0.0447 (-7%) | 0.0470 (-2%) | 0.0449 (-6%) | 0.0470 (-2%) | 0.0454 (-5%) | 0.0429 (-11%) | 0.0456 (-5%) | 0.0443 (-8%) |
-| dE/pop rec-exp (pts) | -1.7000 | -1.6494 (+5%) | -1.6887 (+1%) | -1.6981 (+0%) | -1.8815 (-18%) | -1.6130 (+9%) | -1.6887 (+1%) | -1.7851 (-9%) | -1.7242 (-2%) | -1.6475 (+5%) |
-| wage gap (hourly ratio) | 0.7100 | 0.7308 (+3%) | 0.7382 (+4%) | 0.7363 (+4%) | 0.7427 (+5%) | 0.7643 (+8%) | 0.7899 (+11%) | 0.8239 (+16%) | 0.7352 (+4%) | 0.7415 (+4%) |
-| sd log UE (women) | 0.0686 | 0.0686 (-0%) | 0.0408 (-41%) | 0.0296 (-57%) | 0.0562 (-18%) | 0.0724 (+5%) | 0.0714 (+4%) | 0.0767 (+12%) | 0.0490 (-29%) | 0.0465 (-32%) |
-
-| untargeted moment | adopted | adopted iid (ls) | version 3 | version 4 | version 6 (persistent shock) | version 7b (KPR gamma 2) | version 5b (log utility) | recession UI cut | 7 wage types |
+| target | data | adopted | version 7c (KPR; corrected simulator) | version 4e (separable; corrected simulator) | adopted iid (pre-fix) | version 4 (pre-fix) | version 6 persistent shock (pre-fix) | version 7b KPR (pre-fix) | version 5b log utility (pre-fix) |
 |---|---|---|---|---|---|---|---|---|---|
-| U rate | 0.0441 | 0.0447 | 0.0447 | 0.0457 | 0.0396 | 0.0397 | 0.0606 | 0.0445 | 0.0434 |
-| wife share exp | 0.3316 | 0.3319 | 0.3316 | 0.3360 | 0.3346 | 0.3626 | 0.3611 | 0.3270 | 0.3354 |
-| cons drop at H job loss exp (%) | -5.0742 | -5.0741 | -5.0814 | -5.0523 | -5.0143 | -5.2342 | -5.3658 | -5.0871 | -5.0683 |
-| cons drop at H job loss rec (%) | -8.5594 | -7.2569 | -8.5421 | -8.5003 | -8.4531 | -8.4942 | -8.5648 | -8.5456 | -7.3114 |
-| mean assets/monthly HH inc | 1.4538 | 1.4074 | 1.4182 | 1.4797 | 1.4976 | 1.2376 | 0.5596 | 1.4181 | 1.4372 |
+| E/pop | 0.6200 | 0.6451 (+4%) | 0.6763 (+9%) | 0.6831 (+10%) | 0.6641 (+7%) | 0.6658 (+7%) | 0.6593 (+6%) | 0.6503 (+5%) | 0.6187 (-0%) |
+| hours|E | 0.4000 | 0.3825 (-4%) | 0.4134 (+3%) | 0.4116 (+3%) | 0.4097 (+2%) | 0.4145 (+4%) | 0.4096 (+2%) | 0.4050 (+1%) | 0.4404 (+10%) |
+| share Lifecycle | 0.3100 | 0.2452 (-21%) | 0.3056 (-1%) | 0.3025 (-2%) | 0.3085 (-0%) | 0.3162 (+2%) | 0.3571 (+15%) | 0.2923 (-6%) | 0.3123 (+1%) |
+| share PT | 0.2800 | 0.3310 (+18%) | 0.2727 (-3%) | 0.2550 (-9%) | 0.2502 (-11%) | 0.2419 (-14%) | 0.2275 (-19%) | 0.2542 (-9%) | 0.2408 (-14%) |
+| share Career | 0.1900 | 0.1033 (-46%) | 0.1748 (-8%) | 0.1873 (-1%) | 0.1719 (-10%) | 0.1802 (-5%) | 0.1465 (-23%) | 0.1558 (-18%) | 0.1654 (-13%) |
+| share NiLF | 0.2200 | 0.3204 (+46%) | 0.2469 (+12%) | 0.2552 (+16%) | 0.2694 (+22%) | 0.2617 (+19%) | 0.2690 (+22%) | 0.2977 (+35%) | 0.2815 (+28%) |
+| quit/m exp | 0.0340 | 0.0429 (+26%) | 0.0333 (-2%) | 0.0354 (+4%) | 0.0332 (-2%) | 0.0322 (-5%) | 0.0350 (+3%) | 0.0396 (+16%) | 0.0316 (-7%) |
+| quit/m rec | 0.0280 | 0.0293 (+4%) | 0.0253 (-10%) | 0.0235 (-16%) | 0.0250 (-11%) | 0.0229 (-18%) | 0.0239 (-15%) | 0.0298 (+6%) | 0.0231 (-18%) |
+| E->nonE/m exp | 0.0500 | 0.0616 (+23%) | 0.0531 (+6%) | 0.0533 (+7%) | 0.0505 (+1%) | 0.0492 (-2%) | 0.0535 (+7%) | 0.0591 (+18%) | 0.0517 (+3%) |
+| E->nonE/m rec | 0.0480 | 0.0505 (+5%) | 0.0457 (-5%) | 0.0449 (-6%) | 0.0447 (-7%) | 0.0449 (-6%) | 0.0470 (-2%) | 0.0496 (+3%) | 0.0429 (-11%) |
+| dE/pop rec-exp (pts) | -1.7000 | -1.9548 (-25%) | -1.6658 (+3%) | -1.7584 (-6%) | -1.6887 (+1%) | -1.8815 (-18%) | -1.6130 (+9%) | -2.0457 (-35%) | -1.7851 (-9%) |
+| wage gap (hourly ratio) | 0.7100 | 0.6781 (-4%) | 0.7118 (+0%) | 0.7299 (+3%) | 0.7382 (+4%) | 0.7427 (+5%) | 0.7643 (+8%) | 0.7369 (+4%) | 0.8239 (+16%) |
+| sd log UE (women) | 0.0686 | 0.0634 (-8%) | 0.0682 (-1%) | 0.0705 (+3%) | 0.0408 (-41%) | 0.0562 (-18%) | 0.0724 (+5%) | 0.0767 (+12%) | 0.0767 (+12%) |
+
+| untargeted moment | adopted | version 7c (KPR; corrected simulator) | version 4e (separable; corrected simulator) | adopted iid (pre-fix) | version 4 (pre-fix) | version 6 persistent shock (pre-fix) | version 7b KPR (pre-fix) | version 5b log utility (pre-fix) |
+|---|---|---|---|---|---|---|---|---|
+| U rate | 0.0451 | 0.0397 | 0.0456 | 0.0447 | 0.0457 | 0.0396 | 0.0414 | 0.0606 |
+| wife share exp | 0.2829 | 0.3273 | 0.3230 | 0.3319 | 0.3360 | 0.3346 | 0.3229 | 0.3611 |
+| cons drop at H job loss exp (%) | -7.1733 | -7.0656 | -6.7332 | -5.0741 | -5.0523 | -5.0143 | -7.1105 | -5.3658 |
+| cons drop at H job loss rec (%) | -10.5164 | -10.0996 | -10.0754 | -7.2569 | -8.5003 | -8.4531 | -10.2573 | -8.5648 |
+| mean assets/monthly HH inc | 1.7457 | 1.6206 | 1.8603 | 1.4074 | 1.4797 | 1.4976 | 1.5920 | 0.5596 |
 
 ### 1b. Identification: local elasticities of the targeted moments
 
@@ -270,7 +276,13 @@ Decomposition of the baseline quit gap (share removed when each channel is switc
 
 Source: `scripts/channels.py`. Quit gap = recession minus expansion monthly quit rate (points). Precaution share = fall in the gap when the husband's risk (job loss, job finding, recession UI cut) is made acyclical; hoarding share = fall when the wife's job-finding efficiency is made acyclical; both off = fall when both are. Parameters are held at the calibrated values within each block; only the named ingredient changes.
 
-**version 4c** (`output/channels_v4c.json`)
+**version 7c (KPR; corrected simulator)** (`output/channels_v7c.json`)
+
+| variant | E/pop | quit exp | quit rec | gap | precaution | hoarding | both off | dE base | dE acyc. husband |
+|---|---|---|---|---|---|---|---|---|---|
+| baseline | 0.676 | 0.0333 | 0.0253 | -0.80 | 16% | 47% | 62% | -1.67 | -1.62 |
+
+**version 4c (pre-fix)** (`output/channels_v4c.json`)
 
 | variant | E/pop | quit exp | quit rec | gap | precaution | hoarding | both off | dE base | dE acyc. husband |
 |---|---|---|---|---|---|---|---|---|---|
@@ -285,28 +297,13 @@ Source: `scripts/channels.py`. Quit gap = recession minus expansion monthly quit
 | risk aversion 3 | 0.562 | 0.0803 | 0.0402 | -4.01 | 30% | 35% | 70% | +1.75 | -2.24 |
 | longer recessions (persistence 0.95) | 0.675 | 0.0341 | 0.0214 | -1.26 | 25% | 41% | 61% | -2.53 | -3.96 |
 
-**adopted iid (ls)** (`output/channels_ls.json`)
+**version 7b KPR (pre-fix)** (`output/channels_v7b.json`)
 
 | variant | E/pop | quit exp | quit rec | gap | precaution | hoarding | both off | dE base | dE acyc. husband |
 |---|---|---|---|---|---|---|---|---|---|
-| baseline | 0.664 | 0.0332 | 0.0250 | -0.82 | 19% | 39% | 52% | -1.69 | -2.23 |
-| job finding falls 5% in recessions (ratio 0.95) | 0.664 | 0.0337 | 0.0275 | -0.62 | 21% | 19% | 36% | -0.74 | -1.16 |
-| job finding falls 30% in recessions (ratio 0.70) | 0.662 | 0.0327 | 0.0208 | -1.19 | 18% | 58% | 67% | -2.87 | -3.69 |
-| husband job loss x2.5 in recessions (data: x1.78) | 0.668 | 0.0327 | 0.0232 | -0.95 | 30% | 39% | 59% | -1.24 | -2.23 |
-| husband job finding 0.20 in recessions (data: 0.28) | 0.667 | 0.0327 | 0.0232 | -0.95 | 30% | 34% | 59% | -1.20 | -2.23 |
-| UI replacement 15% in recessions (ui_rec_mult 0.5) | 0.668 | 0.0327 | 0.0227 | -1.00 | 33% | 36% | 61% | -1.11 | -2.23 |
-| UI replacement 15% always | 0.679 | 0.0306 | 0.0218 | -0.88 | 23% | 34% | 57% | -1.09 | -1.98 |
-| no assets | 0.667 | 0.0316 | 0.0230 | -0.86 | 24% | 42% | 55% | -1.82 | -2.50 |
-| risk aversion 3 | 0.552 | 0.0755 | 0.0465 | -2.90 | 24% | 36% | 61% | +0.38 | -1.93 |
-| longer recessions (persistence 0.95) | 0.664 | 0.0330 | 0.0239 | -0.91 | 14% | 38% | 46% | -2.76 | -3.25 |
+| baseline | 0.661 | 0.0342 | 0.0254 | -0.88 | 28% | 47% | 64% | -1.69 | -1.84 |
 
-**version 4** (`output/channels_v4.json`)
-
-| variant | E/pop | quit exp | quit rec | gap | precaution | hoarding | both off | dE base | dE acyc. husband |
-|---|---|---|---|---|---|---|---|---|---|
-| baseline | 0.666 | 0.0322 | 0.0229 | -0.93 | 33% | 34% | 59% | -1.88 | -2.76 |
-
-**version 6 (persistent shock)** (`output/channels_v6.json`)
+**version 6 persistent shock (pre-fix)** (`output/channels_v6.json`)
 
 | variant | E/pop | quit exp | quit rec | gap | precaution | hoarding | both off | dE base | dE acyc. husband |
 |---|---|---|---|---|---|---|---|---|---|
@@ -321,19 +318,7 @@ Source: `scripts/channels.py`. Quit gap = recession minus expansion monthly quit
 | risk aversion 3 | 0.533 | 0.0831 | 0.0422 | -4.08 | 38% | 35% | 70% | +3.34 | -1.77 |
 | longer recessions (persistence 0.95) | 0.662 | 0.0347 | 0.0218 | -1.28 | 25% | 46% | 65% | -2.30 | -3.86 |
 
-**version 7b (KPR gamma 2)** (`output/channels_v7b.json`)
-
-| variant | E/pop | quit exp | quit rec | gap | precaution | hoarding | both off | dE base | dE acyc. husband |
-|---|---|---|---|---|---|---|---|---|---|
-| baseline | 0.661 | 0.0342 | 0.0254 | -0.88 | 28% | 47% | 64% | -1.69 | -1.84 |
-
-**version 7 (KPR first polish)** (`output/channels_v7.json`)
-
-| variant | E/pop | quit exp | quit rec | gap | precaution | hoarding | both off | dE base | dE acyc. husband |
-|---|---|---|---|---|---|---|---|---|---|
-| baseline | 0.630 | 0.0315 | 0.0236 | -0.79 | 25% | 49% | 64% | -1.71 | -1.71 |
-
-**version 5b (log utility)** (`output/channels_v5b.json`)
+**version 5b log utility (pre-fix)** (`output/channels_v5b.json`)
 
 | variant | E/pop | quit exp | quit rec | gap | precaution | hoarding | both off | dE base | dE acyc. husband |
 |---|---|---|---|---|---|---|---|---|---|
@@ -348,27 +333,30 @@ Source: `scripts/channels.py`. Quit gap = recession minus expansion monthly quit
 | risk aversion 3 | 0.351 | 0.1873 | 0.1336 | -5.37 | 55% | 48% | 89% | -2.05 | -5.52 |
 | longer recessions (persistence 0.95) | 0.616 | 0.0320 | 0.0221 | -0.99 | 5% | 56% | 62% | -2.83 | -3.03 |
 
-**v5b + Epstein-Zin RRA 10** (`output/channels_v5b_rra10.json`)
+**v5b + Epstein-Zin RRA 10 (pre-fix)** (`output/channels_v5b_rra10.json`)
 
 | variant | E/pop | quit exp | quit rec | gap | precaution | hoarding | both off | dE base | dE acyc. husband |
 |---|---|---|---|---|---|---|---|---|---|
 | baseline | 0.575 | 0.0382 | 0.0299 | -0.83 | 9% | 68% | 79% | -2.20 | -2.49 |
 
-**v5b + KPR gamma 2 imposed** (`output/channels_v5b_kpr2.json`)
+**adopted iid (pre-fix)** (`output/channels_ls.json`)
 
 | variant | E/pop | quit exp | quit rec | gap | precaution | hoarding | both off | dE base | dE acyc. husband |
 |---|---|---|---|---|---|---|---|---|---|
-| baseline | 0.565 | 0.0580 | 0.0415 | -1.65 | 22% | 50% | 73% | -1.70 | -2.71 |
-
-**recession UI cut** (`output/channels_ui.json`)
-
-| variant | E/pop | quit exp | quit rec | gap | precaution | hoarding | both off | dE base | dE acyc. husband |
-|---|---|---|---|---|---|---|---|---|---|
-| baseline | 0.659 | 0.0341 | 0.0245 | -0.95 | 29% | 34% | 58% | -1.72 | -2.61 |
+| baseline | 0.664 | 0.0332 | 0.0250 | -0.82 | 19% | 39% | 52% | -1.69 | -2.23 |
+| job finding falls 5% in recessions (ratio 0.95) | 0.664 | 0.0337 | 0.0275 | -0.62 | 21% | 19% | 36% | -0.74 | -1.16 |
+| job finding falls 30% in recessions (ratio 0.70) | 0.662 | 0.0327 | 0.0208 | -1.19 | 18% | 58% | 67% | -2.87 | -3.69 |
+| husband job loss x2.5 in recessions (data: x1.78) | 0.668 | 0.0327 | 0.0232 | -0.95 | 30% | 39% | 59% | -1.24 | -2.23 |
+| husband job finding 0.20 in recessions (data: 0.28) | 0.667 | 0.0327 | 0.0232 | -0.95 | 30% | 34% | 59% | -1.20 | -2.23 |
+| UI replacement 15% in recessions (ui_rec_mult 0.5) | 0.668 | 0.0327 | 0.0227 | -1.00 | 33% | 36% | 61% | -1.11 | -2.23 |
+| UI replacement 15% always | 0.679 | 0.0306 | 0.0218 | -0.88 | 23% | 34% | 57% | -1.09 | -1.98 |
+| no assets | 0.667 | 0.0316 | 0.0230 | -0.86 | 24% | 42% | 55% | -1.82 | -2.50 |
+| risk aversion 3 | 0.552 | 0.0755 | 0.0465 | -2.90 | 24% | 36% | 61% | +0.38 | -1.93 |
+| longer recessions (persistence 0.95) | 0.664 | 0.0330 | 0.0239 | -0.91 | 14% | 38% | 46% | -2.76 | -3.25 |
 
 ### 4c. What moves the split: local sensitivity of the two shares
 
-**version 4c**: `output/jacobian_channels_v4c.json` (`scripts/jacobian_channels.py`; +10% steps on `output/final_calib_v4c_full.json`, other parameters fixed). Baseline: precaution 31%, hoarding 44%, quit gap -1.16 points, sd log UE 0.0686, recession employment drop -1.65 (-2.88 without cyclical husband risk). Entries are changes per +1% of the named quantity: shares and the recession quit rate in percentage points, the quit gap and the employment drop in percentage points of the rate, sd log UE in units.
+**version 4c (pre-fix)**: `output/jacobian_channels_v4c.json` (`scripts/jacobian_channels.py`; +10% steps on `output/final_calib_v4c_full.json`, other parameters fixed). Baseline: precaution 31%, hoarding 44%, quit gap -1.16 points, sd log UE 0.0686, recession employment drop -1.65 (-2.88 without cyclical husband risk). Entries are changes per +1% of the named quantity: shares and the recession quit rate in percentage points, the quit gap and the employment drop in percentage points of the rate, sd log UE in units.
 
 | quantity perturbed | precaution share | hoarding share | quit gap | sd log UE | dE | dE acyc. husband | quit rec |
 |---|---|---|---|---|---|---|---|
@@ -404,7 +392,7 @@ Ranking by the effect on precaution minus hoarding (percentage points per +1%), 
 | job-finding efficiency level (lam_f0) | -0.48 | the employment-rate target (0.62) |
 | cost-shock sd (sd_kT) | -0.58 | the monthly quit-rate targets (3.4% / 2.8%) |
 
-**version 7b (KPR gamma 2)**: `output/jacobian_channels_v7b.json` (`scripts/jacobian_channels.py`; +10% steps on `output/final_calib_v7b_full.json`, other parameters fixed). Baseline: precaution 28%, hoarding 47%, quit gap -0.88 points, sd log UE 0.0714, recession employment drop -1.69 (-1.84 without cyclical husband risk). Entries are changes per +1% of the named quantity: shares and the recession quit rate in percentage points, the quit gap and the employment drop in percentage points of the rate, sd log UE in units.
+**version 7b (pre-fix)**: `output/jacobian_channels_v7b.json` (`scripts/jacobian_channels.py`; +10% steps on `output/final_calib_v7b_full.json`, other parameters fixed). Baseline: precaution 28%, hoarding 47%, quit gap -0.88 points, sd log UE 0.0714, recession employment drop -1.69 (-1.84 without cyclical husband risk). Entries are changes per +1% of the named quantity: shares and the recession quit rate in percentage points, the quit gap and the employment drop in percentage points of the rate, sd log UE in units.
 
 | quantity perturbed | precaution share | hoarding share | quit gap | sd log UE | dE | dE acyc. husband | quit rec |
 |---|---|---|---|---|---|---|---|
@@ -532,5 +520,5 @@ Objective: weighted sum of squared deviations over the 13 targets of `keam/final
 * The transitory cost shock (sd σ_κ) drives the monthly quit rate; its distribution is not disciplined by micro data beyond the quit and exit rates.
 * Career shares are computed on annual hours over ages 25-54 from the model's 4,000-hour endowment; the data taxonomy uses reported annual hours.
 
-* The recession fall in the quit rate is 34% in the model against 18% in the data (recession quit rate 0.0227, target 0.028): with the UE-rate cyclicality matched, quits driven by a one-month cost draw respond too strongly to re-entry prospects. If the excess response is hoarding, the hoarding share is overstated by the same margin.
+* The recession fall in the quit rate is 32% in the model against 18% in the data (recession quit rate 0.0293, target 0.028): with the UE-rate cyclicality matched, quits driven by a one-month cost draw respond too strongly to re-entry prospects. If the excess response is hoarding, the hoarding share is overstated by the same margin.
 * The precaution / hoarding split rests on γ = 2: it is 31% / 44% in version 4c, and log utility (balanced growth) cuts precaution to single digits (section 6a). Keeping balanced growth and precaution together needs non-separable King-Plosser-Rebelo preferences (`kpr=True` in `keam/final/solve.py`; version 7, calibrated separately).

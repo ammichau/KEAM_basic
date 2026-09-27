@@ -213,6 +213,14 @@ labor supply has a role at least comparable to hoarding. The women's UE-rate cyc
    entry ratio is 1.08 (v4c) and 1.00 (v7b) against 1.60: the ex-post entry response is far too weak in
    both; candidate levers are lower liquid assets and longer husband spells. Candidate 14th target once the
    PDF (blocked from the cloud; ask the author to add it to the repo) confirms the definition.
+   DONE (2026-09-27, corrected simulator): v7c (KPR) objective 0.076, the best of all versions: wage gap and
+   UE cyclicality on target, quits -2% / -10%, never-working +12%, career -8%, employment +9%
+   (`final_calib_v7c_full.*`); channel split precaution 16% / hoarding 47% (`channels_v7c.md`): the
+   corrected husband process (6% unemployed instead of 10%, lower loss risk) halves the precautionary share
+   relative to the pre-fix KPR versions. v4e (separable, workstation) objective 0.139, employment +10%,
+   never-working +16%, recession quit rate -16%; its channel split is pending. Added-worker entry ratio
+   (data 1.60): v4e 1.11, v7c see `moments_full`. RESULTS.md carries a superseded-results note at the top
+   until the v4e/v7c pipelines replace the v4c sections.
    New moments for discriminating the two preference specifications (added 2026-09-27, `moments.py`):
    the wife's employment and hours 12 months after the husband's job loss relative to the 12 months
    before (event study), by aggregate state at the loss, and wife employment / hours by the husband's state.
