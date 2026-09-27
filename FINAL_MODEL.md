@@ -67,7 +67,15 @@ the table at the end lists what is calibrated.
   (`output/channels_v5b_rra{2,5,10}.md`), so the channel is governed by the intertemporal
   elasticity (period-utility curvature, γ = 2 gives 0.5), not by risk aversion. Balanced growth
   with a precautionary labor-supply channel therefore needs non-separable consumption-hours
-  preferences of the King-Plosser-Rebelo class (u = [c g(h)]^(1−γ)/(1−γ)), not implemented.
+  preferences of the King-Plosser-Rebelo class.
+* **King-Plosser-Rebelo option (2026-09-27).** `kpr = True`: the flow utility is U(x) with the
+  composite x = log c − µ h^{1+η}/(1+η) − κ_τ and U(x) = exp((1−γ) x)/(1−γ) (U(x) = x at γ = 1), i.e.
+  u = [c·exp(−v(h) − κ)]^{1−γ}/(1−γ): consistent with balanced growth for any γ, nesting the separable
+  log model exactly at γ = 1 (checked). The costs µ, κ̄, κ_m are then in log-consumption units, as
+  in the log model; the transitory shock κ_T remains an additive shock to the value at the quit
+  decision. At the log-utility calibration (v5b) with γ = 2 imposed, the precautionary share rises
+  from 7% to 22% (hoarding 50%; `output/channels_v5b_kpr2.md`); version 7 recalibrates this
+  specification (`output/final_calib_v7_full.*`).
 * **Assets:** c + a' = income + a, a' ≥ 0, gross return 1 (net rate zero). The asset grid has
   20 points on [0, 15] (about ten months of household income) with more points near zero;
   a' is chosen on the grid, policies are interpolated bilinearly in (e, a) in the simulation.

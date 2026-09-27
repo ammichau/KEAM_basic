@@ -65,7 +65,11 @@ lower cost of work) make it more cyclical, a closing wage gap less so. Reference
    stays 7-9% at risk aversion 2, 5 and 10 (`output/channels_v5b_rra*.md`). The channel is driven
    by the intertemporal elasticity, so balanced growth with precaution needs King-Plosser-Rebelo
    non-separable preferences (u = [c g(h)]^(1-gamma)/(1-gamma), costs as consumption equivalents):
-   a flow-utility change in `solve_type`, not built; ask the author first.
+   built as `kpr=True` (`keam/final/solve.py`, nests the log model at gamma = 1). At the v5b parameters
+   with gamma = 2 it lifts precaution from 7% to 22% (`output/channels_v5b_kpr2.md`). Version 7 = KPR,
+   gamma 2, UI cut, 20% job-finding fall, calibrated from v5b on the cloud (`output/final_calib_v7_full.*`,
+   then `channels_v7`). Note: `channels.py`/`eval_point.py` `--fixed` overrides now take precedence
+   over the calibration file's fixed fields (earlier runs where the file fixed the same field are void).
    Version 4c (UI cut, 20% job-finding fall, UE cyclicality matched): precaution 31%, hoarding 44%,
    but the recession quit drop is overstated (34% versus 18%), which motivates version 6.
    Versions so far (RESULTS.md 1a/4b; objective with 12 targets unless noted; precaution / hoarding shares
