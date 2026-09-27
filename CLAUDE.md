@@ -218,7 +218,11 @@ labor supply has a role at least comparable to hoarding. The women's UE-rate cyc
    response: insurance runs through retention (quits), entry is decided by type. An added-worker effect of
    the observed size needs women near the participation margin (persistent cost shocks or a finer type
    continuum around the margin); candidate next test: persistent shock (`rho_kT`, n_kT 3) on top of v7c
-   with the entry ratio 1.60 as a 14th target.
+   with the entry ratio 1.60 as a 14th target: RUNNING on the cloud as version 10 (`calibrate_ls.py --x0
+   output/final_calib_v7c_full.json --fixed kpr=1 --fixed gamma=2.0 --fixed ui_rec_mult=0.5 --fixed n_kT=3
+   --set lam_f_ratio=0.80 --bound lam_f_ratio:0.8:0.8000001 --extra rho_kT --set rho_kT=0.3 --bound rho_kT:0.0:0.9
+   --extra-target 'AWE: LF entry ratio (H E->U / stays E)=1.60:1.0' --max-nfev 6 --tag v10_full`; objective
+   on 14 targets, not comparable with the 13-target ones), then `channels.py --tag v10 --variants quick`.
    Added-worker moments after Guner, Kulikova and Valladares-Esteban (RED 2025, "Does the added worker
    effect matter?"; data: a wife's monthly labor-force entry probability is 60% higher in the month her
    husband moves from employment to unemployment; aggregate participation +0.72 pp, employment +0.65 pp):

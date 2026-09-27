@@ -24,6 +24,7 @@ ap.add_argument("--bound", action="append", default=[])
 ap.add_argument("--coarse", action="store_true", help="27-type grid (default: 100 types)")
 ap.add_argument("--fixed", action="append", default=[], help="fix a FinalParams field (not calibrated): name=value (repeatable)")
 ap.add_argument("--set", action="append", default=[])
+ap.add_argument("--extra-target", action="append", default=[], help="add a target at run time: 'moment name=value:weight' (repeatable)")
 ap.add_argument("--resume", action="store_true", help="replay the evaluations already in the log (same tag) instead of recomputing them")
 a = ap.parse_args()
 HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.join(HERE, "..")
@@ -31,6 +32,9 @@ C.BOUNDS.update({"home_young_mult": (1.0, 3.0), "nu_h": (0.3, 0.8), "z_h": (0.3,
                  "e_max": (1.5, 4.0), "theta_e": (0.005, 0.05), "kappa_h_power": (0.0, 1.0)})
 for b in a.bound:
     n, lo, hi = b.split(":"); C.BOUNDS[n] = (float(lo), float(hi))
+for t in a.extra_target:                         # e.g. "AWE: LF entry ratio (H E->U / stays E)=1.60:1.0"
+    name, rest = t.rsplit("=", 1); val, w = rest.split(":")
+    C.TARGETS[name] = float(val); C.SCALE[name] = float(val); C.WEIGHT[name] = float(w)
 x0 = json.load(open(os.path.join(ROOT, a.x0)))["x"]
 for n in [e for e in a.extra.split(",") if e]:
     x0.setdefault(n, {"lam_f_ratio": 0.85}.get(n, getattr(FinalParams(), n, None)))
@@ -79,7 +83,7 @@ sol = least_squares(resid, z0, bounds=(lo, hi), method="trf", diff_step=a.diff_s
 best = min(hist, key=lambda h: h["obj"])
 if not best.get("m"):
     mb, _, _ = run(C.apply_params(base, best["x"]), cfg); best["m"] = {k: float(v) for k, v in mb.items()}
-out = dict(x=best["x"], obj=best["obj"], moments=best["m"], targets=C.TARGETS, n_eval=len(hist),
+out = dict(x=best["x"], obj=best["obj"], moments=best["m"], targets=dict(C.TARGETS), n_eval=len(hist), extra_targets=a.extra_target,
            seconds=time.time() - t0, coarse=a.coarse, names=names,
            fixed={kv.split('=')[0]: float(kv.split('=')[1]) for kv in a.fixed}, status=int(sol.status), message=sol.message)
 json.dump(out, open(os.path.join(ROOT, "output", f"final_calib_{a.tag}.json"), "w"), indent=1)
