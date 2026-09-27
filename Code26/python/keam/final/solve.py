@@ -47,6 +47,8 @@ def solve_retirement(p: FinalParams):
     c = yR + a[:, None] - a[None, :]                        # (a, a')
     flow = np.where(c > 1e-8, u(np.maximum(c, 1e-8), p.gamma), -1e10)
     V = flow.max(axis=1) / (1 - p.beta * (1 - p.death))
+    # mortality acts as extra discounting (no certainty equivalent over death: with log utility the
+    # level of V is arbitrary, so a "death value" of 0 would not be innocuous under risk sensitivity)
     for _ in range(5000):
         Vn = (flow + p.beta * (1 - p.death) * V[None, :]).max(axis=1)
         if np.max(np.abs(Vn - V)) < 1e-9:
@@ -112,8 +114,12 @@ def solve_type(p: FinalParams, omega: float, kbar: float, km: float, VR: np.ndar
             Qnext = np.broadcast_to(VRb, (kT.size, nE, nA, nY, nZ)); VNnext = np.broadcast_to(VRb, (nJ, nE, nA, nY, nZ))
         else:
             Qnext = np.maximum(VE[tau + 1][st] - kT[:, None, None, None, None], VN[tau + 1][st]); VNnext = VN[tau + 1]
-        EVmax_next = expect(np.tensordot(PJ, Qnext, axes=(1, 0)))                   # (j, e, a, y, z)
-        EVN_next = expect(np.tensordot(PJ if nJ > 1 else np.ones((1, 1)), VNnext, axes=(1, 0)))
+        th = (p.ez_rra - 1.0) * (1.0 - p.beta) if p.ez_rra > 1.0 else 0.0     # risk sensitivity in V units
+        vref = float(max(np.max(Qnext), np.max(VNnext))) if th > 0 else 0.0
+        Tr = (lambda X: np.exp(-th * (X - vref))) if th > 0 else (lambda X: X)    # to the risk-sensitive domain
+        Trinv = (lambda M: vref - np.log(np.maximum(M, 1e-300)) / th) if th > 0 else (lambda M: M)
+        EVmax_next = expect(np.tensordot(PJ, Tr(Qnext), axes=(1, 0)))                # (j, e, a, y, z)
+        EVN_next = expect(np.tensordot(PJ if nJ > 1 else np.ones((1, 1)), Tr(VNnext), axes=(1, 0)))
         pa = p_age[tau]
         # initial guess
         VEc = (np.maximum(VE[tau + 1], VN[tau + 1]) if tau < nT - 1
@@ -125,8 +131,8 @@ def solve_type(p: FinalParams, omega: float, kbar: float, km: float, VR: np.ndar
             # value at the start of a period by shock node j' (before the quit decision), then the
             # expectation over j' given today's state j; all arrays (j, e', a', y, z)
             Q = np.maximum(VEc[st] - kT[:, None, None, None, None], VNc[st])           # (j', e, a, y, z)
-            Vmax = np.tensordot(PJ, Q, axes=(1, 0))
-            VNj = np.tensordot(PJ if nJ > 1 else np.ones((1, 1)), VNc, axes=(1, 0))
+            Vmax = np.tensordot(PJ, Tr(Q), axes=(1, 0))           # with ez_rra > 1 everything below is in
+            VNj = np.tensordot(PJ if nJ > 1 else np.ones((1, 1)), Tr(VNc), axes=(1, 0))  # the exp(-theta V) domain
             Wmax = (1 - pa) * expect(Vmax) + pa * EVmax_next
             WN = (1 - pa) * expect(VNj) + pa * EVN_next
             WE = (1 - lam_u)[None, None, None, None, :] * Wmax + lam_u[None, None, None, None, :] * WN
@@ -138,7 +144,7 @@ def solve_type(p: FinalParams, omega: float, kbar: float, km: float, VR: np.ndar
             # (j, e, s, a', y, z)
             contN = ((1 - pi_f)[None, None, :, None, None, :] * WNs[:, :, None]
                      + pi_f[None, None, :, None, None, :] * WNf[:, :, None])
-            return contE, contN
+            return Trinv(contE), Trinv(contN)                      # certainty equivalents (identity if theta = 0)
 
         ie, ia, iy, iz = np.ogrid[:nE, :nA, :nY, :nZ]
         for it in range(p.max_iter):

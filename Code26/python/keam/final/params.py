@@ -10,6 +10,10 @@ class FinalParams:
     beta: float = 0.99
     gamma: float = 2.0          # CRRA
     eta: float = 1.4            # curvature of hours disutility (slides p.29)
+    ez_rra: float = 1.0         # Epstein-Zin risk aversion with unit intertemporal elasticity (use with
+                                # gamma = 1): continuation values enter through the certainty equivalent
+                                # -(1/theta) log E exp(-theta V) with theta = (ez_rra - 1)(1 - beta), the
+                                # log form of V = c^(1-beta) [E V'^(1-rra)]^(beta/(1-rra)). 1 = expected utility.
     mu: float = 1.0             # weight on hours disutility (calibrated)
     # ---------------- wage: phi(Z) tau_w omega (1 + gam_e e^xi) ----------------
     tau_w: float = 0.71         # gender wage penalty (calibrated to the within-couple gap)
