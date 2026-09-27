@@ -109,6 +109,15 @@ labor supply has a role at least comparable to hoarding. The women's UE-rate cyc
    --calib-alt "adopted iid=output/final_calib_ls_full.json,version 3=output/final_calib_v3_full.json,version 4=output/final_calib_v4_full.json,version 4c=output/final_calib_v4c_full.json,version 5 (log utility)=output/final_calib_v5_full.json,recession UI cut=output/final_calib_ui_full.json,7 wage types=output/final_calib_om7_full.json"
    --channels "<tag>=output/channels_<tag>.json,adopted=output/channels_ls.json,version 4=output/channels_v4.json,version 4c=output/channels_v4c.json,version 5=output/channels_v5.json,UI cut=output/channels_ui.json"`
    (drop files that do not exist). Update the state section above and the PR description.
+5. Version 6 (after 4 and 5): persistent cost-of-work shock under the version-4c assumptions. With the
+   UE-rate cyclicality matched (20% job-finding fall) the iid-shock model overstates the recession quit
+   drop (34% versus 18% in the data; RESULTS.md 4b/4c), because a quit driven by a one-month cost draw is
+   very sensitive to re-entry prospects. A persistent shock weakens that link. Run on the full grid
+   (3-node shock, about 3x the solve time):
+   `python3 -u scripts/calibrate_ls.py --x0 output/final_calib_v4c_full.json --fixed ui_rec_mult=0.5 --fixed n_kT=3
+   --set lam_f_ratio=0.80 --bound lam_f_ratio:0.8:0.8000001 --extra rho_kT --set rho_kT=0.5 --max-nfev 6 --diff-step 0.04 --tag v6_full`
+   then `scripts/channels.py --calib output/final_calib_v6_full.json --tag v6`. Judge it on the recession
+   quit rate, the UE cyclicality and the unemployment rate (the earlier persistent version had 12%).
 4. Report (RESULTS.md section 6 and the reply): a table of all versions (objective, the 13 targets'
    deviations, precaution and hoarding shares, recession employment drop with and without cyclical
    husband risk); whether log utility preserves the precautionary channel and what it does to the fit;
