@@ -64,6 +64,8 @@ class FinalParams:
     kbar_max: float = 0.075              # permanent cost, truncated normal on [0, kbar_max]
     n_km: int = 4
     km_max: float = 2.27                 # life-cycle multiplier, uniform on [1, km_max]
+    n_zh: int = 1                        # permanent home-productivity type: equiprobable multipliers on z_h
+    zh_spread: float = 0.0               # (1 - s, 1 + s) for two points, (1 - s, 1, 1 + s) for three; 0 = off
     n_kT: int = 5                        # transitory cost-of-work shock (slides p.13), discrete normal
     sd_kT: float = 0.05
     rho_kT: float = 0.0                  # monthly probability that the shock keeps its value (0 = iid)
@@ -159,5 +161,24 @@ def make_types(p: FinalParams):
         a, b = norm.cdf((0 - mu_k) / sd_k), norm.cdf((p.kbar_max - mu_k) / sd_k)
         kbar = mu_k + sd_k * norm.ppf(a + q * (b - a))
     km = np.linspace(1.0, p.km_max, p.n_km) if p.n_km > 1 else np.array([1.0])
-    O, K, M = np.meshgrid(omega, kbar, km, indexing="ij")
+    zh = 1.0 + p.zh_spread * np.linspace(-1.0, 1.0, p.n_zh) if p.n_zh > 1 else np.array([1.0])
+    O, K, M, Z = np.meshgrid(omega, kbar, km, zh, indexing="ij")
     return O.ravel(), K.ravel(), M.ravel()
+
+
+def make_types4(p: FinalParams):
+    """As make_types, plus the home-productivity multiplier of each type."""
+    q = (np.arange(p.n_omega) + 0.5) / p.n_omega
+    lo = norm.ppf(q) * p.sd_log_omega
+    omega = np.exp(lo); omega = omega / np.mean(omega)
+    q = (np.arange(p.n_kbar) + 0.5) / p.n_kbar
+    mu_k, sd_k = p.kbar_max / 2, p.kbar_max / 2
+    if sd_k <= 0:
+        kbar = np.zeros(p.n_kbar)
+    else:
+        a, b = norm.cdf((0 - mu_k) / sd_k), norm.cdf((p.kbar_max - mu_k) / sd_k)
+        kbar = mu_k + sd_k * norm.ppf(a + q * (b - a))
+    km = np.linspace(1.0, p.km_max, p.n_km) if p.n_km > 1 else np.array([1.0])
+    zh = 1.0 + p.zh_spread * np.linspace(-1.0, 1.0, p.n_zh) if p.n_zh > 1 else np.array([1.0])
+    O, K, M, Z = np.meshgrid(omega, kbar, km, zh, indexing="ij")
+    return O.ravel(), K.ravel(), M.ravel(), Z.ravel()

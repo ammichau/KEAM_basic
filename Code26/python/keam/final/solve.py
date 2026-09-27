@@ -15,7 +15,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 import time
 import numpy as np
-from .params import FinalParams, make_types
+from .params import FinalParams, make_types, make_types4
 
 
 @dataclass
@@ -27,6 +27,7 @@ class FinalSolution:
     gS: np.ndarray; gAN: np.ndarray         # search, savings when non-employed
     VR: np.ndarray                          # retirement value on the asset grid
     info: dict
+    zh: np.ndarray = None                  # home-productivity multiplier per type (ones if absent)
 
 
 def u(c, gamma):
@@ -64,14 +65,14 @@ def solve_retirement(p: FinalParams):
     return V
 
 
-def solve_type(p: FinalParams, omega: float, kbar: float, km: float, VR: np.ndarray, verbose=False):
+def solve_type(p: FinalParams, omega: float, kbar: float, km: float, VR: np.ndarray, verbose=False, zh: float = 1.0):
     nE, nA, nH, nS = p.nE, p.nA, p.nH, p.nS
     nY, nZ, nT = 3, 2, 3
     eg, ag, hg, sg = p.egrid, p.agrid, p.hgrid, p.sgrid
     beta = p.beta
     phi = np.array([1.0, p.phi_rec])
     w = phi[None, :] * p.tau_w * omega * (1 + p.gam_e * eg[:, None] ** p.xi)      # (nE, nZ)
-    f = p.ybar_h + p.z_h * omega ** p.alpha_h
+    f = p.ybar_h + p.z_h * zh * omega ** p.alpha_h
     yH = p.y_husband()                                                              # (nT, nY, nZ)
     lamH = p.lamH()                                                                 # (nZ, nY, nY)
     lam_u = np.asarray(p.lam_u); lam_f = np.asarray(p.lam_f)
@@ -190,15 +191,15 @@ def solve_type(p: FinalParams, omega: float, kbar: float, km: float, VR: np.ndar
 
 
 def _solve_one(args):
-    p, om, kb, km_, VR = args
-    return solve_type(p, om, kb, km_, VR)
+    p, om, kb, km_, VR, zh = args
+    return solve_type(p, om, kb, km_, VR, zh=zh)
 
 
 def solve_all(p: FinalParams, verbose=False, n_jobs: int | None = None) -> FinalSolution:
     import os
     if n_jobs is None:
         n_jobs = int(os.environ.get("KEAM_NJOBS", os.cpu_count() or 1))
-    omega, kbar, km = make_types(p)
+    omega, kbar, km, zh = make_types4(p)
     nK = omega.size
     VR = solve_retirement(p)
     nJ = p.kT_chain()[1]
@@ -207,7 +208,7 @@ def solve_all(p: FinalParams, verbose=False, n_jobs: int | None = None) -> Final
     gH = np.zeros(shape, np.float32); gAE = np.zeros(shape, np.float32)
     gS = np.zeros(shape, np.float32); gAN = np.zeros(shape, np.float32)
     t0 = time.time(); iters = np.zeros((nK, 3), int)
-    jobs = [(p, omega[k], kbar[k], km[k], VR) for k in range(nK)]
+    jobs = [(p, omega[k], kbar[k], km[k], VR, zh[k]) for k in range(nK)]
     if n_jobs > 1:
         import multiprocessing as mp
         with mp.get_context("fork").Pool(n_jobs) as pool:
@@ -221,5 +222,5 @@ def solve_all(p: FinalParams, verbose=False, n_jobs: int | None = None) -> Final
         gS[k] = np.moveaxis(p.sgrid[s], 1, -1); gAN[k] = np.moveaxis(p.agrid[aN], 1, -1)
     if verbose:
         print(f"solved {nK} types in {time.time() - t0:.0f}s; max iterations {iters.max()}")
-    return FinalSolution(params=p, omega=omega, kbar=kbar, km=km, VE=VE, VN=VN, gH=gH, gAE=gAE,
+    return FinalSolution(params=p, omega=omega, kbar=kbar, km=km, zh=zh, VE=VE, VN=VN, gH=gH, gAE=gAE,
                          gS=gS, gAN=gAN, VR=VR, info=dict(seconds=time.time() - t0, iters=iters))

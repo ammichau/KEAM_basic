@@ -40,8 +40,8 @@ PARAM_NAMES = ["mu", "kbar_max", "km_max", "tau_w", "lam_f0", "lam_u0", "lam_u1"
 BOUNDS = {"mu": (0.2, 5.0), "kbar_max": (0.005, 1.0), "km_max": (1.0, 15.0), "tau_w": (0.4, 1.2),
           "lam_f0": (0.05, 0.9), "lam_u0": (0.003, 0.05), "lam_u1": (0.003, 0.08), "ybar_h": (0.0, 0.6),
           "sd_kT": (0.001, 0.6), "delta_e": (0.001, 0.008), "lam_f_ratio": (0.5, 1.0),
-          "rho_kT": (0.0, 0.97)}
-OPTIONAL_PARAMS = ["delta_e", "lam_f_ratio", "rho_kT"]
+          "rho_kT": (0.0, 0.97), "zh_spread": (0.0, 0.8)}
+OPTIONAL_PARAMS = ["delta_e", "lam_f_ratio", "rho_kT", "zh_spread"]
 
 
 def apply_params(base: FinalParams, x: dict) -> FinalParams:

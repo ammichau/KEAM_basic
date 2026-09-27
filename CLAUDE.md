@@ -163,6 +163,20 @@ labor supply has a role at least comparable to hoarding. The women's UE-rate cyc
    --set lam_f_ratio=0.80 --bound lam_f_ratio:0.8:0.8000001 --extra rho_kT --set rho_kT=0.5 --max-nfev 6 --diff-step 0.04 --tag v6_full`
    then `scripts/channels.py --calib output/final_calib_v6_full.json --tag v6`. Judge it on the recession
    quit rate, the UE cyclicality and the unemployment rate (the earlier persistent version had 12%).
+6. Never-working share (all versions +18-22%): a permanent home-productivity type is implemented
+   (`n_zh`, `zh_spread`; `keam/final/params.py` `make_types4`, solver and simulator carry the multiplier).
+   On the coarse grid at the v7b parameters, `zh_spread` 0.3 with `n_zh` 2 brings the never-working share
+   to 0.22 and the career shares near the data at fixed parameters (FINAL_MODEL.md). Calibrations:
+   - version 8 (cloud, running): KPR v7b assumptions + the type, `zh_spread` free:
+     `python3 -u scripts/calibrate_ls.py --x0 output/final_calib_v7b_full.json --fixed kpr=1 --fixed gamma=2.0
+     --fixed ui_rec_mult=0.5 --fixed n_zh=2 --set lam_f_ratio=0.80 --bound lam_f_ratio:0.8:0.8000001
+     --extra zh_spread --set zh_spread=0.3 --bound zh_spread:0.0:0.8 --max-nfev 6 --diff-step 0.04 --tag v8_full`
+     (200 types, about 130 s per evaluation on 4 cores), then `channels.py --tag v8 --variants quick`.
+   - version 4d (workstation, to run): the same with the v4c assumptions (separable gamma 2):
+     `python3 -u scripts/calibrate_ls.py --x0 output/final_calib_v4c_full.json --fixed ui_rec_mult=0.5 --fixed n_zh=2
+     --set lam_f_ratio=0.80 --bound lam_f_ratio:0.8:0.8000001 --extra zh_spread --set zh_spread=0.3 --bound zh_spread:0.0:0.8
+     --max-nfev 6 --diff-step 0.04 --tag v4d_full`, then `channels.py --tag v4d`; if it fits, its full pipeline.
+   `zh_spread` must be listed in `calibrate.py` BOUNDS (added) and passed with `--extra`.
 4. Report (RESULTS.md section 6 and the reply): a table of all versions (objective, the 13 targets'
    deviations, precaution and hoarding shares, recession employment drop with and without cyclical
    husband risk); whether log utility preserves the precautionary channel and what it does to the fit;

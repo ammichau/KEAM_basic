@@ -13,7 +13,12 @@ the table at the end lists what is calibrated.
 * **Type** θ = (ω, κ̄, κ_m), fixed at entry and solved for explicitly: ω is log-normal with
   sd 0.37 (the wage fixed-effect dispersion) on 5 points normalised to mean 1; κ̄ is a
   truncated normal on [0, κ̄_max] on 5 points; κ_m is uniform on [1, κ_m,max] on 4 points.
-  100 types with equal weights.
+  100 types with equal weights. **Option (2026-09-27):** a permanent home-productivity type, `n_zh`
+  equiprobable multipliers 1 ± `zh_spread` on z_h (types × n_zh; `make_types4`), motivated by the
+  never-working share being one wage-type cell in every calibration (RESULTS.md 1b). On the coarse grid
+  at the version-7b parameters a spread of 0.3 moves the never-working share from 0.30 to 0.22 and the
+  career shares to 0.28 / 0.29 / 0.21 / 0.22 (data 0.31 / 0.28 / 0.19 / 0.22) without recalibration;
+  versions 8 (KPR) and 4d (separable, v4c) recalibrate with `zh_spread` free.
 * **States:** experience e ∈ [0, 2], assets a ≥ 0, husband x_m ∈ {E, R, U}, aggregate
   Z ∈ {expansion, recession}, employment status, and a cost-of-work shock κ_T (discrete
   normal with sd σ_κ) realised at the start of each month, before the quit decision. In the

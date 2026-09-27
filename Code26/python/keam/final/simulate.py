@@ -92,7 +92,8 @@ def simulate_final(p: FinalParams, sol: FinalSolution, cfg: SimConfigFinal | Non
     lam_u = np.asarray(p.lam_u); lam_f = np.asarray(p.lam_f)
     phi = np.array([1.0, p.phi_rec])
     omega = sol.omega[ktype]
-    f = p.ybar_h + p.z_h * omega ** p.alpha_h
+    zh = (sol.zh if getattr(sol, 'zh', None) is not None else np.ones(nK))[ktype]
+    f = p.ybar_h + p.z_h * zh * omega ** p.alpha_h
     # draws
     uH = rng.random((Nind, L), dtype=np.float32); uJ = rng.random((Nind, L), dtype=np.float32)
     kT_nodes, kT_w = p.kT_nodes()
