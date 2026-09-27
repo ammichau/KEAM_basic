@@ -126,7 +126,7 @@ def simulate_final(p: FinalParams, sol: FinalSolution, cfg: SimConfigFinal | Non
         aw = np.clip((a - ag[ak]) / (ag[ak + 1] - ag[ak]), 0, 1)
         VEi = _interp2(sol.VE, ktype, tau, ek, ew, ak, aw, y, z, jst[:, it])
         VNi = _interp2(sol.VN, ktype, tau, ek, ew, ak, aw, y, z, jst[:, it])
-        q = E_in & (VNi > VEi - kT_draw[:, it])
+        q = E_in & (VNi > VEi - (0.0 if p.kT_mult else kT_draw[:, it]))     # kT_mult: the shock is in V^E_j
         work = E_in & ~q
         w = phi[z] * p.tau_w * omega * (1 + p.gam_e * e ** p.xi)
         yh = yH[tau, y, z]

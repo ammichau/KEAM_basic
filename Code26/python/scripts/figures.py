@@ -73,6 +73,9 @@ def panel(title, ylabel, series, name, ylim=None):
     save(fig, name)
 
 def quit_prob(y, z):
+    if p.kT_mult:            # the shock is inside V^E by node: quit at node j when V^E_j < V^N_j
+        d = sol.VE[:, tau, :, ia, y, z, :] - sol.VN[:, tau, :, ia, y, z, :]          # (nK, nE, nJ)
+        return np.mean(np.sum(wT[None, None, :] * (d < 0), axis=2), axis=0)
     d = sol.VE[:, tau, :, ia, y, z, jmid] - sol.VN[:, tau, :, ia, y, z, jmid]          # (nK, nE)
     return np.mean(np.sum(wT[None, None, :] * ((d[:, :, None] - kT[None, None, :]) < 0), axis=2), axis=0)
 

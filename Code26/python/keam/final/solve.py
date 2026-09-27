@@ -80,6 +80,18 @@ def solve_type(p: FinalParams, omega: float, kbar: float, km: float, VR: np.ndar
     p_age = p.p_age
     kT, nJ, PJ = p.kT_chain()                                                       # nodes, states, (nJ, n_kT)
     st = np.arange(kT.size) if nJ > 1 else np.zeros(kT.size, int)                   # state reached at node j'
+    if p.kT_mult and not p.kpr:
+        raise ValueError("kT_mult requires kpr preferences")
+    st_of_j = np.arange(nJ)                                                         # node of state j (nJ = n_kT)
+    kTdec = np.zeros_like(kT) if p.kT_mult else kT                                  # additive shock at the decision
+    # iid proportional shock: V^E carries today's node (the flow depends on it) but the continuation and
+    # V^N do not, so they are computed once (nJc = 1) and V^N is broadcast over the nodes when stored
+    iidm = p.kT_mult and nJ > 1 and p.rho_kT <= 0
+    nJc = 1 if iidm else nJ
+    PJc = PJ[:1] if iidm else PJ
+    stN = np.zeros(kT.size, int) if iidm else st
+    jjc = np.zeros((nJ, 1, 1, 1, 1), int) if iidm else np.arange(nJ)[:, None, None, None, None]
+    jjn = np.arange(nJc)[:, None, None, None, None]
     jj = np.arange(nJ)[:, None, None, None, None]
     # joint transition of (y, z): T[z, y, z', y'] = piz[z, z'] lamH[z, y, y']
     T = p.piz[:, None, :, None] * lamH[:, :, None, :]                               # (nZ, nY, nZ', nY')
@@ -112,7 +124,11 @@ def solve_type(p: FinalParams, omega: float, kbar: float, km: float, VR: np.ndar
         vh = p.mu * hg[None, None, None, None, :, None] ** (1 + p.eta) / (1 + p.eta) + kap_h[None, None, None, None, :, None]
         cN = (fs[None, None, None, None, :, None] + yH[tau][None, None, :, :, None, None]
               + ag[None, :, None, None, None, None] - ag[None, None, None, None, None, :])
-        if p.kpr:      # non-separable: the composite log c - v(h) - kappa raised to the CRRA curvature
+        if p.kpr and p.kT_mult:     # transitory shock inside the aggregator: flow by today's node j
+            lcv = np.log(np.maximum(cE, 1e-8)) - vh
+            flowE = np.stack([np.where(cE > 1e-8, U_kpr(lcv - kT[st_of_j[j]], p.gamma), -1e10) for j in range(nJ)])
+            flowN = np.where(cN > 1e-8, U_kpr(np.log(np.maximum(cN, 1e-8)), p.gamma), -1e10)
+        elif p.kpr:    # non-separable: the composite log c - v(h) - kappa raised to the CRRA curvature
             flowE = np.where(cE > 1e-8, U_kpr(np.log(np.maximum(cE, 1e-8)) - vh, p.gamma), -1e10)
             flowN = np.where(cN > 1e-8, U_kpr(np.log(np.maximum(cN, 1e-8)), p.gamma), -1e10)
         else:
@@ -123,28 +139,28 @@ def solve_type(p: FinalParams, omega: float, kbar: float, km: float, VR: np.ndar
         # shock node j' (quit decision at node j'), then by today's shock state through PJ
         if tau == nT - 1:
             VRb = np.broadcast_to(VR[None, :, None, None], (nE, nA, nY, nZ))
-            Qnext = np.broadcast_to(VRb, (kT.size, nE, nA, nY, nZ)); VNnext = np.broadcast_to(VRb, (nJ, nE, nA, nY, nZ))
+            Qnext = np.broadcast_to(VRb, (kT.size, nE, nA, nY, nZ)); VNnext = np.broadcast_to(VRb, (nJc, nE, nA, nY, nZ))
         else:
-            Qnext = np.maximum(VE[tau + 1][st] - kT[:, None, None, None, None], VN[tau + 1][st]); VNnext = VN[tau + 1]
+            Qnext = np.maximum(VE[tau + 1][st] - kTdec[:, None, None, None, None], VN[tau + 1][stN]); VNnext = VN[tau + 1][:nJc]
         th = (p.ez_rra - 1.0) * (1.0 - p.beta) if p.ez_rra > 1.0 else 0.0     # risk sensitivity in V units
         vref = float(max(np.max(Qnext), np.max(VNnext))) if th > 0 else 0.0
         Tr = (lambda X: np.exp(-th * (X - vref))) if th > 0 else (lambda X: X)    # to the risk-sensitive domain
         Trinv = (lambda M: vref - np.log(np.maximum(M, 1e-300)) / th) if th > 0 else (lambda M: M)
-        EVmax_next = expect(np.tensordot(PJ, Tr(Qnext), axes=(1, 0)))                # (j, e, a, y, z)
-        EVN_next = expect(np.tensordot(PJ if nJ > 1 else np.ones((1, 1)), Tr(VNnext), axes=(1, 0)))
+        EVmax_next = expect(np.tensordot(PJc, Tr(Qnext), axes=(1, 0)))               # (j, e, a, y, z)
+        EVN_next = expect(np.tensordot(PJc if nJc > 1 else np.ones((1, 1)), Tr(VNnext), axes=(1, 0)))
         pa = p_age[tau]
         # initial guess
         VEc = (np.maximum(VE[tau + 1], VN[tau + 1]) if tau < nT - 1
                else np.broadcast_to(VR[None, None, :, None, None], (nJ, nE, nA, nY, nZ))).copy()
-        VNc = VEc.copy()
+        VNc = VEc[:nJc].copy()
         hE = np.zeros((nJ, nE, nA, nY, nZ), int); aE = np.zeros_like(hE); sN = np.zeros_like(hE); aN = np.zeros_like(hE)
 
         def continuation(VEc, VNc):
             # value at the start of a period by shock node j' (before the quit decision), then the
             # expectation over j' given today's state j; all arrays (j, e', a', y, z)
-            Q = np.maximum(VEc[st] - kT[:, None, None, None, None], VNc[st])           # (j', e, a, y, z)
-            Vmax = np.tensordot(PJ, Tr(Q), axes=(1, 0))           # with ez_rra > 1 everything below is in
-            VNj = np.tensordot(PJ if nJ > 1 else np.ones((1, 1)), Tr(VNc), axes=(1, 0))  # the exp(-theta V) domain
+            Q = np.maximum(VEc[st] - kTdec[:, None, None, None, None], VNc[stN])          # (j', e, a, y, z)
+            Vmax = np.tensordot(PJc, Tr(Q), axes=(1, 0))          # with ez_rra > 1 everything below is in
+            VNj = np.tensordot(PJc if nJc > 1 else np.ones((1, 1)), Tr(VNc), axes=(1, 0))  # the exp(-theta V) domain
             Wmax = (1 - pa) * expect(Vmax) + pa * EVmax_next
             WN = (1 - pa) * expect(VNj) + pa * EVN_next
             WE = (1 - lam_u)[None, None, None, None, :] * Wmax + lam_u[None, None, None, None, :] * WN
@@ -162,13 +178,13 @@ def solve_type(p: FinalParams, omega: float, kbar: float, km: float, VR: np.ndar
         for it in range(p.max_iter):
             contE, contN = continuation(VEc, VNc)
             # maximisation
-            totE = flowE[None] + beta * contE.transpose(0, 1, 4, 5, 2, 3)[:, :, None]   # (j, e, a, y, z, h, a')
+            totE = (flowE if flowE.ndim == 7 else flowE[None]) + beta * contE.transpose(0, 1, 4, 5, 2, 3)[:, :, None]   # (j, e, a, y, z, h, a')
             flatE = totE.reshape(nJ, nE, nA, nY, nZ, -1)
             idxE = flatE.argmax(axis=-1)
             hE, aE = np.divmod(idxE, nA)
             VEn = np.take_along_axis(flatE, idxE[..., None], axis=-1)[..., 0]
             totN = flowN[None] + beta * contN.transpose(0, 1, 4, 5, 2, 3)[:, :, None]   # (j, e, a, y, z, s, a')
-            flatN = totN.reshape(nJ, nE, nA, nY, nZ, -1)
+            flatN = totN.reshape(nJc, nE, nA, nY, nZ, -1)
             idxN = flatN.argmax(axis=-1)
             sN, aN = np.divmod(idxN, nA)
             VNn = np.take_along_axis(flatN, idxN[..., None], axis=-1)[..., 0]
@@ -177,13 +193,13 @@ def solve_type(p: FinalParams, omega: float, kbar: float, km: float, VR: np.ndar
             if err < p.vf_tol:
                 break
             # Howard evaluation with fixed policies
-            fE = flowE[ie, ia, iy, iz, hE, aE]; fN = flowN[ie, ia, iy, iz, sN, aN]
+            fE = (flowE[jj, ie, ia, iy, iz, hE, aE] if flowE.ndim == 7 else flowE[ie, ia, iy, iz, hE, aE]); fN = flowN[ie, ia, iy, iz, sN, aN]
             for _ in range(p.howard_steps):
                 contE, contN = continuation(VEc, VNc)
-                VEc = fE + beta * contE[jj, ie, hE, aE, iy, iz]
-                VNc = fN + beta * contN[jj, ie, sN, aN, iy, iz]
+                VEc = fE + beta * contE[jjc, ie, hE, aE, iy, iz]
+                VNc = fN + beta * contN[jjn, ie, sN, aN, iy, iz]
         iters[tau] = it + 1
-        VE[tau], VN[tau] = VEc, VNc
+        VE[tau], VN[tau] = VEc, VNc                         # V^N broadcast over the nodes when nJc = 1
         gH[tau], gAE[tau], gS[tau], gAN[tau] = hE, aE, sN, aN
         if verbose:
             print(f"    age {tau}: {it + 1} iterations, err {err:.2e}")

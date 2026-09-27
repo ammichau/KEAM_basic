@@ -12,8 +12,14 @@ class FinalParams:
     eta: float = 1.4            # curvature of hours disutility (slides p.29)
     kpr: bool = False           # King-Plosser-Rebelo preferences: u = U(log c - mu h^(1+eta)/(1+eta) - kappa)
                                 # with U(x) = exp((1-gamma) x)/(1-gamma); balanced-growth consistent for any
-                                # gamma, nests the separable log model at gamma = 1. The transitory cost
-                                # shock stays an additive shock to the value at the quit decision.
+                                # gamma, nests the separable log model at gamma = 1. The fixed costs kappa
+                                # (kbar, km) enter the aggregator as exp(-kappa), a proportional consumption
+                                # tax on employment. The transitory shock is additive to V^E at the quit
+                                # decision unless kT_mult (then also a proportional tax, scale-invariant).
+    kT_mult: bool = False       # with kpr: the transitory cost shock is a one-month proportional consumption
+                                # tax on employment, u = U(log c - v(h) - kappa - kappa_T) (scale-invariant),
+                                # instead of an additive shock to V^E at the quit decision. The values then carry
+                                # the shock node (iid rows of the chain); nests the additive model at gamma = 1.
     ez_rra: float = 1.0         # Epstein-Zin risk aversion with unit intertemporal elasticity (use with
                                 # gamma = 1): continuation values enter through the certainty equivalent
                                 # -(1/theta) log E exp(-theta V) with theta = (ez_rra - 1)(1 - beta), the
@@ -119,6 +125,8 @@ class FinalParams:
         shock is iid) and the transition matrix from state to next period's node, (n_state, n_kT):
         with probability rho_kT the shock keeps its value, otherwise it is redrawn from the nodes."""
         nodes, w = self.kT_nodes()
+        if nodes.size > 1 and self.kT_mult and self.rho_kT <= 0:    # the flow depends on today's node
+            return nodes, nodes.size, np.repeat(w[None, :], nodes.size, axis=0)
         if self.rho_kT <= 0 or nodes.size == 1:
             return nodes, 1, w[None, :]
         P = self.rho_kT * np.eye(nodes.size) + (1 - self.rho_kT) * w[None, :]

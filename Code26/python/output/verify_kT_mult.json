@@ -1,0 +1,83 @@
+{
+ "calib": "output/final_calib_v7b_full.json",
+ "coarse": true,
+ "max_abs_diff_gamma1": 0.0,
+ "runs": {
+  "gamma 1, additive shock": {
+   "seconds": 6.2724151611328125,
+   "m": {
+    "E/pop": 0.6798386931667707,
+    "hours|E": 0.41869491345742876,
+    "share Lifecycle": 0.19791666666666666,
+    "share PT": 0.36791666666666667,
+    "share Career": 0.22291666666666668,
+    "share NiLF": 0.21125,
+    "quit/m exp": 0.017218113348786215,
+    "quit/m rec": 0.012389656036323051,
+    "E->nonE/m exp": 0.03681428336745245,
+    "E->nonE/m rec": 0.032394937016178155,
+    "dE/pop rec-exp (pts)": -1.3028395628437717,
+    "wage gap (hourly ratio)": 0.7860366830811488,
+    "sd log UE (women)": 0.08794154462167082,
+    "U rate": 0.038808273949771585
+   }
+  },
+  "gamma 1, proportional shock": {
+   "seconds": 14.753280401229858,
+   "m": {
+    "E/pop": 0.6798386931667707,
+    "hours|E": 0.41869491345742876,
+    "share Lifecycle": 0.19791666666666666,
+    "share PT": 0.36791666666666667,
+    "share Career": 0.22291666666666668,
+    "share NiLF": 0.21125,
+    "quit/m exp": 0.017218113348786215,
+    "quit/m rec": 0.012389656036323051,
+    "E->nonE/m exp": 0.03681428336745245,
+    "E->nonE/m rec": 0.032394937016178155,
+    "dE/pop rec-exp (pts)": -1.3028395628437717,
+    "wage gap (hourly ratio)": 0.7860366830811488,
+    "sd log UE (women)": 0.08794154462167082,
+    "U rate": 0.038808273949771585
+   }
+  },
+  "gamma 2, additive shock": {
+   "seconds": 5.960163593292236,
+   "m": {
+    "E/pop": 0.6464421369388935,
+    "hours|E": 0.41443896610003345,
+    "share Lifecycle": 0.33520833333333333,
+    "share PT": 0.2075,
+    "share Career": 0.15916666666666668,
+    "share NiLF": 0.298125,
+    "quit/m exp": 0.03846656496663513,
+    "quit/m rec": 0.029163569944564507,
+    "E->nonE/m exp": 0.0581320476978184,
+    "E->nonE/m rec": 0.04893461020833048,
+    "dE/pop rec-exp (pts)": -1.9694547676494145,
+    "wage gap (hourly ratio)": 0.7764605323053976,
+    "sd log UE (women)": 0.07991321603727362,
+    "U rate": 0.03966169497896942
+   }
+  },
+  "gamma 2, proportional shock": {
+   "seconds": 15.139916896820068,
+   "m": {
+    "E/pop": 0.6011422611842119,
+    "hours|E": 0.43811898465341553,
+    "share Lifecycle": 0.21458333333333332,
+    "share PT": 0.24145833333333333,
+    "share Career": 0.21979166666666666,
+    "share NiLF": 0.32416666666666666,
+    "quit/m exp": 0.02608488660244233,
+    "quit/m rec": 0.02107646579104088,
+    "E->nonE/m exp": 0.045728612903139995,
+    "E->nonE/m rec": 0.040960801180296,
+    "dE/pop rec-exp (pts)": -1.788468223286388,
+    "wage gap (hourly ratio)": 0.8225730609583674,
+    "sd log UE (women)": 0.07616783774204083,
+    "U rate": 0.03923867325937582
+   }
+  }
+ }
+}
