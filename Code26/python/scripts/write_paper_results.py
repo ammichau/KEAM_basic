@@ -42,6 +42,23 @@ L = ["# Paper results: separable CRRA and King-Plosser-Rebelo preferences, γ = 
      "each section. Both specifications use the corrected simulator (husband returns to employment), a recession cut "
      "of the husband's UI replacement to 15%, a 20% recession fall in the wife's job-finding efficiency, and the 13 "
      "targets of `keam/final/calibrate.py`. Model: `FINAL_MODEL.md`.", ""]
+# ---------------- summary (generated from the same files)
+L.append("## Summary\n")
+L.append("| | " + " | ".join(N) + " |\n|---|" + "---|" * len(N))
+row = lambda name, f: L.append(f"| {name} | " + " | ".join(f(s) for s in specs) + " |")
+row("objective (13 targets)", lambda s: f"{C.objective_from_moments(s['calib']['moments'])[0]:.3f}")
+row("largest target misses", lambda s: ", ".join(f"{k} {100 * v:+.0f}%" for k, v in sorted(
+    C.objective_from_moments(s['calib']['moments'])[1].items(), key=lambda kv: -abs(kv[1]))[:3] if "pts" not in k))
+row("recession quit drop: precaution / hoarding", lambda s: f"{s['ch']['baseline']['precaution']:.0%} / {s['ch']['baseline']['hoarding']:.0%}" if s["ch"] else "-")
+row("recession employment drop (pts): baseline / acyclical husband risk", lambda s: f"{s['ch']['baseline']['dE']:+.2f} / {s['ch']['baseline']['dE_acycH']:+.2f}" if s["ch"] else "-")
+row("wife's LF entry ratio when husband loses job (data 1.60)", lambda s: f"{s['res']['baseline'].get('AWE: LF entry ratio (H E->U / stays E)', np.nan):.2f}" if s["res"] else "-")
+row("recession employment drop (pts) at 1970s employment: RoE / comp. wage gap / cost", lambda s: " / ".join(
+    f"{m['dE/pop rec-exp (pts)']:+.2f}" for m in s["res"]["experiments"].values()) if s["res"] else "-")
+row("cohorts 1940 → 1980 (relative targets): recession employment drop (pts)", lambda s: (
+    f"{s['coh']['1940']['m']['dE/pop rec-exp (pts)']:+.2f} → {s['coh']['1980']['m']['dE/pop rec-exp (pts)']:+.2f}") if s["coh"] else "-")
+row("cohorts 1940 → 1980: expansion quit rate", lambda s: (
+    f"{s['coh']['1940']['m']['quit/m exp']:.4f} → {s['coh']['1980']['m']['quit/m exp']:.4f}") if s["coh"] else "-")
+L.append("")
 # ---------------- specifications
 L.append("## 0. Specifications\n")
 L.append("| | " + " | ".join(N) + " |\n|---|" + "---|" * len(N))

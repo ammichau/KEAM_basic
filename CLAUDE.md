@@ -256,6 +256,13 @@ labor supply has a role at least comparable to hoarding. The women's UE-rate cyc
    0.194, never-working +32%, not adopted. Added-worker entry ratio
    (data 1.60): v4e 1.11, v7c see `moments_full`. RESULTS.md carries a superseded-results note at the top
    until the v4e/v7c pipelines replace the v4c sections.
+   - DONE (workstation, 2026-09-27): v4e (separable CRRA gamma 2) objective 0.139, precaution 16% / hoarding 51%;
+     v9 (KPR, all costs incl. the transitory shock proportional, `kT_mult`) objective 0.194 (a second start from
+     v7c, v9b, reached 0.260), precaution 6% / hoarding 58%, no employment effect of the husband's risk. Full
+     results for both (pipelines, channels, jacobians, cohorts with `--e-mode relative`, tags `<tag>_rel`) in
+     `PAPER_RESULTS.md` (`scripts/write_paper_results.py --specs "CRRA γ = 2 (v4e)=v4e,KPR γ = 2 (v9)=v9"`).
+     `cohorts_refined.py --e-mode relative` targets the model's 1940 employment plus the data's change (the
+     level targets make the employment path nearly flat because the model's 1940 rate is above 0.62).
    New moments for discriminating the two preference specifications (added 2026-09-27, `moments.py`):
    the wife's employment and hours 12 months after the husband's job loss relative to the 12 months
    before (event study), by aggregate state at the loss, and wife employment / hours by the husband's state.
