@@ -32,7 +32,13 @@ lower cost of work) make it more cyclical, a closing wage gap less so. Reference
    cost shock, child-care home-productivity multiplier at 25-39, hours-scaled fixed cost).
    Specification: `FINAL_MODEL.md`. Author decisions: monthly period, 30% replacement rate for
    the husband's unemployment income, compensated wage-gap experiment, assets.
-3. DONE (workstation, 2026-09-26): carried-forward calibration is **version 4c**
+3. CURRENT (2026-09-27, corrected simulator): carried-forward calibration is **version 4e** (separable CRRA
+   gamma 2, `output/final_calib_v4e_full.*`, objective 0.139; full pipeline with the `v4e` tag; RESULTS.md main),
+   with **version 7c** (KPR, `final_calib_v7c_full.*`, objective 0.076, no pipeline yet) as the balanced-growth
+   alternative. RESULTS.md regeneration command: as below with `v4e` in place of `v4c`, `--calib-prev
+   output/final_calib_v4c_full.json`, `--jacobian-channels "version 4e (...)=output/jacobian_channels_v4e.json,..."`,
+   `--calib-alt` led by v7c, `--channels` led by v4e and v7c, pre-fix versions labelled "(pre-fix)".
+   PRE-FIX (workstation, 2026-09-26): carried-forward calibration was **version 4c**
    `output/final_calib_v4c_full.json/.md` (13 targets, objective 0.171; recession UI cut `ui_rec_mult` 0.5,
    job-finding fall fixed at 20% via `lam_f_ratio` 0.80, polished from v4). UE-rate cyclicality matched
    exactly (0.0686); NiLF +21%, career -12%, recession quit rate -19%, employment +9%. Precaution 31%,
