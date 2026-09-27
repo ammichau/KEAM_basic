@@ -154,7 +154,7 @@ def simulate_final(p: FinalParams, sol: FinalSolution, cfg: SimConfigFinal | Non
         srch[:, it] = np.where(work, 0, s); hstat[:, it] = y
         inc_w[:, it] = np.where(work, w * h, 0); inc_h[:, it] = yh; cons[:, it] = c
         # transitions
-        y_new = np.ones(Nind, int)
+        y_new = np.zeros(Nind, int)          # default: employed (0); R (1) and U (2) below
         pU = lamH[z, y, 2]; pR = lamH[z, y, 1]
         y_new[uH[:, it] < pR + pU] = 1
         y_new[uH[:, it] < pU] = 2

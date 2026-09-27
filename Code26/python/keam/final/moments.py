@@ -95,6 +95,22 @@ def moments_final(sim: FinalSim, window=None) -> dict:
         chg = after / before - 1
         out["cons drop at H job loss exp (%)"] = 100 * float(chg[zl == 0].mean()) if (zl == 0).any() else np.nan
         out["cons drop at H job loss rec (%)"] = 100 * float(chg[zl == 1].mean()) if (zl == 1).any() else np.nan
+    # added-worker responses to the husband's job loss: the wife's employment and hours 1-12 months
+    # after the loss relative to the 12 months before (event study on hloss), by aggregate state at the loss
+    if idx.size:
+        emp_b = np.stack([sim.emp[i, j - k] for k in range(1, 13)], 1).mean(1)
+        emp_a = np.stack([sim.emp[i, j + k] for k in range(0, 12)], 1).mean(1)
+        hrs_b = np.stack([sim.hours[i, j - k] for k in range(1, 13)], 1).mean(1)
+        hrs_a = np.stack([sim.hours[i, j + k] for k in range(0, 12)], 1).mean(1)
+        out["added worker: wife E +12m after H loss (pp)"] = 100 * float((emp_a - emp_b).mean())
+        out["added worker: wife E +12m, loss in rec (pp)"] = 100 * float((emp_a - emp_b)[zl == 1].mean()) if (zl == 1).any() else np.nan
+        out["added worker: wife hours +12m after H loss (%)"] = 100 * float((hrs_a.mean() / max(hrs_b.mean(), 1e-9)) - 1)
+    # employment and hours of wives by the husband's current state (E / R / U), within the window
+    for name, ys in [("husband E", 0), ("husband R", 1), ("husband U", 2)]:
+        msk = (sim.hstat == ys) & inwin
+        out[f"wife E | {name}"] = float((sim.emp * msk).sum() / max(msk.sum(), 1))
+        me = msk & (sim.emp == 1)
+        out[f"wife hours|E | {name}"] = float((sim.hours * me).sum() / max(me.sum(), 1))
     out["mean assets/monthly HH inc"] = float((sim.a * inwin).sum() / max(inwin.sum(), 1)) / max(ratio(IW + IH, pop, sel), 1e-9)
     out["share e at cap"] = float(((sim.e >= p.e_max - 1e-6) * inwin).sum() / max(inwin.sum(), 1))
     out["share rec months"] = float(rec.sum() / sel.sum())

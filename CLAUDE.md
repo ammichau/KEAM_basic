@@ -14,6 +14,16 @@ lower cost of work) make it more cyclical, a closing wage gap less so. Reference
 
 ## State of the work
 
+0. **SIMULATOR BUG FIXED 2026-09-27 (commit "Husband state default")**: `keam/final/simulate.py` initialised the
+   husband's next state to 1 (R, scarred) instead of 0 (E), so simulated husbands never returned to E
+   (0.1% of months in E, 90% in R with 15% lower income and 2.5x the job-loss rate; the solver used the
+   correct transition matrix). Every calibration, experiment and channel decomposition before this commit
+   (ls, ui, om7, v3, v4, v4c, v5, v5b, v6, v7, v7b, the channels and jacobian tables, RESULTS.md) was
+   simulated with that husband process and must be recomputed. At the v4c parameters the fix moves the
+   coarse-grid quit rate from 3.4% to 4.4%, the recession employment drop from -1.7 to -2.1 points, the
+   never-working share to 0.33 and the wife's income share to 0.28. Recalibrations with the fixed
+   simulator: v7c (KPR, from v7b, cloud) and v4e (separable gamma 2, from v4c, workstation); see plan item 7.
+
 1. `Code26/python/keam/` is an exact Python translation of the MATLAB model in `Code26/`
    (reproduces every saved solution to 1e-14). `DEPARTURES.md` catalogues where that code
    departs from the model in the slides and quantifies each item. The MATLAB calibration
@@ -177,6 +187,19 @@ labor supply has a role at least comparable to hoarding. The women's UE-rate cyc
      --set lam_f_ratio=0.80 --bound lam_f_ratio:0.8:0.8000001 --extra zh_spread --set zh_spread=0.3 --bound zh_spread:0.0:0.8
      --max-nfev 6 --diff-step 0.04 --tag v4d_full`, then `channels.py --tag v4d`; if it fits, its full pipeline.
    `zh_spread` must be listed in `calibrate.py` BOUNDS (added) and passed with `--extra`.
+7. AFTER THE SIMULATOR FIX (plan item 0 in the state): recalibrate the two candidate specifications with
+   the corrected husband process, then redo the channel decompositions and the results pipeline.
+   - v7c (cloud, running): `python3 -u scripts/calibrate_ls.py --x0 output/final_calib_v7b_full.json --fixed kpr=1
+     --fixed gamma=2.0 --fixed ui_rec_mult=0.5 --set lam_f_ratio=0.80 --bound lam_f_ratio:0.8:0.8000001 --max-nfev 8
+     --diff-step 0.04 --tag v7c_full`, then `channels.py --tag v7c`.
+   - v4e (workstation): `python3 -u scripts/calibrate_ls.py --x0 output/final_calib_v4c_full.json --fixed ui_rec_mult=0.5
+     --set lam_f_ratio=0.80 --bound lam_f_ratio:0.8:0.8000001 --max-nfev 8 --diff-step 0.04 --tag v4e_full`, then
+     `channels.py --tag v4e`, `jacobian_channels.py --tag v4e`, and `bash scripts/run_pipeline.sh
+     output/final_calib_v4e_full.json v4e`; regenerate RESULTS.md with v4e as the main calibration and v7c as
+     the balanced-growth alternative; mark the pre-fix versions as superseded in 1a/6a.
+   New moments for discriminating the two preference specifications (added 2026-09-27, `moments.py`):
+   the wife's employment and hours 12 months after the husband's job loss relative to the 12 months
+   before (event study), by aggregate state at the loss, and wife employment / hours by the husband's state.
 4. Report (RESULTS.md section 6 and the reply): a table of all versions (objective, the 13 targets'
    deviations, precaution and hoarding shares, recession employment drop with and without cyclical
    husband risk); whether log utility preserves the precautionary channel and what it does to the fit;
