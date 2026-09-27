@@ -23,6 +23,8 @@ base = FinalParams(n_omega=3, n_kbar=3, n_km=3) if a.coarse else FinalParams()
 for kv in a.fixed:
     n, v = kv.split("="); base = base.replace(**{n: type(getattr(base, n))(float(v))})
 p = C.params_from_calib(calib, base)
+for kv in a.fixed:            # command-line overrides win over the calibration file's fixed fields
+    n, v = kv.split("="); p = p.replace(**{n: type(getattr(p, n))(float(v))})
 t0 = time.time(); m, _, _ = run(p, SimConfigFinal(N=60, n_cohorts=90)); obj, parts = C.objective_from_moments(m)
 print(f"{a.calib}: {'coarse' if a.coarse else 'full'} grid, fixed {a.fixed}, objective {obj:.4f} ({time.time() - t0:.0f}s)")
 for k, tv in C.TARGETS.items():

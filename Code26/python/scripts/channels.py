@@ -30,6 +30,8 @@ base = FinalParams()
 for kv in a.fixed:
     n, v = kv.split("="); base = base.replace(**{n: type(getattr(base, n))(float(v))})
 p0 = C.params_from_calib(calib, base)
+for kv in a.fixed:            # command-line overrides win over the calibration file's fixed fields
+    n, v = kv.split("="); p0 = p0.replace(**{n: type(getattr(p0, n))(float(v))})
 cfg = SimConfigFinal(N=60, n_cohorts=90)
 VARIANTS = {
     "baseline": {},
