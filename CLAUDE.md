@@ -206,6 +206,13 @@ labor supply has a role at least comparable to hoarding. The women's UE-rate cyc
      The author wants the full results (moments vs data, cohorts, decompositions) for v9 and for the best
      separable gamma = 2 version (v4e); both pipelines run on the workstation. Tags v4e and v9 are the
      workstation's; please do not write them from the cloud.
+   Added-worker moments after Guner, Kulikova and Valladares-Esteban (RED 2025, "Does the added worker
+   effect matter?"; data: a wife's monthly labor-force entry probability is 60% higher in the month her
+   husband moves from employment to unemployment; aggregate participation +0.72 pp, employment +0.65 pp):
+   `moments.py` "AWE: ..." entries. With the corrected simulator at the pre-fix parameters the model's
+   entry ratio is 1.08 (v4c) and 1.00 (v7b) against 1.60: the ex-post entry response is far too weak in
+   both; candidate levers are lower liquid assets and longer husband spells. Candidate 14th target once the
+   PDF (blocked from the cloud; ask the author to add it to the repo) confirms the definition.
    New moments for discriminating the two preference specifications (added 2026-09-27, `moments.py`):
    the wife's employment and hours 12 months after the husband's job loss relative to the 12 months
    before (event study), by aggregate state at the loss, and wife employment / hours by the husband's state.

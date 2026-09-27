@@ -105,6 +105,29 @@ def moments_final(sim: FinalSim, window=None) -> dict:
         out["added worker: wife E +12m after H loss (pp)"] = 100 * float((emp_a - emp_b).mean())
         out["added worker: wife E +12m, loss in rec (pp)"] = 100 * float((emp_a - emp_b)[zl == 1].mean()) if (zl == 1).any() else np.nan
         out["added worker: wife hours +12m after H loss (%)"] = 100 * float((hrs_a.mean() / max(hrs_b.mean(), 1e-9)) - 1)
+    # joint monthly transitions (Guner, Kulikova and Valladares-Esteban, "Does the added worker effect
+    # matter?"): the wife's probability of entering the labor force (from NiLF: non-employed and not
+    # searching) or employment in the month the husband moves from E to U, relative to months in which he
+    # stays employed. Data: entry into the labor force is 60% more likely when the husband loses his job.
+    hprev = np.full_like(sim.hstat, 0); hprev[:, 1:] = sim.hstat[:, :-1]
+    sprev = np.full_like(sim.stat, 0); sprev[:, 1:] = sim.stat[:, :-1]
+    valid = inwin.copy(); valid[:, 0] = False
+    nilf_prev = (sprev == 2) & valid
+    h_EU = (hprev == 0) & (sim.hstat == 2); h_EE = (hprev == 0) & (sim.hstat == 0)
+    inLF = (sim.stat <= 1); inE = (sim.emp == 1)
+    def cond(num, den):
+        return float((num & den).sum() / max(den.sum(), 1))
+    out["AWE: P(wife NiLF->LF | H E->U)"] = cond(inLF, nilf_prev & h_EU)
+    out["AWE: P(wife NiLF->LF | H stays E)"] = cond(inLF, nilf_prev & h_EE)
+    out["AWE: P(wife NiLF->E | H E->U)"] = cond(inE, nilf_prev & h_EU)
+    out["AWE: P(wife NiLF->E | H stays E)"] = cond(inE, nilf_prev & h_EE)
+    r = out["AWE: P(wife NiLF->LF | H stays E)"]
+    out["AWE: LF entry ratio (H E->U / stays E)"] = out["AWE: P(wife NiLF->LF | H E->U)"] / r if r > 0 else np.nan
+    # over the following 12 months: entry into the labor force by 12 months after the husband's loss
+    if idx.size:
+        lf_a = np.stack([(sim.stat[i, j + k] <= 1) for k in range(0, 12)], 1).any(1)
+        nilf_at = (sim.stat[i, np.maximum(j - 1, 0)] == 2)
+        out["AWE: P(NiLF wife enters LF within 12m | H loss)"] = float(lf_a[nilf_at].mean()) if nilf_at.any() else np.nan
     # employment and hours of wives by the husband's current state (E / R / U), within the window
     for name, ys in [("husband E", 0), ("husband R", 1), ("husband U", 2)]:
         msk = (sim.hstat == ys) & inwin
