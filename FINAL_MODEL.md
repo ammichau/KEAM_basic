@@ -18,7 +18,11 @@ the table at the end lists what is calibrated.
   never-working share being one wage-type cell in every calibration (RESULTS.md 1b). On the coarse grid
   at the version-7b parameters a spread of 0.3 moves the never-working share from 0.30 to 0.22 and the
   career shares to 0.28 / 0.29 / 0.21 / 0.22 (data 0.31 / 0.28 / 0.19 / 0.22) without recalibration;
-  versions 8 (KPR) and 4d (separable, v4c) recalibrate with `zh_spread` free.
+  On the 100-type grid at the corrected KPR calibration (v7c) the type does the opposite: a spread of
+  0.15 / 0.30 / 0.45 raises the never-working share from +12% to +15% / +22% / +25% and polarises the
+  shares (career up, life-cycle and part-time down; `output/eval_v7c_zh*.out`), and the least-squares
+  recalibration with the type (v8c) did not improve on v7c. Not adopted; the coarse-grid result was a
+  27-type artefact.
 * **States:** experience e ∈ [0, 2], assets a ≥ 0, husband x_m ∈ {E, R, U}, aggregate
   Z ∈ {expansion, recession}, employment status, and a cost-of-work shock κ_T (discrete
   normal with sd σ_κ) realised at the start of each month, before the quit decision. In the
