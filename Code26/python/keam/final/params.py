@@ -10,6 +10,10 @@ class FinalParams:
     beta: float = 0.99
     gamma: float = 2.0          # CRRA
     eta: float = 1.4            # curvature of hours disutility (slides p.29)
+    kpr: bool = False           # King-Plosser-Rebelo preferences: u = U(log c - mu h^(1+eta)/(1+eta) - kappa)
+                                # with U(x) = exp((1-gamma) x)/(1-gamma); balanced-growth consistent for any
+                                # gamma, nests the separable log model at gamma = 1. The transitory cost
+                                # shock stays an additive shock to the value at the quit decision.
     ez_rra: float = 1.0         # Epstein-Zin risk aversion with unit intertemporal elasticity (use with
                                 # gamma = 1): continuation values enter through the certainty equivalent
                                 # -(1/theta) log E exp(-theta V) with theta = (ez_rra - 1)(1 - beta), the

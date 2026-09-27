@@ -35,6 +35,13 @@ def u(c, gamma):
     return np.power(c, 1.0 - gamma) / (1.0 - gamma)
 
 
+def U_kpr(x, gamma):
+    """King-Plosser-Rebelo outer function of the composite x = log c - v(h) - kappa."""
+    if abs(gamma - 1.0) < 1e-12:
+        return x
+    return np.exp((1.0 - gamma) * x) / (1.0 - gamma)
+
+
 def _bracket(grid, x):
     k = np.clip(np.searchsorted(grid, x, side="right") - 1, 0, grid.size - 2)
     w = np.clip((x - grid[k]) / (grid[k + 1] - grid[k]), 0.0, 1.0)
@@ -101,11 +108,15 @@ def solve_type(p: FinalParams, omega: float, kbar: float, km: float, VR: np.ndar
               + fh[None, None, None, None, :, None] + yH[tau][None, None, :, :, None, None]
               + ag[None, :, None, None, None, None] - ag[None, None, None, None, None, :])
         kap_h = kap * (hg / 0.4) ** p.kappa_h_power if p.kappa_h_power > 0 else np.full(nH, kap)
-        flowE = np.where(cE > 1e-8, u(np.maximum(cE, 1e-8), p.gamma), -1e10) \
-            - p.mu * hg[None, None, None, None, :, None] ** (1 + p.eta) / (1 + p.eta) - kap_h[None, None, None, None, :, None]
+        vh = p.mu * hg[None, None, None, None, :, None] ** (1 + p.eta) / (1 + p.eta) + kap_h[None, None, None, None, :, None]
         cN = (fs[None, None, None, None, :, None] + yH[tau][None, None, :, :, None, None]
               + ag[None, :, None, None, None, None] - ag[None, None, None, None, None, :])
-        flowN = np.where(cN > 1e-8, u(np.maximum(cN, 1e-8), p.gamma), -1e10)
+        if p.kpr:      # non-separable: the composite log c - v(h) - kappa raised to the CRRA curvature
+            flowE = np.where(cE > 1e-8, U_kpr(np.log(np.maximum(cE, 1e-8)) - vh, p.gamma), -1e10)
+            flowN = np.where(cN > 1e-8, U_kpr(np.log(np.maximum(cN, 1e-8)), p.gamma), -1e10)
+        else:
+            flowE = np.where(cE > 1e-8, u(np.maximum(cE, 1e-8), p.gamma), -1e10) - vh
+            flowN = np.where(cN > 1e-8, u(np.maximum(cN, 1e-8), p.gamma), -1e10)
         flowN = np.ascontiguousarray(np.broadcast_to(flowN, (nE, nA, nY, nZ, nS, nA)))
         # next-age continuation (fixed during the iteration): start-of-period values at age tau+1 by
         # shock node j' (quit decision at node j'), then by today's shock state through PJ
