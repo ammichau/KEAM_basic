@@ -81,8 +81,12 @@ lower cost of work) make it more cyclical, a closing wage gap less so. Reference
    recession quit rate -16%, wage gap +27%; precaution 25% / hoarding 49% (`channels_v7.md`): KPR
    restores the precautionary channel under balanced growth. Its employment drop does not change when
    the husband's risk is made acyclical (-1.71 both), unlike v4c (-1.65 / -2.88): the added-worker
-   response to the husband's risk is absent in v7, the quit response is not. Next: a v7 polish of the
-   wage gap (tau_w bound) and its full pipeline if the author wants balanced growth in the paper.
+   response to the husband's risk is absent in v7, the quit response is not. Version 7b (longer polish
+   of v7, `final_calib_v7b_full.*`): objective 0.118 on 13 targets, the best of all versions (v4c 0.171);
+   never-working +18%, wage gap +11%, career -10%, recession quit rate -9%, everything else within 8%;
+   channel split in `channels_v7b.md`. If the author wants balanced growth, run the full pipeline for
+   v7b on the workstation (`bash scripts/run_pipeline.sh output/final_calib_v7b_full.json v7b`) and
+   make it the main calibration in RESULTS.md.
    Versions so far (RESULTS.md 1a/4b; objective with 12 targets unless noted; precaution / hoarding shares
    of the recession quit drop): adopted `ls` 0.120, 19/39; `ui` (UI cut) 0.144, 29/34; `om7` (7 wage types)
    0.135, 21/38; `v3` (UI cut + 10% job-finding fall) 0.113, 29/25; `v4` (UI cut + job-finding fall
