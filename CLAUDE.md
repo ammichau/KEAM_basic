@@ -263,7 +263,8 @@ labor supply has a role at least comparable to hoarding. The women's UE-rate cyc
      `PAPER_RESULTS.md` (`scripts/write_paper_results.py --specs "CRRA γ = 2 (v4e)=v4e,KPR γ = 2 (v9)=v9"`).
      `cohorts_refined.py --e-mode relative` targets the model's 1940 employment plus the data's change (the
      level targets make the employment path nearly flat because the model's 1940 rate is above 0.62).
-   New moments for discriminating the two preference specifications (added 2026-09-27, `moments.py`):
+   AUTHOR DECISION (2026-09-27): the added-worker moments are dropped and ignored entirely (not targets, not
+   reported); the notes above on them are historical. Moments for the preference specifications (`moments.py`):
    the wife's employment and hours 12 months after the husband's job loss relative to the 12 months
    before (event study), by aggregate state at the loss, and wife employment / hours by the husband's state.
 4. Report (RESULTS.md section 6 and the reply): a table of all versions (objective, the 13 targets'

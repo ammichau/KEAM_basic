@@ -1,5 +1,5 @@
 """Paper results for several specifications side by side (PAPER_RESULTS.md at the repository root):
-calibration (parameters, targeted moments against the data, untargeted and added-worker moments), the
+calibration (parameters, targeted moments against the data, untargeted moments), the
 single-factor experiments sized to the 1970s employment rate, the refined cohort accounting, the mechanism
 decompositions (counterfactuals, precaution versus hoarding, sensitivity of the split) and robustness.
 Every number is read from the output files of the scripts named in each section.
@@ -51,7 +51,6 @@ row("largest target misses", lambda s: ", ".join(f"{k} {100 * v:+.0f}%" for k, v
     C.objective_from_moments(s['calib']['moments'])[1].items(), key=lambda kv: -abs(kv[1]))[:3] if "pts" not in k))
 row("recession quit drop: precaution / hoarding", lambda s: f"{s['ch']['baseline']['precaution']:.0%} / {s['ch']['baseline']['hoarding']:.0%}" if s["ch"] else "-")
 row("recession employment drop (pts): baseline / acyclical husband risk", lambda s: f"{s['ch']['baseline']['dE']:+.2f} / {s['ch']['baseline']['dE_acycH']:+.2f}" if s["ch"] else "-")
-row("wife's LF entry ratio when husband loses job (data 1.60)", lambda s: f"{s['res']['baseline'].get('AWE: LF entry ratio (H E->U / stays E)', np.nan):.2f}" if s["res"] else "-")
 row("recession employment drop (pts) at 1970s employment: RoE / comp. wage gap / cost", lambda s: " / ".join(
     f"{m['dE/pop rec-exp (pts)']:+.2f}" for m in s["res"]["experiments"].values()) if s["res"] else "-")
 row("cohorts 1940 → 1980 (relative targets): recession employment drop (pts)", lambda s: (
@@ -92,9 +91,7 @@ L.append("\nµ, κ̄, κ_m and σ_κ are in utility units under CRRA and in log-
          "levels are not comparable across the two columns.\n")
 UNT = [("U rate", None), ("wife share exp", None), ("wife share rec", None), ("cons drop at H job loss exp (%)", None),
        ("cons drop at H job loss rec (%)", None), ("mean assets/monthly HH inc", None),
-       ("added worker: wife E +12m after H loss (pp)", None), ("added worker: wife E +12m, loss in rec (pp)", None),
-       ("AWE: LF entry ratio (H E->U / stays E)", 1.60), ("AWE: P(wife NiLF->LF | H E->U)", None),
-       ("AWE: P(wife NiLF->LF | H stays E)", None), ("wife E | husband E", None), ("wife E | husband U", None)]
+       ("wife E | husband E", None), ("wife E | husband U", None)]
 L.append("Untargeted moments (baseline simulation of `final_results_<tag>.json`; data for the labor-force entry ratio: "
          "Guner, Kulikova and Valladares-Esteban, a wife's monthly entry probability is 60% higher when her husband "
          "loses his job):\n")

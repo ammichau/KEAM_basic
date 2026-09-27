@@ -23,11 +23,9 @@ the table at the end lists what is calibrated.
   shares (career up, life-cycle and part-time down; `output/eval_v7c_zh*.out`), and the least-squares
   recalibration with the type (v8c) did not improve on v7c. Not adopted; the coarse-grid result was a
   27-type artefact.
-* **Added-worker effect (2026-09-27).** The model's wives insure against the husband's risk by not quitting,
-  not by entering: the monthly labor-force entry ratio (husband E→U versus stays E; data 1.60, Guner,
-  Kulikova and Valladares-Esteban 2025) is 1.01 (v7c) and 1.11 (v4e), and neither removing assets, lengthening
-  the husband's spells nor a persistent cost shock (ratios 0.66-0.91) raises it (`output/awe_levers_v7c.md`,
-  `output/awe_rho_scan_v7c.json`). Entry is decided by the wage type, not by the household's state.
+* **Added-worker moments: dropped (author decision, 2026-09-27).** The entry-ratio moments after Guner,
+  Kulikova and Valladares-Esteban remain computable in `moments.py` for reference but are not targets
+  and are not reported.
 * **States:** experience e ∈ [0, 2], assets a ≥ 0, husband x_m ∈ {E, R, U}, aggregate
   Z ∈ {expansion, recession}, employment status, and a cost-of-work shock κ_T (discrete
   normal with sd σ_κ) realised at the start of each month, before the quit decision. In the
