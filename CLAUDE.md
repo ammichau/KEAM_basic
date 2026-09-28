@@ -317,6 +317,13 @@ labor supply has a role at least comparable to hoarding. The women's UE-rate cyc
    quit-targeted runs (q tags) are kept only as a comparison for the best version. Mean liquid assets are a check
    (data: about 6 months of household income), not a target. The partial-liquidity parameter `liq` (a' >= (1 - liq) a)
    stays in the code at its default 1 (inactive).
+   RESULTS (workstation, first pass at the evaluation limit, second polishes running): v4em (separable, wage cut)
+   objective 0.219 on 11 targets: employment +16%, quit exp +19% (0.0270), quit rec -12% (0.0184, a 32% recession fall
+   against 7% in the data), UE cyclicality +12%, mean assets 4.5 months of own income (ages 25-54: 1.3-2.4, 55-64: 10.4);
+   v7cm (KPR, wage cut) objective 0.112: employment +6%, never-working +14%, quit exp +5% (0.0237), quit rec -17%
+   (0.0175, a 26% fall), UE cyclicality +3%, wage gap on target, mean assets 10.3 months (ages 25-54: 9-10), 4% of
+   household-months near a_max 30 (`final_calib_{v4em,v7cm}_full.md`, `asset_distribution_{v4em,v7cm}.md`). Both
+   overstate the recession quit drop by a factor of 4: with the 20% job-finding fall the model cannot match a 7% fall.
 4. Report (RESULTS.md section 6 and the reply): a table of all versions (objective, the 13 targets'
    deviations, precaution and hoarding shares, recession employment drop with and without cyclical
    husband risk); whether log utility preserves the precautionary channel and what it does to the fit;
