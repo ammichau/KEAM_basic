@@ -324,6 +324,13 @@ labor supply has a role at least comparable to hoarding. The women's UE-rate cyc
    (0.0175, a 26% fall), UE cyclicality +3%, wage gap on target, mean assets 10.3 months (ages 25-54: 9-10), 4% of
    household-months near a_max 30 (`final_calib_{v4em,v7cm}_full.md`, `asset_distribution_{v4em,v7cm}.md`). Both
    overstate the recession quit drop by a factor of 4: with the 20% job-finding fall the model cannot match a 7% fall.
+   Second polishes with a_max 45 (the grid no longer binds): v4emb objective 0.230, converged (xtol): employment +16%,
+   quit exp +18% (0.0267), quit rec -14% (0.0181, a 32% fall), UE cyclicality +13%, wage gap +5%; mean assets 3.2 months
+   of own income (ages 25-54: 1.0-1.4). v7cmb objective 0.120 at the evaluation limit: employment +7%, hours +6%,
+   never-working +10%, quit exp +4% (0.0235), quit rec -18% (0.0173, a 26% fall), UE cyclicality +8%, wage gap on
+   target; mean assets 6.9 months of own income (ages 25-54: 5.6-7.0), i.e. the data's 6 months without targeting
+   (`final_calib_{v4emb,v7cmb}_full.md`, `asset_distribution_{v4emb,v7cmb}.md`). Under the macro calibration the
+   separable version cannot fit employment and the quit level together; KPR can, and holds realistic liquid wealth.
 4. Report (RESULTS.md section 6 and the reply): a table of all versions (objective, the 13 targets'
    deviations, precaution and hoarding shares, recession employment drop with and without cyclical
    husband risk); whether log utility preserves the precautionary channel and what it does to the fit;
