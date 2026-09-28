@@ -1,0 +1,35 @@
+base {'gap': -1.107, 'precaution': 0.208, 'hoarding': 0.56, 'both_off': 0.781, 'sdUE': 0.069, 'dE': -1.67, 'dE_acycH': -2.814, 'quit_rec': 0.024, 'E': 0.679} [141s]
+job-finding fall in recessions (1 - lam_f ratio): precaution 0.183 hoarding 0.580 sdUE 0.0806 dE -1.91 [285s]
+UI cut in recessions (1 - ui_rec_mult): precaution 0.215 hoarding 0.555 sdUE 0.0704 dE -1.63 [433s]
+husband job-loss rate in recessions: precaution 0.240 hoarding 0.538 sdUE 0.0685 dE -1.48 [589s]
+husband job-finding rate in recessions: precaution 0.193 hoarding 0.574 sdUE 0.0713 dE -1.85 [736s]
+husband job-loss rate (both states): precaution 0.223 hoarding 0.537 sdUE 0.0681 dE -1.67 [876s]
+UI replacement (both states): precaution 0.219 hoarding 0.549 sdUE 0.0705 dE -1.69 [1023s]
+wife own job loss in recessions (lam_u1): precaution 0.226 hoarding 0.564 sdUE 0.0681 dE -2.19 [1173s]
+job-finding efficiency level (lam_f0): precaution 0.228 hoarding 0.544 sdUE 0.0571 dE -1.28 [1327s]
+cost-shock sd (sd_kT): precaution 0.210 hoarding 0.553 sdUE 0.0658 dE -1.58 [1477s]
+recession wage cut (1 - phi_rec): precaution 0.208 hoarding 0.560 sdUE 0.0692 dE -1.67 [1626s]
+expected recession duration (1 / exit probability): precaution 0.227 hoarding 0.588 sdUE 0.0714 dE -1.84 [1770s]
+asset limit a_max: precaution 0.218 hoarding 0.545 sdUE 0.0682 dE -1.63 [1909s]
+risk aversion gamma: precaution 0.221 hoarding 0.533 sdUE 0.0692 dE -1.34 [2062s]
+# Sensitivity of the precaution / hoarding split (`output/final_calib_v4nb_full.json`, +10% steps, parameters otherwise fixed)
+
+Baseline: precaution 21%, hoarding 56%, both off 78%, quit gap -1.11 points, sd log UE 0.0692, recession employment drop -1.67 (-2.81 without cyclical husband risk).
+
+Entries: change per +1% of the named quantity (shares in percentage points; quit gap and employment drop in percentage points of the rate; sd log UE in units).
+
+| quantity perturbed | precaution share (pp) | hoarding share (pp) | quit gap (pp) | sd log UE | dE (pts) | dE acyc. husband (pts) | quit rec (pp) |
+|---|---|---|---|---|---|---|---|
+| job-finding fall in recessions (1 - lam_f ratio) | -0.25 | +0.21 | -0.005 | +0.0011 | -0.024 | -0.035 | -0.006 |
+| UI cut in recessions (1 - ui_rec_mult) | +0.07 | -0.05 | -0.001 | +0.0001 | +0.004 | +0.000 | -0.001 |
+| husband job-loss rate in recessions | +0.31 | -0.22 | -0.005 | -0.0001 | +0.019 | +0.000 | -0.007 |
+| husband job-finding rate in recessions | -0.15 | +0.15 | +0.002 | +0.0002 | -0.018 | +0.000 | +0.003 |
+| husband job-loss rate (both states) | +0.14 | -0.23 | +0.001 | -0.0001 | +0.000 | +0.003 | -0.012 |
+| UI replacement (both states) | +0.11 | -0.10 | -0.001 | +0.0001 | -0.002 | -0.002 | +0.002 |
+| wife own job loss in recessions (lam_u1) | +0.17 | +0.04 | +0.002 | -0.0001 | -0.052 | -0.055 | +0.004 |
+| job-finding efficiency level (lam_f0) | +0.19 | -0.15 | -0.026 | -0.0012 | +0.039 | +0.030 | +0.041 |
+| cost-shock sd (sd_kT) | +0.01 | -0.06 | -0.021 | -0.0003 | +0.009 | +0.009 | +0.047 |
+| recession wage cut (1 - phi_rec) | +0.00 | +0.00 | +0.000 | +0.0000 | +0.000 | +0.000 | +0.000 |
+| expected recession duration (1 / exit probability) | +0.18 | +0.29 | +0.003 | +0.0002 | -0.017 | -0.021 | +0.001 |
+| asset limit a_max | +0.10 | -0.14 | -0.001 | -0.0001 | +0.004 | -0.003 | -0.002 |
+| risk aversion gamma | +0.13 | -0.26 | -0.036 | +0.0000 | +0.033 | +0.019 | +0.063 |
