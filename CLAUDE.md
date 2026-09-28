@@ -331,6 +331,13 @@ labor supply has a role at least comparable to hoarding. The women's UE-rate cyc
    target; mean assets 6.9 months of own income (ages 25-54: 5.6-7.0), i.e. the data's 6 months without targeting
    (`final_calib_{v4emb,v7cmb}_full.md`, `asset_distribution_{v4emb,v7cmb}.md`). Under the macro calibration the
    separable version cannot fit employment and the quit level together; KPR can, and holds realistic liquid wealth.
+   No-wage-cut pair, first pass at the evaluation limit (a_max 30, second polishes with a_max 45 to follow): v4nbm
+   (separable, no wage cut) objective 1.138, stalled: employment +17%, quit exp +15%, quit rec -12%, recession employment
+   drop -0.74 points against -1.7 (without the wage cut the patient, wealthier separable households do not produce the
+   employment drop); v9nm (KPR proportional shock, no wage cut) 0.256, still falling: employment +15%, lifecycle share
+   -19%, quit exp +17%, quit rec -5% (0.0199, a 25% fall), employment drop -1.51, mean assets 10.9 months of own income
+   (`final_calib_{v4nbm,v9nm}_full.md`, `asset_distribution_{v4nbm,v9nm}.md`). Under the macro calibration the KPR
+   version with the wage cut (v7cmb, 0.120) is the best fit by a wide margin.
 4. Report (RESULTS.md section 6 and the reply): a table of all versions (objective, the 13 targets'
    deviations, precaution and hoarding shares, recession employment drop with and without cyclical
    husband risk); whether log utility preserves the precautionary channel and what it does to the fit;
