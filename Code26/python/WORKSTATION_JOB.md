@@ -10,31 +10,32 @@ suffixes) are yours; the cloud session will not write them.
 
 ## Data and targets
 
-`data/QuitLayoff2024_sa.csv` (author; CPS monthly flows, seasonally adjusted 13-month moving averages, percent):
-`eqmw_ma` = married women's monthly quit rate from employment to non-employment, `elmw_ma` = their monthly
-layoff rate to non-employment. Moments: `python3 scripts/quit_layoff_moments.py --file data/QuitLayoff2024_sa.csv
---early-end 1985 --ma 13` (already run: `output/quit_layoff.md/.json`).
+`data/QuitLayoff2024.csv` (author; CPS monthly flows 1978-02 to 2016-12, seasonally adjusted, unsmoothed, percent; the `_sa.csv` file is the same data as 13-month centred moving averages, not used for targets):
+`eqmw_seats` = married women's monthly quit rate from employment to non-employment, `elmw_seats` = their monthly
+layoff rate to non-employment. Moments: `python3 scripts/quit_layoff_moments.py --file data/QuitLayoff2024.csv
+--quit eqmw_seats --layoff elmw_seats --early-end 1985 --ma 1` (already run: `output/quit_layoff.md/.json`; no smoothing
+anywhere, in the data or in the model).
 
 Targets for the 1940s cohort come from the early window 1978-85 (22 NBER recession months: 1980, 1981-82),
-trend-adjusted (rate on a linear trend and a recession dummy, the dummy averaged over 13 months like the series):
+trend-adjusted (rate on a linear trend and a recession dummy):
 
 | moment | value | use |
 |---|---|---|
-| quit/m exp | 0.0230 | target (weight 2) |
-| quit/m rec | 0.0202 | target (weight 2); recession fall 13% |
-| lam_u0 (exogenous job loss, expansion) | 0.0133 | fixed at the layoff rate, not calibrated |
-| lam_u1 (exogenous job loss, recession) | 0.0160 | fixed at the layoff rate, not calibrated |
+| quit/m exp | 0.0226 | target (weight 2) |
+| quit/m rec | 0.0210 | target (weight 2); recession fall 7% |
+| lam_u0 (exogenous job loss, expansion) | 0.0130 | fixed at the layoff rate, not calibrated |
+| lam_u1 (exogenous job loss, recession) | 0.0154 | fixed at the layoff rate, not calibrated |
 
 The `E->nonE/m exp` and `E->nonE/m rec` targets are dropped (quits plus layoffs); the other nine targets are
 unchanged, so each objective has 11 targets. `lam_f_ratio` stays fixed at 0.80 (the women's UE-rate cyclicality),
-as in all carried versions. Note the tension to watch: the data's recession fall in quits is 13% (the old target
-had 18%; the full 1978-2019 sample has none) while the 20% job-finding fall alone gave the model quit drops of
-24-34%.
+as in all carried versions. Note the tension to watch: the data's recession fall in quits is 7% (the old target
+had 18%; over the full 1978-2016 sample quits are 4% HIGHER in recessions after the trend) while the 20% job-finding
+fall alone gave the model quit drops of 24-34%.
 
 Common flags (shell variable):
 
 ```
-Q='--set lam_u0=0.0133 --set lam_u1=0.0160 --drop lam_u0 --drop lam_u1 --drop-target "E->nonE/m exp" --drop-target "E->nonE/m rec" --extra-target "quit/m exp=0.0230:2.0" --extra-target "quit/m rec=0.0202:2.0" --set lam_f_ratio=0.80 --bound lam_f_ratio:0.8:0.8000001 --max-nfev 8 --diff-step 0.04'
+Q='--set lam_u0=0.0130 --set lam_u1=0.0154 --drop lam_u0 --drop lam_u1 --drop-target "E->nonE/m exp" --drop-target "E->nonE/m rec" --extra-target "quit/m exp=0.0226:2.0" --extra-target "quit/m rec=0.0210:2.0" --set lam_f_ratio=0.80 --bound lam_f_ratio:0.8:0.8000001 --max-nfev 8 --diff-step 0.04'
 ```
 
 (`--drop` keeps a parameter at its `--set` value outside the calibrated vector; `--drop-target` removes a target;
@@ -63,7 +64,7 @@ score each file on its own target set.)
 4. Exploration of the quit-cyclicality tension, for the best-fitting version (tag `<tag>`):
    - job-finding fall free: same flags without `--set lam_f_ratio=0.80 --bound lam_f_ratio:0.8:0.8000001`, plus
      `--bound lam_f_ratio:0.5:1.0`, `--tag <tag>f_full`;
-   - acyclical quits (the full-sample estimate): `--extra-target "quit/m rec=0.0229:2.0"` in place of 0.0202, `--tag <tag>a_full`;
+   - acyclical quits (the full-sample estimate, ratio 1.04): `--extra-target "quit/m rec=0.0234:2.0"` in place of 0.0210, `--tag <tag>a_full`;
    then `channels.py` for both; commit and push.
 5. `python3 scripts/write_paper_results.py --specs "CRRA quit-targeted (v4eq)=v4eq,KPR quit-targeted (v7cq)=v7cq,CRRA no wage cut quit-targeted (v4nbq)=v4nbq,KPR no wage cut quit-targeted (v9nq)=v9nq" --out ../../PAPER_RESULTS_quit.md`
    (add the step-4 tags as further columns if they exist); write the outcome (objectives, the 11 targets' fit,
