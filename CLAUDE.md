@@ -264,6 +264,14 @@ labor supply has a role at least comparable to hoarding. The women's UE-rate cyc
      `PAPER_RESULTS.md` (`scripts/write_paper_results.py --specs "CRRA γ = 2 (v4e)=v4e,KPR γ = 2 (v9)=v9"`).
      `cohorts_refined.py --e-mode relative` targets the model's 1940 employment plus the data's change (the
      level targets make the employment path nearly flat because the model's 1940 rate is above 0.62).
+   - DONE (workstation, 2026-09-27, author request): NO RECESSION WAGE CUT (`--fixed phi_rec=1.0 --fixed phi_rec_H=1.0`;
+     the husband's recession job loss x1.78 and job finding 0.28, the wife's 20% job-finding fall and the UI cut stay;
+     the wife's own job-loss rate stays free, author decision: do not force it to rise). Separable CRRA v4nb
+     (second polish of v4n) objective 0.113, KPR proportional v9n 0.121: both fit better than with the cut
+     (v4e 0.139, v9 0.194) and both hit the recession employment drop (-1.67). Precaution / hoarding 21% / 56%
+     (v4nb), 9% / 64% (v9n). Without the cut the wife's recession job loss carries the employment drop in v4nb
+     (lam_u ratio 1.55). Full results for all four in `PAPER_RESULTS.md` (write_paper_results.py --specs
+     "CRRA no wage cut (v4nb)=v4nb,KPR no wage cut (v9n)=v9n,CRRA with wage cut (v4e)=v4e,KPR with wage cut (v9)=v9").
    AUTHOR DECISION (2026-09-27): the added-worker moments are dropped and ignored entirely (not targets, not
    reported); the notes above on them are historical. Moments for the preference specifications (`moments.py`):
    the wife's employment and hours 12 months after the husband's job loss relative to the 12 months
