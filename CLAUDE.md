@@ -35,9 +35,11 @@ lower cost of work) make it more cyclical, a closing wage gap less so. Reference
 3. CURRENT (2026-09-27, corrected simulator): carried-forward calibration is **version 4e** (separable CRRA
    gamma 2, `output/final_calib_v4e_full.*`, objective 0.139; full pipeline with the `v4e` tag; RESULTS.md main),
    with **version 7c** (KPR, `final_calib_v7c_full.*`, objective 0.076; full pipeline complete, tag `v7c`) as the
-   balanced-growth alternative. `PAPER_RESULTS.md` (root) is the side-by-side deliverable for the two specifications:
-   `python3 scripts/write_paper_results.py --specs "CRRA gamma 2 (v4e)=v4e,KPR gamma 2 (v7c)=v7c"`. It is the
-   alternative. RESULTS.md regeneration command: as below with `v4e` in place of `v4c`, `--calib-prev
+   balanced-growth alternative. `PAPER_RESULTS.md` (root) is the side-by-side deliverable; since 2026-09-28 it carries five columns (the two
+   carried specifications, v4e and v7c, plus the workstation's no-wage-cut versions v4nb and v9n and the KPR
+   proportional-shock version v9):
+   `python3 scripts/write_paper_results.py --specs "CRRA no wage cut (v4nb)=v4nb,KPR proportional shock no wage cut (v9n)=v9n,CRRA with wage cut (v4e)=v4e,KPR additive shock with wage cut (v7c)=v7c,KPR proportional shock with wage cut (v9)=v9"`
+   (labels must not contain commas). RESULTS.md regeneration command: as below with `v4e` in place of `v4c`, `--calib-prev
    output/final_calib_v4c_full.json`, `--jacobian-channels "version 4e (...)=output/jacobian_channels_v4e.json,..."`,
    `--calib-alt` led by v7c, `--channels` led by v4e and v7c, pre-fix versions labelled "(pre-fix)".
    PRE-FIX (workstation, 2026-09-26): carried-forward calibration was **version 4c**
@@ -272,6 +274,11 @@ labor supply has a role at least comparable to hoarding. The women's UE-rate cyc
      (v4nb), 9% / 64% (v9n). Without the cut the wife's recession job loss carries the employment drop in v4nb
      (lam_u ratio 1.55). Full results for all four in `PAPER_RESULTS.md` (write_paper_results.py --specs
      "CRRA no wage cut (v4nb)=v4nb,KPR no wage cut (v9n)=v9n,CRRA with wage cut (v4e)=v4e,KPR with wage cut (v9)=v9").
+     Cloud (2026-09-28): v7c (KPR with the additive shock and the wage cut, objective 0.076, the best fit of all
+     versions) restored as a fifth column, with its relative-target cohorts `cohorts_refined_v7c_rel.*`; the
+     five-column command is in state item 3. In v7c the cost scale is at the zero corner for every cohort from
+     1950 on (employment 0.72-0.74 against targets 0.73-0.79): the cohort employment rise is carried by tau_w,
+     and the recession employment drop moves only from -1.67 to -2.01 points (v4nb -2.96, v4e -2.54).
    AUTHOR DECISION (2026-09-27): the added-worker moments are dropped and ignored entirely (not targets, not
    reported); the notes above on them are historical. Moments for the preference specifications (`moments.py`):
    the wife's employment and hours 12 months after the husband's job loss relative to the 12 months
