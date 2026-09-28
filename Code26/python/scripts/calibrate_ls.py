@@ -26,6 +26,8 @@ ap.add_argument("--fixed", action="append", default=[], help="fix a FinalParams 
 ap.add_argument("--set", action="append", default=[])
 ap.add_argument("--extra-target", action="append", default=[], help="add a target at run time: 'moment name=value:weight' (repeatable)")
 ap.add_argument("--resume", action="store_true", help="replay the evaluations already in the log (same tag) instead of recomputing them")
+ap.add_argument("--drop", action="append", default=[], help="keep a parameter of x0 at its value (see --set) and do not calibrate it, e.g. lam_u0 fixed from the layoff data (repeatable)")
+ap.add_argument("--drop-target", action="append", default=[], help="remove a target from the objective at run time (repeatable)")
 a = ap.parse_args()
 HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.join(HERE, "..")
 C.BOUNDS.update({"home_young_mult": (1.0, 3.0), "nu_h": (0.3, 0.8), "z_h": (0.3, 0.6), "alpha_h": (0.05, 1.5),
@@ -35,12 +37,15 @@ for b in a.bound:
 for t in a.extra_target:                         # e.g. "AWE: LF entry ratio (H E->U / stays E)=1.60:1.0"
     name, rest = t.rsplit("=", 1); val, w = rest.split(":")
     C.TARGETS[name] = float(val); C.SCALE[name] = float(val); C.WEIGHT[name] = float(w)
+for k in a.drop_target:
+    C.TARGETS.pop(k, None); C.SCALE.pop(k, None); C.WEIGHT.pop(k, None)
 x0 = json.load(open(os.path.join(ROOT, a.x0)))["x"]
 for n in [e for e in a.extra.split(",") if e]:
     x0.setdefault(n, {"lam_f_ratio": 0.85}.get(n, getattr(FinalParams(), n, None)))
 for kv in a.set:
     n, v = kv.split("="); x0[n] = float(v)
-names = list(x0.keys())
+fixed_x = {n: x0[n] for n in a.drop}          # part of x (apply_params needs them) but not calibrated
+names = [n for n in x0 if n not in fixed_x]
 lo = np.array([C.BOUNDS[n][0] for n in names]); hi = np.array([C.BOUNDS[n][1] for n in names])
 z0 = np.clip(np.array([x0[n] for n in names]), lo + 1e-9, hi - 1e-9)
 base = FinalParams(n_omega=3, n_kbar=3, n_km=3) if a.coarse else FinalParams()
@@ -61,7 +66,7 @@ keys = list(C.TARGETS.keys()); w = np.sqrt([C.WEIGHT[k] for k in keys])
 
 
 def resid(z):
-    x = dict(zip(names, [float(v) for v in z]))
+    x = dict(fixed_x); x.update(zip(names, [float(v) for v in z]))
     key = tuple(round(x[n], 10) for n in names)
     if key in cache:                    # replay (the log stores the full-precision deviations)
         r0 = cache.pop(key)
@@ -84,7 +89,8 @@ best = min(hist, key=lambda h: h["obj"])
 if not best.get("m"):
     mb, _, _ = run(C.apply_params(base, best["x"]), cfg); best["m"] = {k: float(v) for k, v in mb.items()}
 out = dict(x=best["x"], obj=best["obj"], moments=best["m"], targets=dict(C.TARGETS), n_eval=len(hist), extra_targets=a.extra_target,
-           seconds=time.time() - t0, coarse=a.coarse, names=names,
+           seconds=time.time() - t0, coarse=a.coarse, names=names, weights=dict(C.WEIGHT), dropped=a.drop,
+           dropped_targets=a.drop_target,
            fixed={kv.split('=')[0]: float(kv.split('=')[1]) for kv in a.fixed}, status=int(sol.status), message=sol.message)
 json.dump(out, open(os.path.join(ROOT, "output", f"final_calib_{a.tag}.json"), "w"), indent=1)
 print("best objective", round(best["obj"], 4), "after", len(hist), "evaluations;", sol.message)

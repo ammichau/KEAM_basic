@@ -28,7 +28,7 @@ for item in a.versions.split(","):
     if not os.path.exists(fc):
         continue
     d = json.load(open(fc)); m = d.get("moments_full", d["moments"])
-    obj, dev = C.objective_from_moments(m)
+    obj, dev = C.objective_from_moments(m, *C.targets_of(d))
     fch = os.path.join(ROOT, "output", f"channels_{tag}.json")
     ch = json.load(open(fch))["baseline"] if os.path.exists(fch) else None
     rows.append(dict(label=label, tag=tag, obj=float(obj), dev={k: float(v) for k, v in dev.items()},

@@ -81,15 +81,27 @@ def _from_unit(z, names=PARAM_NAMES):
     return x
 
 
-def objective_from_moments(m):
+def targets_of(calib: dict | None = None):
+    """(targets, weights, scales) of a calibration file: its own target set (extra or dropped targets, new
+    values) when it records one, else the module defaults. Percentage-point moments keep scale 1."""
+    if calib and calib.get("targets"):
+        t = dict(calib["targets"])
+        w = dict(calib.get("weights") or {k: WEIGHT.get(k, 1.0) for k in t})
+        s = {k: (1.0 if "pts" in k else v) for k, v in t.items()}
+        return t, w, s
+    return TARGETS, WEIGHT, SCALE
+
+
+def objective_from_moments(m, targets=None, weight=None, scale=None):
+    targets = targets or TARGETS; weight = weight or WEIGHT; scale = scale or SCALE
     tot = 0.0; parts = {}
-    for k, tv in TARGETS.items():
+    for k, tv in targets.items():
         mv = m.get(k, np.nan)
         if not np.isfinite(mv):
             mv = 0.0
-        d = (mv - tv) / SCALE[k]
+        d = (mv - tv) / scale[k]
         parts[k] = d
-        tot += WEIGHT[k] * d * d
+        tot += weight[k] * d * d
     return tot, parts
 
 

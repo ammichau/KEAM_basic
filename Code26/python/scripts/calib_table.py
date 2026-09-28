@@ -4,15 +4,20 @@ usage: python scripts/calib_table.py output/final_calib_childcare2.json [> file.
 """
 import sys, os, json
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
-from keam.final.calibrate import TARGETS
+from keam.final import calibrate as C
 d = json.load(open(sys.argv[1]))
 m = d.get("moments", {})
-print(f"Calibration `{sys.argv[1]}`: objective {d['obj']:.3f} after {d.get('n_eval', '?')} evaluations\n")
+T, W, S = C.targets_of(d)
+print(f"Calibration `{sys.argv[1]}`: objective {d['obj']:.3f} after {d.get('n_eval', '?')} evaluations "
+      f"({len(T)} targets{'; dropped: ' + ', '.join(d['dropped_targets']) if d.get('dropped_targets') else ''})\n")
+if d.get("dropped"):
+    print("Fixed from the data, not calibrated: " + ", ".join(f"{k} = {d['x'][k]:.4f}" for k in d["dropped"]) + "\n")
 print("| parameter | value |\n|---|---|")
 for k, v in d["x"].items():
-    print(f"| {k} | {v:.4f} |")
+    if k not in (d.get("dropped") or []):
+        print(f"| {k} | {v:.4f} |")
 print("\n| target | data | model | deviation |\n|---|---|---|---|")
-for k, tv in TARGETS.items():
+for k, tv in T.items():
     mv = m.get(k, float("nan")); sc = 1.0 if "pts" in k else tv
     print(f"| {k} | {tv:.4f} | {mv:.4f} | {100 * (mv - tv) / sc:+.1f}% |")
 print("\n| untargeted moment | model |\n|---|---|")

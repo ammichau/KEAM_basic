@@ -283,10 +283,33 @@ labor supply has a role at least comparable to hoarding. The women's UE-rate cyc
    reported); the notes above on them are historical. Moments for the preference specifications (`moments.py`):
    the wife's employment and hours 12 months after the husband's job loss relative to the 12 months
    before (event study), by aggregate state at the loss, and wife employment / hours by the husband's state.
+8. NEW DATA (2026-09-28, author): `Code26/python/data/QuitLayoff2024_sa.csv`, CPS monthly flows for married women
+   1978-2023 (seasonally adjusted 13-month moving averages, percent): `eqmw_ma` quits E->N, `elmw_ma` layoffs E->N
+   (also N->E `nemw_ma`, N->U `numw_ma`, and the same for other women and all workers). Moments:
+   `scripts/quit_layoff_moments.py --file data/QuitLayoff2024_sa.csv --early-end 1985 --ma 13` -> `output/quit_layoff.md`
+   (`output/ne_nu_moments.md` for the entry series). Findings: quits 2.3%/month in 1978-85 falling to 1.3-1.4% by the
+   2000s-2010s (the model's cohort accounting predicted 0.035 -> 0.021, a 40% fall, against 39% in the data cross-sections);
+   layoffs 1.33% -> 0.85%. Cyclicality (trend-adjusted, recession dummy smoothed like the series): quits fall 13% in the
+   early window's recessions (1980, 1981-82), 2% over 1978-2019, and RISE in 1990-91; layoffs rise 23%; married women's
+   N->E rate (4.5%/month) is nearly acyclical. Author decision: the layoff series is the exogenous separation rate
+   (`lam_u` fixed at 0.0133 / 0.0160 by regime, not calibrated) and the quit series is targeted (0.0230 / 0.0202); the
+   E->nonE targets are dropped (11 targets). `calibrate_ls.py` gained `--drop` (parameter fixed at its --set value) and
+   `--drop-target`; the calibration JSON records `targets`, `weights`, `dropped`, `dropped_targets`, and
+   `calibrate.targets_of()` scores each file on its own target set (used by `calib_table.py`, `versions_table.py`,
+   `write_paper_results.py`). Re-estimation of v4e, v7c, v4nb, v9n with these targets (tags v4eq, v7cq, v4nbq, v9nq) runs
+   on the workstation: `Code26/python/WORKSTATION_JOB.md` (plan item 8). Early period: the 1978-85 window is a
+   cross-section of all cohorts (the 1940s cohort was 29-45), the natural target for the 1940s calibration given no
+   cohort breakdown; the later decades give the quit levels for the cohort accounting.
 4. Report (RESULTS.md section 6 and the reply): a table of all versions (objective, the 13 targets'
    deviations, precaution and hoarding shares, recession employment drop with and without cyclical
    husband risk); whether log utility preserves the precautionary channel and what it does to the fit;
    which parameters and targets govern the split (section 4b).
+
+8. Quit-targeted re-estimation (2026-09-28, author request; workstation): the job in `Code26/python/WORKSTATION_JOB.md`.
+   Four calibrations with `lam_u` fixed from the layoff data and the quit rate targeted (11 targets), channel
+   decompositions, full pipelines for the best separable and the best KPR version, an exploration with the job-finding
+   fall free and with acyclical quits, and `PAPER_RESULTS_quit.md`. The cloud session merges the pushes and does not
+   write the q tags.
 
 ## Conventions
 
