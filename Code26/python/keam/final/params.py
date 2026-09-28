@@ -79,6 +79,8 @@ class FinalParams:
     nE: int = 20
     nA: int = 20
     a_max: float = 15.0
+    liq: float = 1.0                     # share of the asset stock that can be drawn down within a month:
+                                         # a' >= (1 - liq) a (1 = fully liquid, the baseline); retirement unrestricted
     nH: int = 20                         # hours grid on [h_min, 1]
     h_min: float = 0.05
     nS: int = 21                         # search grid on [0, 1]

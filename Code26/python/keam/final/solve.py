@@ -134,6 +134,10 @@ def solve_type(p: FinalParams, omega: float, kbar: float, km: float, VR: np.ndar
         else:
             flowE = np.where(cE > 1e-8, u(np.maximum(cE, 1e-8), p.gamma), -1e10) - vh
             flowN = np.where(cN > 1e-8, u(np.maximum(cN, 1e-8), p.gamma), -1e10)
+        if p.liq < 1.0:      # partial liquidity: a' below the illiquid remainder (1 - liq) a is infeasible
+            illiq = np.where(ag[None, :] < (1.0 - p.liq) * ag[:, None] - 1e-12, -1e10, 0.0)      # (a, a')
+            flowE = flowE + (illiq[None, None, :, None, None, None, :] if flowE.ndim == 7 else illiq[:, None, None, None, :])
+            flowN = flowN + illiq[:, None, None, None, :]
         flowN = np.ascontiguousarray(np.broadcast_to(flowN, (nE, nA, nY, nZ, nS, nA)))
         # next-age continuation (fixed during the iteration): start-of-period values at age tau+1 by
         # shock node j' (quit decision at node j'), then by today's shock state through PJ

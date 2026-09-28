@@ -303,6 +303,19 @@ labor supply has a role at least comparable to hoarding. The women's UE-rate cyc
    on the workstation: `Code26/python/WORKSTATION_JOB.md` (plan item 8). Early period: the 1978-85 window is a
    cross-section of all cohorts (the 1940s cohort was 29-45), the natural target for the 1940s calibration given no
    cohort breakdown; the later decades give the quit levels for the cohort accounting.
+9. LIQUIDITY (2026-09-28, author question): the model's households hold LITTLE liquid wealth, not much: at v7c and
+   v4nb the mean is 1.4-1.7 months of household income, the median 0.6, 70% hold under one month, and at ages 25-54
+   the mean is 0.4-0.6 months (98% under one month); only the 55-64 group accumulates (3.6-4.4 months) for retirement
+   (`scripts/asset_distribution.py`, `output/asset_distribution_{v7c,v4nb}.md`). Reason: beta = 0.99 per month
+   (0.886 per year) and no return on assets. The author's data figure is 6 months of income of liquidity on average.
+   A partial-liquidity parameter `liq` (share of the stock that can be drawn down within a month, a' >= (1 - liq) a;
+   1 = baseline; solver mask and simulator floor; retirement unrestricted) is implemented. Coarse-grid evaluations at the
+   v7c parameters (`output/eval_liq_*.out`): liq 0.5 / 0.2 lowers mean assets only to 1.48 / 1.33 months and the
+   recession quit rate from 0.0279 to 0.0272 / 0.0261 (slightly more retention); beta 0.996 raises assets to 2.8 months
+   but employment to 0.76 and halves quits (not a usable lever without recalibration). Matching 6 months of liquid wealth
+   would need a return on savings (not in the model) and a recalibration, and would weaken precautionary labor supply
+   (self-insurance substitutes for it); a two-state Markov access process is possible (composite state with the shock
+   state axis) but not built. Decision pending with the author.
 4. Report (RESULTS.md section 6 and the reply): a table of all versions (objective, the 13 targets'
    deviations, precaution and hoarding shares, recession employment drop with and without cyclical
    husband risk); whether log utility preserves the precautionary channel and what it does to the fit;
