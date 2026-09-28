@@ -139,11 +139,12 @@ def simulate_final(p: FinalParams, sol: FinalSolution, cfg: SimConfigFinal | Non
         f_t = f * (p.home_young_mult if tau == 0 else 1.0)
         incE = w * h + f_t * (1 - h) ** p.nu_h + yh
         incN = f_t * (1 - s) ** p.nu_h + yh
-        aE = np.minimum(aE, a + incE - 1e-6); aN = np.minimum(aN, a + incN - 1e-6)
+        aR = (1.0 + p.r_a) * a                                  # assets with their return
+        aE = np.minimum(aE, aR + incE - 1e-6); aN = np.minimum(aN, aR + incN - 1e-6)
         if p.liq < 1.0:                     # partial liquidity: at most liq of the stock can be drawn down
             aE = np.maximum(aE, (1.0 - p.liq) * a); aN = np.maximum(aN, (1.0 - p.liq) * a)
         a_next = np.where(work, aE, aN)
-        c = np.where(work, incE + a - aE, incN + a - aN)
+        c = np.where(work, incE + aR - aE, incN + aR - aN)
         e_next = np.where(work, np.minimum(p.e_max, (1 - p.delta_e) * e + p.theta_e * e * h ** p.psi_e),
                           (1 - p.delta_e) * e)
         lost = work & (uJ[:, it] < lam_u[z])

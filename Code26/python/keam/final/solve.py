@@ -52,7 +52,7 @@ def _bracket(grid, x):
 def solve_retirement(p: FinalParams):
     a = p.agrid; nA = a.size
     yR = p.pension * p.yH_age[1]
-    c = yR + a[:, None] - a[None, :]                        # (a, a')
+    c = yR + (1.0 + p.r_a) * a[:, None] - a[None, :]        # (a, a')
     flow = np.where(c > 1e-8, u(np.maximum(c, 1e-8), p.gamma), -1e10)
     V = flow.max(axis=1) / (1 - p.beta * (1 - p.death))
     # mortality acts as extra discounting (no certainty equivalent over death: with log utility the
@@ -117,13 +117,14 @@ def solve_type(p: FinalParams, omega: float, kbar: float, km: float, VR: np.ndar
         fh = f_tau * (1 - hg) ** p.nu_h                                             # (nH,)
         fs = f_tau * (1 - sg) ** p.nu_h                                             # (nS,)
         # flow utilities (independent of V): employed (e, a, y, z, h, a'), non-employed (e, a, y, z, s, a')
+        Ra = 1.0 + p.r_a                                                            # gross return on assets
         cE = (w[:, None, None, :, None, None] * hg[None, None, None, None, :, None]
               + fh[None, None, None, None, :, None] + yH[tau][None, None, :, :, None, None]
-              + ag[None, :, None, None, None, None] - ag[None, None, None, None, None, :])
+              + Ra * ag[None, :, None, None, None, None] - ag[None, None, None, None, None, :])
         kap_h = kap * (hg / 0.4) ** p.kappa_h_power if p.kappa_h_power > 0 else np.full(nH, kap)
         vh = p.mu * hg[None, None, None, None, :, None] ** (1 + p.eta) / (1 + p.eta) + kap_h[None, None, None, None, :, None]
         cN = (fs[None, None, None, None, :, None] + yH[tau][None, None, :, :, None, None]
-              + ag[None, :, None, None, None, None] - ag[None, None, None, None, None, :])
+              + Ra * ag[None, :, None, None, None, None] - ag[None, None, None, None, None, :])
         if p.kpr and p.kT_mult:     # transitory shock inside the aggregator: flow by today's node j
             lcv = np.log(np.maximum(cE, 1e-8)) - vh
             flowE = np.stack([np.where(cE > 1e-8, U_kpr(lcv - kT[st_of_j[j]], p.gamma), -1e10) for j in range(nJ)])

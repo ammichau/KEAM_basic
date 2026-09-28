@@ -80,6 +80,12 @@ the table at the end lists what is calibrated.
   elasticity (period-utility curvature, γ = 2 gives 0.5), not by risk aversion. Balanced growth
   with a precautionary labor-supply channel therefore needs non-separable consumption-hours
   preferences of the King-Plosser-Rebelo class.
+* **Return on assets and the macro calibration (2026-09-28).** `r_a` is the monthly net return on assets: the budget
+  constraints read c = income + (1 + r_a) a − a′ at working ages and in retirement (`solve.py`, `simulate.py`); r_a = 0
+  is the original model (no return), verified to reproduce it exactly. The author's macro calibration is β = 0.96 per
+  year (0.99661 per month, in place of 0.99 per month) and r_a = 4% per year (0.00327 per month), with the asset grid
+  widened to a_max = 30, nA = 25. `liq` (share of the asset stock that can be drawn down within a month, a′ ≥ (1 − liq) a;
+  1 = fully liquid) exists but is inactive.
 * **King-Plosser-Rebelo option (2026-09-27).** `kpr = True`: the flow utility is U(x) with the
   composite x = log c − µ h^{1+η}/(1+η) − κ_τ and U(x) = exp((1−γ) x)/(1−γ) (U(x) = x at γ = 1), i.e.
   u = [c·exp(−v(h) − κ)]^{1−γ}/(1−γ): consistent with balanced growth for any γ, nesting the separable
