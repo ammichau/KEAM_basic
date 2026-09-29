@@ -394,7 +394,10 @@ labor supply has a role at least comparable to hoarding. The women's UE-rate cyc
    stopped by xtol after 35 evaluations with the ratio still at 0.80 and objective 0.119 (v7cmb 0.120): the quit-recession
    target does not pull the fall down because the employment drop and the UE cyclicality push back; channels 6% / 63%,
    `channels_v7cmbf.md`. Both interrupt pokes (07:20, 09:30 UTC) had not reached the workstation by 09:25 UTC: its
-   chain went on with v7cmbf; v7cmba and PAPER_RESULTS_quit.md were next in it.
+   chain went on with v7cmbf; v7cmba and PAPER_RESULTS_quit.md were next in it. v7cmba (acyclical quits, target quit rec
+   0.0234, lumpy grid, `final_calib_v7cmba_full.md`): objective 0.179 at the evaluation limit, quit rec still 0.0179
+   (-23%): with the 20% job-finding fall the model cannot make quits acyclical; channels 10% / 64% (`channels_v7cmba.md`).
+   The old chain was complete except PAPER_RESULTS_quit.md at 10:27 UTC; no step-6 output had arrived.
 4. Report (RESULTS.md section 6 and the reply): a table of all versions (objective, the 13 targets'
    deviations, precaution and hoarding shares, recession employment drop with and without cyclical
    husband risk); whether log utility preserves the precautionary channel and what it does to the fit;
