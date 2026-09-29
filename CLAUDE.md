@@ -342,6 +342,13 @@ labor supply has a role at least comparable to hoarding. The women's UE-rate cyc
    -0.96; a third polish v4nbmc running, at 0.69), v9nmb 0.248 (employment +16%, lifecycle -17%, quit exp +14%, quit
    rec -8%, employment drop -1.50; mean assets 7.1 months of own income). Ranking under the macro calibration:
    v7cmb 0.120 < v4emb 0.230 < v9nmb 0.248 < v4nbmb 0.93. Channel decomposition of v7cmb in progress on the workstation.
+   CHANNELS under the macro calibration (`channels_{v7cmb,v4emb,v9nmb,v4nbmc}.md`): precaution / hoarding shares of the
+   recession quit drop are 6% / 62% (v7cmb), 5% / 49% (v4emb), 13% / 70% (v9nmb), 9% / 53% (v4nbmc, third separable
+   no-cut polish, objective 0.685). The precautionary channel collapses under patient households: at v7cmb removing
+   assets does not restore it (5%), the husband's job loss x2.5 lifts it only to 11%, and only a much smaller
+   job-finding fall does (5% fall: precaution 22% / hoarding 29%, quit gap -0.33 pp i.e. a 14% recession fall, but
+   the employment drop vanishes, -0.02). Hoarding is now the mechanism; the author's parity priority is further away
+   than under beta 0.99 (v7c 16% / 47%). The comparison runs (job-finding fall free; acyclical quits) are next.
 4. Report (RESULTS.md section 6 and the reply): a table of all versions (objective, the 13 targets'
    deviations, precaution and hoarding shares, recession employment drop with and without cyclical
    husband risk); whether log utility preserves the precautionary channel and what it does to the fit;
