@@ -49,7 +49,7 @@ bash scripts/run_pipeline.sh "$CALIB" "$BEST" > "output/pipeline_${BEST}.out" 2>
 commit_push "Full results pipeline for $BEST" "$BEST"
 python3 -u scripts/cohorts_refined.py --calib "$CALIB" --e-mode relative --tag "${BEST}_rel" > "output/cohorts_refined_${BEST}_rel.out" 2>&1
 commit_push "Refined cohort accounting with relative employment targets for $BEST" "${BEST}_rel"
-python3 -u scripts/jacobian_channels.py --tag "$BEST" > "output/jacobian_channels_${BEST}.out" 2>&1
+python3 -u scripts/jacobian_channels.py --calib "$CALIB" --tag "$BEST" > "output/jacobian_channels_${BEST}.out" 2>&1
 commit_push "Sensitivity of the precaution/hoarding split for $BEST" "jacobian_channels_${BEST}"
 # 5. paper results
 python3 scripts/write_paper_results.py --specs "KPR with offer arrival from non-participation (${BEST})=${BEST}" --out ../../PAPER_RESULTS_quit.md
