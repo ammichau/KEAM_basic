@@ -389,7 +389,12 @@ labor supply has a role at least comparable to hoarding. The women's UE-rate cyc
    (KPR, beta 0.99, r 0, quit targets, `final_calib_v7cq_full.md`): objective 0.098 on 11 targets, the best quit-targeted
    fit (employment +6.5%, never-working +5.5%, quit exp +12% (0.0253), quit rec -13% (0.0184, a 27% recession fall against
    7%), UE cyclicality +6%, wage gap on target), mean assets 1.6 months on the lumpy grid (about 3.4 with nAc 100, as for
-   v7c); its channels are queued on the workstation.
+   v7c); channels `channels_v7cq.md`: precaution 13% / hoarding 50% (v7c 16% / 47%), 26% / 19% with a 5% job-finding
+   fall. v7cmbf (job-finding fall free on [0.5, 1.0], lumpy grid, `final_calib_v7cmbf_full.md`): the least squares
+   stopped by xtol after 35 evaluations with the ratio still at 0.80 and objective 0.119 (v7cmb 0.120): the quit-recession
+   target does not pull the fall down because the employment drop and the UE cyclicality push back; channels 6% / 63%,
+   `channels_v7cmbf.md`. Both interrupt pokes (07:20, 09:30 UTC) had not reached the workstation by 09:25 UTC: its
+   chain went on with v7cmbf; v7cmba and PAPER_RESULTS_quit.md were next in it.
 4. Report (RESULTS.md section 6 and the reply): a table of all versions (objective, the 13 targets'
    deviations, precaution and hoarding shares, recession employment drop with and without cyclical
    husband risk); whether log utility preserves the precautionary channel and what it does to the fit;
