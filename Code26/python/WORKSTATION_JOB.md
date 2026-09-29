@@ -5,11 +5,14 @@ You are the executor on the author's workstation for the KEAM project (repositor
 `claude/hopeful-ride-vbnou4`). Read `CLAUDE.md` (state items 9 and 10) first. Work autonomously; never modify the
 MATLAB files. The author's decision (16:20 UTC): work only on the v7c family; the other specifications are dropped.
 
-## Step 0: stop everything from the earlier jobs
+## Step 0: check the lock, then stop the earlier jobs
 
-Kill every running `calibrate_ls.py` and any chain script from the 15:00 UTC job (tags v7ck, v4ek, v9nk, v4nbk) and
-from the 17:00 UTC draft (v4en, v9nn, v4nbn); delete nothing. Then `git pull origin claude/hopeful-ride-vbnou4`
-(commit with `scripts/run_v7cn.sh`, 16:30 UTC or later).
+FIRST: if the directory `Code26/python/output/.lock_v7cn` exists, the author has already launched the chain of step 1
+by hand: kill nothing, launch nothing, and stop here (poll `output/run_v7cn.out` if you like). Only if the lock does
+not exist: kill the running `calibrate_ls.py` processes and chain scripts of the 15:00 UTC job (tags v7ck, v4ek, v9nk,
+v4nbk) and of the 17:00 UTC draft (v4en, v9nn, v4nbn), identified by the `--tag` in their command lines; never kill a
+process whose command line contains `v7cn`; delete nothing. Then `git pull origin claude/hopeful-ride-vbnou4` (commit
+with `scripts/run_v7cn.sh`, 16:30 UTC or later).
 
 ## Step 1: one command
 
