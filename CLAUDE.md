@@ -383,6 +383,13 @@ labor supply has a role at least comparable to hoarding. The women's UE-rate cyc
    must be redone with `--fixed nAc=100` once the author sets the discount factor; `WORKSTATION_JOB.md` step 6 stops the
    v7cmbf / v7cmba comparisons (v7cq continues) and runs the full-grid convergence checks (nAc 0/50/100/200, a_max 90,
    beta scan) at the v7cmb parameters. The cost of the fix: nAc 100 multiplies the solve time by 3-4.
+   ARRIVED AFTER THE INTERRUPT (workstation, lumpy grid): jacobians `jacobian_channels_{v7cmb,v4emb}.md` (per +1%: the
+   husband's job-loss level lifts precaution +0.38 / +0.40 pp and the cost-shock sd +0.43 / +0.42, the job-finding fall
+   lifts hoarding +0.41 / +0.26, recession duration +0.33 / +0.25; nothing on the husband's side reaches parity); v7cq
+   (KPR, beta 0.99, r 0, quit targets, `final_calib_v7cq_full.md`): objective 0.098 on 11 targets, the best quit-targeted
+   fit (employment +6.5%, never-working +5.5%, quit exp +12% (0.0253), quit rec -13% (0.0184, a 27% recession fall against
+   7%), UE cyclicality +6%, wage gap on target), mean assets 1.6 months on the lumpy grid (about 3.4 with nAc 100, as for
+   v7c); its channels are queued on the workstation.
 4. Report (RESULTS.md section 6 and the reply): a table of all versions (objective, the 13 targets'
    deviations, precaution and hoarding shares, recession employment drop with and without cyclical
    husband risk); whether log utility preserves the precautionary channel and what it does to the fit;
