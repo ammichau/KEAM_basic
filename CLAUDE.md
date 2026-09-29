@@ -411,6 +411,14 @@ labor supply has a role at least comparable to hoarding. The women's UE-rate cyc
    at nAc 100 with 80 evaluations is about 17 hours; nAc 50 gives the same asset level at 2.5x the old cost, and a_max
    should be sized to the discount factor chosen (about 20 months at beta 0.99). eval_point.py printed the objective on
    the default 13 targets; it now scores a file on its own targets (`calibrate.targets_of`).
+   AUTHOR DECISION (2026-09-29, 15:00 UTC): **beta = 0.993 per month** (0.919 per year), r = 4% per year, with the fine
+   savings choice grid (`nAc` 100, `a_max` 60, `nA` 25) for every calibration from now on (mean assets about 15 months of
+   household income at the v7cmb parameters; a check, not a target). The quit-targeted re-estimation of the four
+   specifications runs on the workstation under these settings as tags **v7ck** (KPR, wage cut, from v7cmb), **v4ek**
+   (separable, wage cut, from v4emb), **v9nk** (KPR proportional shock, no wage cut, from v9nmb), **v4nbk** (separable,
+   no wage cut, from v4nbmc): `Code26/python/WORKSTATION_JOB.md` (15:00 UTC): calibrations two at a time (about 15
+   machine-hours each), channels, pipelines for the best KPR and the best separable version, `PAPER_RESULTS_quit.md`.
+   The m tags (0.96 per year) and q tags (0.99 per month), all on the lumpy grid, are superseded history.
 4. Report (RESULTS.md section 6 and the reply): a table of all versions (objective, the 13 targets'
    deviations, precaution and hoarding shares, recession employment drop with and without cyclical
    husband risk); whether log utility preserves the precautionary channel and what it does to the fit;

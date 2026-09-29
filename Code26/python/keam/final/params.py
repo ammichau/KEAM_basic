@@ -7,7 +7,8 @@ from scipy.stats import norm
 @dataclass
 class FinalParams:
     # ---------------- preferences (monthly) ----------------
-    beta: float = 0.99          # monthly (0.886 per year; the macro calibration uses 0.96^(1/12) = 0.99661)
+    beta: float = 0.99          # monthly (0.886 per year); the calibration since 2026-09-29 uses 0.993 (0.919 per
+                                # year) with r_a 0.00327 and the fine savings choice grid nAc 100 (see below)
     r_a: float = 0.0            # monthly net return on assets (0 = the original model; 4% per year = 0.00327)
     gamma: float = 2.0          # CRRA
     eta: float = 1.4            # curvature of hours disutility (slides p.29)

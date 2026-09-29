@@ -95,7 +95,9 @@ the table at the end lists what is calibrated.
   continuation value interpolated linearly in a′ (working ages and retirement; the state grid stays nA); nAc = 100 with
   nA = 25 gives 33 months, the same as a golden-section continuous choice, at 3-4 times the solve time. nAc = 0
   reproduces the original solver exactly (`grid_check_v7cmb_coarse_25_repro.out`). Every macro-calibration result before
-  this date (v4em.., v7cm.., v4nbm.., v9nm.. and their pipelines) was computed on the lumpy grid.
+  this date (v4em.., v7cm.., v4nbm.., v9nm.. and their pipelines) was computed on the lumpy grid. Author decision
+  (2026-09-29): the calibration from now on uses β = 0.993 per month (0.919 per year), r_a = 4% per year, a_max = 60,
+  nA = 25, nAc = 100 (tags v7ck, v4ek, v9nk, v4nbk); the 0.96-per-year setting above is superseded.
 * **King-Plosser-Rebelo option (2026-09-27).** `kpr = True`: the flow utility is U(x) with the
   composite x = log c − µ h^{1+η}/(1+η) − κ_τ and U(x) = exp((1−γ) x)/(1−γ) (U(x) = x at γ = 1), i.e.
   u = [c·exp(−v(h) − κ)]^{1−γ}/(1−γ): consistent with balanced growth for any γ, nesting the separable

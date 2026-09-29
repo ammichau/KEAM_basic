@@ -1,125 +1,63 @@
-# Workstation job (2026-09-28, revised 14:30 UTC): quit-targeted re-estimation under the macro calibration
+# Workstation job (2026-09-29, 15:00 UTC): quit-targeted re-estimation at beta 0.993 with the fine savings choice grid
 
 You are the executor on the author's workstation for the KEAM project (repository KEAM_basic, branch
-`claude/hopeful-ride-vbnou4`). Read `CLAUDE.md` (state items 0, 3, 8 and 9) first. Work autonomously, never stop
-to ask questions; commit and push after every completed step with a plain descriptive message; every reported
-number must come from a script in `Code26/python/scripts` that writes an output file; never modify the MATLAB
-files. Setup: `git pull origin claude/hopeful-ride-vbnou4; cd Code26/python; export KEAM_NJOBS=$(nproc)`.
-Run long jobs with `nohup ... &` and poll their logs. The tags below (v4em, v7cm, v4nbm, v9nm, v4eq, v7cq, v4nbq,
-v9nq and their suffixes) are yours; the cloud session will not write them.
+`claude/hopeful-ride-vbnou4`). Read `CLAUDE.md` (state items 8 and 9) first. Work autonomously, never stop to ask
+questions; commit and push after every completed step with a plain descriptive message; every reported number must
+come from a script in `Code26/python/scripts` that writes an output file; never modify the MATLAB files. Setup:
+`git pull origin claude/hopeful-ride-vbnou4; cd Code26/python`. Run long jobs with `nohup ... &` and poll their logs.
+The tags below (v7ck, v4ek, v9nk, v4nbk and their suffixes) are yours; the cloud session will not write them.
+Nothing is running: the previous job (macro calibration, tags v4em.., v7cm.., v4nbm.., v9nm.., v7cq, v7cmbf, v7cmba)
+is complete and superseded (its results were computed on the lumpy savings grid, CLAUDE.md state item 9).
 
-## Step 0: stop the earlier version of this job
+## Settings (author decision, 2026-09-29)
 
-If calibrations with the tags v4eq, v7cq, v4nbq or v9nq (the 14:00 UTC version of this job, without the macro
-calibration) are still running, kill them (`pkill -f "calibrate_ls.py"`), pull, and start below. Keep any
-finished q-tag outputs; they are the beta = 0.99 comparison of step 4.
-
-## Two changes at once, both by the author
-
-1. **Macro calibration** (`beta`, `r_a`): discount factor 0.96 per year and a 4% annual real return on assets,
-   i.e. `--fixed beta=0.99661 --fixed r_a=0.00327` (the original model had beta 0.99 per month = 0.886 per year
-   and no return; `r_a` is new in `keam/final/params.py`, entering the budget constraints in the solver, the
-   retirement problem and the simulator). At the old parameters this roughly doubles attachment (employment 0.76,
-   quits halved) and raises assets to about 9 months of income, so the calibration must move a long way. The asset
-   grid must be widened: `--fixed a_max=30 --fixed nA=25` (at a_max 15, 60% of household-months sat at the top of the
-   grid, `output/asset_distribution_v7c_macro_coarse.md`); this makes each evaluation about 1.6 times slower.
-2. **Quit and layoff targets** from `data/QuitLayoff2024.csv` (author; CPS monthly flows 1978-02 to 2016-12,
-   seasonally adjusted, unsmoothed, percent): `eqmw_seats` = married women's monthly quit rate from employment to
-   non-employment, `elmw_seats` = their layoff rate. Moments: `python3 scripts/quit_layoff_moments.py --file
-   data/QuitLayoff2024.csv --quit eqmw_seats --layoff elmw_seats --early-end 1985 --ma 1` (already run:
-   `output/quit_layoff.md/.json`; no smoothing anywhere, in the data or in the model). Targets for the 1940s cohort
-   from the early window 1978-85 (22 NBER recession months: 1980, 1981-82), trend-adjusted (rate on a linear trend
-   and a recession dummy):
-
-| moment | value | use |
-|---|---|---|
-| quit/m exp | 0.0226 | target (weight 2) |
-| quit/m rec | 0.0210 | target (weight 2); recession fall 7% |
-| lam_u0 (exogenous job loss, expansion) | 0.0130 | fixed at the layoff rate, not calibrated |
-| lam_u1 (exogenous job loss, recession) | 0.0154 | fixed at the layoff rate, not calibrated |
-
-The `E->nonE/m exp` and `E->nonE/m rec` targets are dropped (quits plus layoffs); the other nine targets are
-unchanged, so each objective has 11 targets. `lam_f_ratio` stays fixed at 0.80 (the women's UE-rate cyclicality),
-as in all carried versions. Tension to watch: the data's recession fall in quits is 7% (the old target had 18%;
-over 1978-2016 quits are 4% HIGHER in recessions after the trend) while the 20% job-finding fall alone gave the
-model quit drops of 24-34%. Mean liquid assets are NOT targeted; the data figure (about 6 months of household
-income on average) is a check: report the model's `mean assets/monthly HH inc` and the distribution.
-
-Common flags (shell variable):
+1. **Discount factor 0.993 per month** (0.919 per year) with the 4% annual real return (`r_a` 0.00327). At the v7cmb
+   parameters this gives mean assets of about 15 months of household income (`asset_distribution_v7cmb_c100_beta0.993.md`).
+   Mean assets stay a check, not a target.
+2. **Fine savings choice grid**: `nAc=100` (a' chosen on a 100-point quadratic grid with the continuation value
+   interpolated in a'; the state grid stays `nA=25`), `a_max=60` (at beta 0.993 the v7cmb parameters put 4.8% of
+   household-months near 45; if the share near 60 exceeds 2% in a finished calibration, polish it again with a_max 90).
+3. Targets as in the previous job: `lam_u` fixed from the layoff data, the quit rate targeted (0.0226 / 0.0210), the
+   E->nonE targets dropped (11 targets), `lam_f_ratio` fixed at 0.80.
 
 ```
-M='--fixed beta=0.99661 --fixed r_a=0.00327 --fixed a_max=30 --fixed nA=25'
-Q='--set lam_u0=0.0130 --set lam_u1=0.0154 --drop lam_u0 --drop lam_u1 --drop-target "E->nonE/m exp" --drop-target "E->nonE/m rec" --extra-target "quit/m exp=0.0226:2.0" --extra-target "quit/m rec=0.0210:2.0" --set lam_f_ratio=0.80 --bound lam_f_ratio:0.8:0.8000001 --max-nfev 10 --diff-step 0.04'
+M='--fixed beta=0.993 --fixed r_a=0.00327 --fixed a_max=60 --fixed nA=25 --fixed nAc=100'
+Q='--set lam_u0=0.0130 --set lam_u1=0.0154 --drop lam_u0 --drop lam_u1 --drop-target "E->nonE/m exp" --drop-target "E->nonE/m rec" --extra-target "quit/m exp=0.0226:2.0" --extra-target "quit/m rec=0.0210:2.0" --set lam_f_ratio=0.80 --bound lam_f_ratio:0.8:0.8000001 --diff-step 0.04'
 ```
 
-(`--drop` keeps a parameter at its `--set` value outside the calibrated vector; `--drop-target` removes a target;
-`--extra-target` on an existing name overrides its value and weight. The calibration JSON records `targets`,
-`weights`, `dropped`, `dropped_targets` and `fixed`; `calib_table.py`, `versions_table.py` and
-`write_paper_results.py` score each file on its own target set. Every later script (`channels.py`,
-`run_pipeline.sh`, `cohorts_refined.py`, `jacobian_channels.py`, `asset_distribution.py`) reads the fixed fields
-from the calibration file, so beta, r_a, a_max and nA carry through automatically.)
+Use `eval "python3 -u scripts/calibrate_ls.py ... $M $Q --max-nfev 5 --tag <tag>_full"` so that the quoted target
+names in `$Q` are parsed. `calibrate_ls.py` takes the starting parameters (`x`) from the `--x0` file and the fixed
+fields ONLY from the `--fixed` flags, so the old files' beta, a_max and nA do not carry over.
+
+**Cost.** One full-grid evaluation takes about 770 s with all cores at nAc 100 (`grid_check_v7cmb_full_c100.out`), 5.6
+times the old solver; `--max-nfev 5` is about 70 evaluations, about 15 hours of the whole machine per calibration. Run
+two calibrations at a time with `export KEAM_NJOBS=$(( $(nproc) / 2 ))` for each (same throughput, both results at
+once). Every downstream script (`channels.py`, `run_pipeline.sh`, `cohorts_refined.py`, `jacobian_channels.py`,
+`asset_distribution.py`) reads the fixed fields from the calibration file, so beta, r_a, a_max, nA and nAc carry
+through automatically.
 
 ## Steps
 
-1. Four calibrations, two at a time (each about 2-3 hours on 16 cores with the wider grid). Use
-   `eval "python3 -u scripts/calibrate_ls.py ... $M $Q ..."` so that the quoted target names in `$Q` are parsed:
-   - v4em (separable CRRA gamma 2, wage cut): `--x0 output/final_calib_v4e_full.json --fixed ui_rec_mult=0.5 $M $Q --tag v4em_full`
-   - v7cm (KPR, additive shock, wage cut): `--x0 output/final_calib_v7c_full.json --fixed kpr=1 --fixed gamma=2.0 --fixed ui_rec_mult=0.5 $M $Q --tag v7cm_full`
-   - v4nbm (separable, no wage cut): `--x0 output/final_calib_v4nb_full.json --fixed ui_rec_mult=0.5 --fixed phi_rec=1.0 --fixed phi_rec_H=1.0 $M $Q --tag v4nbm_full`
-   - v9nm (KPR proportional shock, no wage cut): `--x0 output/final_calib_v9n_full.json --fixed kpr=1 --fixed gamma=2.0 --fixed ui_rec_mult=0.5 --fixed kT_mult=1 --fixed phi_rec=1.0 --fixed phi_rec_H=1.0 $M $Q --tag v9nm_full`
-   The starting points are far from the new optimum (objective about 2 at the old parameters), so expect the
-   evaluation limit to bind: when a run stops with the objective still falling, run a second polish from its result
-   (`--x0 output/final_calib_<tag>_full.json`, same flags, `--tag <tag>b_full`) and carry the better one (a third
-   polish if the second still improves by more than 10%). After each: `python3 scripts/calib_table.py
-   output/final_calib_<tag>_full.json > output/final_calib_<tag>_full.md` and `python3 -u scripts/asset_distribution.py
-   --calib output/final_calib_<tag>_full.json --tag <tag>` (if the share near a_max exceeds 2%, rerun the
-   calibration with `--fixed a_max=45`); commit (`git add -f` the `.log` and `.out` files) and push.
-2. Channel decomposition for each: `python3 -u scripts/channels.py --calib output/final_calib_<tag>_full.json --tag <tag>`
-   (`--variants quick` for the two worst fits if time is short); commit and push.
-3. Full pipeline for the best-fitting separable and the best-fitting KPR version:
+1. Calibrations, in this priority order, two at a time. First pair:
+   - v7ck (KPR, additive shock, wage cut): `--x0 output/final_calib_v7cmb_full.json --fixed kpr=1 --fixed gamma=2.0 --fixed ui_rec_mult=0.5 $M $Q --max-nfev 5 --tag v7ck_full`
+   - v4ek (separable CRRA gamma 2, wage cut): `--x0 output/final_calib_v4emb_full.json --fixed ui_rec_mult=0.5 $M $Q --max-nfev 5 --tag v4ek_full`
+   Second pair:
+   - v9nk (KPR proportional shock, no wage cut): `--x0 output/final_calib_v9nmb_full.json --fixed kpr=1 --fixed gamma=2.0 --fixed ui_rec_mult=0.5 --fixed kT_mult=1 --fixed phi_rec=1.0 --fixed phi_rec_H=1.0 $M $Q --max-nfev 5 --tag v9nk_full`
+   - v4nbk (separable, no wage cut): `--x0 output/final_calib_v4nbmc_full.json --fixed ui_rec_mult=0.5 --fixed phi_rec=1.0 --fixed phi_rec_H=1.0 $M $Q --max-nfev 5 --tag v4nbk_full`
+   After each: `python3 scripts/calib_table.py output/final_calib_<tag>_full.json > output/final_calib_<tag>_full.md`
+   and `python3 -u scripts/asset_distribution.py --calib output/final_calib_<tag>_full.json --tag <tag>` (report mean
+   assets in months of income and the share near a_max); commit (`git add -f` the `.log` and `.out` files) and push.
+   When a run stops at the evaluation limit with the objective still falling by more than 10% over its last
+   iteration, run a second polish from its result (`--x0 output/final_calib_<tag>_full.json`, same flags,
+   `--max-nfev 4`, `--tag <tag>b_full`) and carry the better one.
+2. Channel decomposition for each finished calibration, as soon as it is done and cores are free:
+   `python3 -u scripts/channels.py --calib output/final_calib_<tag>_full.json --tag <tag>` (10 variants, about 2-3 hours
+   each with all cores; `--variants quick` for the two worse fits); commit and push.
+3. After all four calibrations and channels: the full pipeline for the best-fitting KPR version and the best-fitting
+   separable version, one at a time with all cores (about 20 hours each at nAc 100):
    `bash scripts/run_pipeline.sh output/final_calib_<tag>_full.json <tag>`, then
    `python3 -u scripts/cohorts_refined.py --calib output/final_calib_<tag>_full.json --e-mode relative --tag <tag>_rel`
    and `python3 -u scripts/jacobian_channels.py --tag <tag>`; commit and push after each script.
-4. Comparisons, for the best-fitting version (tag `<tag>`), in this order:
-   - the same targets at the old discount factor (no macro calibration): the q-tag run from the earlier job if it
-     finished, otherwise `... $Q` without `$M`, `--tag <tag without m>q_full` (e.g. v7cq); then `channels.py`;
-   - job-finding fall free: `$M $Q` without `--set lam_f_ratio=0.80 --bound lam_f_ratio:0.8:0.8000001`, plus
-     `--bound lam_f_ratio:0.5:1.0`, `--tag <tag>f_full`; then `channels.py`;
-   - acyclical quits (the full-sample estimate, ratio 1.04): `--extra-target "quit/m rec=0.0234:2.0"` in place of
-     0.0210, `--tag <tag>a_full`; then `channels.py`.
-   Commit and push after each.
-5. `python3 scripts/write_paper_results.py --specs "CRRA macro (v4em)=v4em,KPR macro (v7cm)=v7cm,CRRA no wage cut macro (v4nbm)=v4nbm,KPR no wage cut macro (v9nm)=v9nm" --out ../../PAPER_RESULTS_quit.md`
-   (add the step-4 tags as further columns as they exist); write the outcome (objectives, the 11 targets' fit, mean
-   assets against the 6-month check, precaution/hoarding shares, the comparisons) into `CLAUDE.md` state item 9;
-   commit and push.
-
-## Step 6 (2026-09-29, 07:40 UTC): INTERRUPT. Grid problem under the macro calibration; convergence checks
-
-Pull first (`git pull origin claude/hopeful-ride-vbnou4`; the solver gained the field `nAc`, see below). The solver chose
-a' on the state grid (nA quadratic points on [0, a_max]): a' could only move by the local grid spacing (1.5 months of
-income near 6 months of assets, 3.7 at the top with nA 25, a_max 45), and with beta (1 + r) = 0.99987 per month the
-saving incentive is too small to justify such lumps, so saving was suppressed and every macro-calibration asset moment is
-a grid artifact: at the v7cmb parameters mean assets are 5.6 months of household income with 25 points, 15 with 40, 30
-with 60 (your `robustness_final_v7cmb.md` and the cloud's `output/grid_check_v7cmb_coarse_*.out`). The fix is the new
-FinalParams field `nAc` (default 0 = the old solver, exact reproduction): a' is chosen on a finer quadratic grid of nAc
-points with the continuation value interpolated linearly in a' (working ages and retirement); `--fixed nAc=100` with
-nA 25 gives 33 months on the coarse type grid, the same as a golden-section continuous choice, at 3-4 times the solve
-time. So: **stop the v7cmbf and v7cmba calibrations** (they are being fitted on the lumpy grid; kill only those two
-`calibrate_ls.py` processes, by their `--tag`), let v7cq run to the end (beta 0.99 per month: the grid matters much
-less there), keep all finished outputs, and run these checks on the full 100-type grid at the v7cmb parameters (each
-`eval_point.py` call is one solve plus simulation; `.out` files are gitignored, `git add -f` them):
-
-```
-for c in 0 50 100 200; do python3 scripts/eval_point.py --calib output/final_calib_v7cmb_full.json --fixed nAc=$c > output/grid_check_v7cmb_full_c$c.out 2>&1; done
-python3 scripts/eval_point.py --calib output/final_calib_v7cmb_full.json --fixed a_max=90 --fixed nA=40 --fixed nAc=160 > output/grid_check_v7cmb_full_amax90.out 2>&1
-for b in 0.990 0.993 0.995; do python3 scripts/eval_point.py --calib output/final_calib_v7cmb_full.json --fixed nAc=100 --fixed beta=$b > output/grid_check_v7cmb_full_c100_beta$b.out 2>&1; done
-python3 -u scripts/asset_distribution.py --calib output/final_calib_v7cmb_full.json --fixed nAc=100 --tag v7cmb_c100
-python3 -u scripts/asset_distribution.py --calib output/final_calib_v7cmb_full.json --fixed nAc=100 --fixed beta=0.993 --tag v7cmb_c100_beta0.993
-```
-
-Commit and push after the first loop and again at the end, with a one-paragraph summary of the numbers (mean assets by
-nAc; the uncapped level at a_max 90; mean assets by beta at nAc 100; the asset distributions by age) in the commit
-message. Then stop: the author decides how the discount factor is set (calibrated to about 6 months of liquid assets at
-r = 4% per year, which the coarse-grid scan puts near beta 0.993 per month, or kept at 0.96 per year with wealth of
-about three years of income), and the quit-targeted calibrations, channels, pipelines and comparisons are rerun under
-that choice with `--fixed nAc=100` (the a_max needed depends on it).
+4. `python3 scripts/write_paper_results.py --specs "KPR wage cut (v7ck)=v7ck,CRRA wage cut (v4ek)=v4ek,KPR no wage cut (v9nk)=v9nk,CRRA no wage cut (v4nbk)=v4nbk" --out ../../PAPER_RESULTS_quit.md`
+   with the columns that exist (rerun it as more arrive); write the outcome (objectives, the 11 targets' fit, mean
+   assets, precaution / hoarding shares) into `CLAUDE.md` state item 9; commit and push.
