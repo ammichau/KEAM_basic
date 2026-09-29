@@ -1,0 +1,28 @@
+best objective 0.2478 after 38 evaluations; The maximum number of function evaluations is exceeded.
+  lam_u0           0.0130
+  lam_u1           0.0154
+  mu               1.4286
+  kbar_max         0.0676
+  km_max           8.4477
+  tau_w            0.7860
+  lam_f0           0.4745
+  ybar_h           0.0422
+  sd_kT            0.2359
+  home_young_mult  2.6174
+  nu_h             0.5426
+  z_h              0.4823
+  alpha_h          0.1122
+  e_max            2.2241
+  kappa_h_power    0.9951
+  lam_f_ratio      0.8000
+  E/pop                            model   0.7163  target   0.6200
+  hours|E                          model   0.4138  target   0.4000
+  share Lifecycle                  model   0.2590  target   0.3100
+  share PT                         model   0.2896  target   0.2800
+  share Career                     model   0.2146  target   0.1900
+  share NiLF                       model   0.2369  target   0.2200
+  quit/m exp                       model   0.0258  target   0.0226
+  quit/m rec                       model   0.0194  target   0.0210
+  dE/pop rec-exp (pts)             model  -1.5037  target  -1.7000
+  wage gap (hourly ratio)          model   0.7503  target   0.7100
+  sd log UE (women)                model   0.0632  target   0.0686
