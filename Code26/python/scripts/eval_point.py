@@ -25,9 +25,10 @@ for kv in a.fixed:
 p = C.params_from_calib(calib, base)
 for kv in a.fixed:            # command-line overrides win over the calibration file's fixed fields
     n, v = kv.split("="); p = p.replace(**{n: type(getattr(p, n))(float(v))})
-t0 = time.time(); m, _, _ = run(p, SimConfigFinal(N=60, n_cohorts=90)); obj, parts = C.objective_from_moments(m)
-print(f"{a.calib}: {'coarse' if a.coarse else 'full'} grid, fixed {a.fixed}, objective {obj:.4f} ({time.time() - t0:.0f}s)")
-for k, tv in C.TARGETS.items():
+T, W, S = C.targets_of(calib)                                   # the file's own target set (else the defaults)
+t0 = time.time(); m, _, _ = run(p, SimConfigFinal(N=60, n_cohorts=90)); obj, parts = C.objective_from_moments(m, T, W, S)
+print(f"{a.calib}: {'coarse' if a.coarse else 'full'} grid, fixed {a.fixed}, objective {obj:.4f} on {len(T)} targets ({time.time() - t0:.0f}s)")
+for k, tv in T.items():
     print(f"  {k:28s} model {m[k]:8.4f} target {tv:8.4f} dev {parts[k]:+.3f}")
 for k in ["U rate", "wife share exp", "cons drop at H job loss exp (%)", "mean assets/monthly HH inc"]:
     print(f"  {k:28s} model {m[k]:8.4f}")

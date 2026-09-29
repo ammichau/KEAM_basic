@@ -398,6 +398,19 @@ labor supply has a role at least comparable to hoarding. The women's UE-rate cyc
    0.0234, lumpy grid, `final_calib_v7cmba_full.md`): objective 0.179 at the evaluation limit, quit rec still 0.0179
    (-23%): with the 20% job-finding fall the model cannot make quits acyclical; channels 10% / 64% (`channels_v7cmba.md`).
    The old chain was complete except PAPER_RESULTS_quit.md at 10:27 UTC; no step-6 output had arrived.
+   STEP 6 DONE (workstation, 2026-09-29 11:00 UTC, full 100-type grid at the v7cmb parameters,
+   `output/grid_check_v7cmb_full_*.out`, `asset_distribution_v7cmb_c100*.md`): mean assets 5.7 months of household income
+   with the old lumpy choice (nAc 0) and 32.2 / 32.3 / 32.6 with nAc 50 / 100 / 200 (converged by nAc 100; 55% of
+   household-months near a_max 45, 83% at ages 55-64), and 60.9 months, about five years of income, with a_max 90, nA 40,
+   nAc 160 (employment 0.587, quits 0.0352 / 0.0298): the macro calibration implies wealth of years, not months. Moments
+   move with the grid: employment 0.663 (nAc 0) -> 0.622 (nAc 100), quits 0.0235 / 0.0173 -> 0.0294 / 0.0236, NiLF 0.24
+   -> 0.32, employment drop -1.62 -> -1.45. Discount-factor scan at nAc 100, a_max 45: beta 0.990 -> 6.8 months (employment
+   0.593, quits 0.0334 / 0.0239), 0.993 -> 14.6 (median 15.4; 45% of ages 25-39 below six months), 0.995 -> 29.5, 0.99661
+   -> 32.3 capped. Six months of liquid assets at r = 4% per year need beta about 0.990 per month. Cost: a full-grid
+   evaluation takes 137 s (nAc 0), 341 s (nAc 50), 768 s (nAc 100), 1370 s (nAc 200) on the workstation, so a calibration
+   at nAc 100 with 80 evaluations is about 17 hours; nAc 50 gives the same asset level at 2.5x the old cost, and a_max
+   should be sized to the discount factor chosen (about 20 months at beta 0.99). eval_point.py printed the objective on
+   the default 13 targets; it now scores a file on its own targets (`calibrate.targets_of`).
 4. Report (RESULTS.md section 6 and the reply): a table of all versions (objective, the 13 targets'
    deviations, precaution and hoarding shares, recession employment drop with and without cyclical
    husband risk); whether log utility preserves the precautionary channel and what it does to the fit;
