@@ -338,6 +338,10 @@ labor supply has a role at least comparable to hoarding. The women's UE-rate cyc
    -19%, quit exp +17%, quit rec -5% (0.0199, a 25% fall), employment drop -1.51, mean assets 10.9 months of own income
    (`final_calib_{v4nbm,v9nm}_full.md`, `asset_distribution_{v4nbm,v9nm}.md`). Under the macro calibration the KPR
    version with the wage cut (v7cmb, 0.120) is the best fit by a wide margin.
+   Second polishes with a_max 45: v4nbmb 0.926 (employment +18%, never-working -15%, quit rec -23%, employment drop
+   -0.96; a third polish v4nbmc running, at 0.69), v9nmb 0.248 (employment +16%, lifecycle -17%, quit exp +14%, quit
+   rec -8%, employment drop -1.50; mean assets 7.1 months of own income). Ranking under the macro calibration:
+   v7cmb 0.120 < v4emb 0.230 < v9nmb 0.248 < v4nbmb 0.93. Channel decomposition of v7cmb in progress on the workstation.
 4. Report (RESULTS.md section 6 and the reply): a table of all versions (objective, the 13 targets'
    deviations, precaution and hoarding shares, recession employment drop with and without cyclical
    husband risk); whether log utility preserves the precautionary channel and what it does to the fit;
