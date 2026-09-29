@@ -96,8 +96,8 @@ def solve_type(p: FinalParams, omega: float, kbar: float, km: float, VR: np.ndar
     f = p.ybar_h + p.z_h * zh * omega ** p.alpha_h
     yH = p.y_husband()                                                              # (nT, nY, nZ)
     lamH = p.lamH()                                                                 # (nZ, nY, nY)
-    lam_u = np.asarray(p.lam_u); lam_f = np.asarray(p.lam_f)
-    pi_f = lam_f[None, :] * sg[:, None] ** p.nu                                     # (nS, nZ)
+    lam_u = np.asarray(p.lam_u); lam_f = np.asarray(p.lam_f); lam_n = np.asarray(p.lam_n, float)
+    pi_f = np.minimum(1.0, lam_n[None, :] + lam_f[None, :] * sg[:, None] ** p.nu)  # (nS, nZ): offers without search + search
     p_age = p.p_age
     kT, nJ, PJ = p.kT_chain()                                                       # nodes, states, (nJ, n_kT)
     st = np.arange(kT.size) if nJ > 1 else np.zeros(kT.size, int)                   # state reached at node j'

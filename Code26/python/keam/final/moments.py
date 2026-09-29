@@ -53,6 +53,10 @@ def moments_final(sim: FinalSim, window=None) -> dict:
     Us = _monthly_sums(sim, U_prev); Ns = _monthly_sums(sim, N_prev)
     out["UE/m exp"] = ratio(UE, Us, exp_); out["UE/m rec"] = ratio(UE, Us, rec)
     out["NE/m exp"] = ratio(NE, Ns, exp_); out["NE/m rec"] = ratio(NE, Ns, rec)
+    # entry from non-participation (previous month non-employed with s < s_bar), the CPS N->E flow of married women
+    NP_prev = (stat_prev == 2); NP_prev[:, 0] = False
+    NPE = _monthly_sums(sim, entry & NP_prev); NPs = _monthly_sums(sim, NP_prev)
+    out["N->E/m exp"] = ratio(NPE, NPs, exp_); out["N->E/m rec"] = ratio(NPE, NPs, rec)
     # cyclicality as a standard deviation of the log rate under the two-state aggregate process:
     # |log(rate_rec / rate_exp)| sqrt(pi_exp pi_rec)  (data: 0.0686 for women's UE rate, 0.0765 for men's)
     piz = stationary(p.piz); wz = float(np.sqrt(piz[0] * piz[1]))

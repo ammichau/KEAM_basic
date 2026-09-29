@@ -49,6 +49,9 @@ class FinalParams:
     # ---------------- search / job loss (monthly) ----------------
     nu: float = 0.5             # search efficiency curvature (slides p.29)
     lam_f: tuple = (0.40, 0.34)   # job-finding efficiency, expansion / recession (15% lower)
+    lam_n: tuple = (0.0, 0.0)     # offer arrival rate without search (non-participants), expansion / recession:
+                                  # job finding = lam_n(Z) + lam_f(Z) s^nu; 0 = the original model (author, 2026-09-29:
+                                  # inferred from married women's N->E flow, which is nearly acyclical in the CPS)
     lam_u: tuple = (0.017, 0.029)  # exogenous job loss, expansion / recession (1.7x)
     s_bar: float = 0.25          # search intensity above which a non-employed woman counts as unemployed
     # ---------------- husband (monthly) ----------------

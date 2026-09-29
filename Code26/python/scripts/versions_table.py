@@ -20,7 +20,7 @@ ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 SHORT = {"E/pop": "E/pop", "hours|E": "hours", "share Lifecycle": "LC", "share PT": "PT", "share Career": "career",
          "share NiLF": "NiLF", "quit/m exp": "quit exp", "quit/m rec": "quit rec", "E->nonE/m exp": "exit exp",
          "E->nonE/m rec": "exit rec", "dE/pop rec-exp (pts)": "dE dev (pts)", "wage gap (hourly ratio)": "wage gap",
-         "sd log UE (women)": "sd log UE"}
+         "sd log UE (women)": "sd log UE", "N->E/m exp": "N->E exp", "N->E/m rec": "N->E rec"}
 rows = []
 for item in a.versions.split(","):
     label, tag = item.rsplit("=", 1)

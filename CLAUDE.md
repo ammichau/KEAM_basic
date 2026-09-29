@@ -419,6 +419,20 @@ labor supply has a role at least comparable to hoarding. The women's UE-rate cyc
    no wage cut, from v4nbmc): `Code26/python/WORKSTATION_JOB.md` (15:00 UTC): calibrations two at a time (about 15
    machine-hours each), channels, pipelines for the best KPR and the best separable version, `PAPER_RESULTS_quit.md`.
    The m tags (0.96 per year) and q tags (0.99 per month), all on the lumpy grid, are superseded history.
+10. OFFER ARRIVAL FROM NON-PARTICIPATION (2026-09-29, author): "there should be different job finding rates from U and
+   from N: not all women in N want a job, so the arrival rate must be inferred to match the N->E flows; a free parameter."
+   Implemented: `lam_n` (FinalParams, expansion / recession), job finding = lam_n(Z) + lam_f(Z) s^nu in `solve.py` (pi_f)
+   and `simulate.py`; 0 reproduces the old model exactly (`grid_check_v7cmb_coarse_25_lamn_repro.out`). Calibrated as
+   `lam_n0` and `lam_n_ratio` (`calibrate.py` BOUNDS (0, 0.3) and (0.3, 2.0), `apply_params`), targets `N->E/m exp` /
+   `N->E/m rec` (`moments.py`: entry into employment per non-employed woman with search below s_bar; data
+   `output/ne_nu_moments.md`, early window trend-adjusted 0.0530 / 0.0524, ratio 0.987). `experiments.acyclical_finding`
+   holds both rates at their expansion values (channels, jacobians, pipeline counterfactual). The motivation (state item
+   9): with one job-finding efficiency for everyone, the 20% recession fall pinned by the UE cyclicality hits the quit
+   margin too, so hoarding dominates and the model's recession quit fall is 25-34% against 7% in the data; married
+   women's N->E rate is nearly acyclical in the CPS. Preview at fixed parameters: `scripts/ne_preview.py` ->
+   `output/ne_preview_v7cmb_beta0.993.md`. Re-estimation on the workstation (`WORKSTATION_JOB.md`, 17:00 UTC; the
+   15:00 UTC job, tags v7ck / v4ek, was stopped): tags **v7cn, v4en, v9nn, v4nbn** (13 targets, beta 0.993, nAc 100),
+   channels, pipelines for the best KPR and separable versions, `PAPER_RESULTS_quit.md`.
 4. Report (RESULTS.md section 6 and the reply): a table of all versions (objective, the 13 targets'
    deviations, precaution and hoarding shares, recession employment drop with and without cyclical
    husband risk); whether log utility preserves the precautionary channel and what it does to the fit;

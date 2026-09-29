@@ -97,7 +97,14 @@ the table at the end lists what is calibrated.
   reproduces the original solver exactly (`grid_check_v7cmb_coarse_25_repro.out`). Every macro-calibration result before
   this date (v4em.., v7cm.., v4nbm.., v9nm.. and their pipelines) was computed on the lumpy grid. Author decision
   (2026-09-29): the calibration from now on uses β = 0.993 per month (0.919 per year), r_a = 4% per year, a_max = 60,
-  nA = 25, nAc = 100 (tags v7ck, v4ek, v9nk, v4nbk); the 0.96-per-year setting above is superseded.
+  nA = 25, nAc = 100; the 0.96-per-year setting above is superseded.
+* **Offer arrival from non-participation (2026-09-29, author).** Job finding = λ_n(Z) + λ_f(Z) s^ν: a non-employed woman
+  receives offers at the rate λ_n whether or not she searches, on top of the search-dependent rate. λ_n (expansion,
+  recession) is inferred from married women's N→E flow in the CPS (0.0530 / 0.0524 per month, 1978-85, trend-adjusted),
+  which is nearly acyclical, through `lam_n0` and `lam_n_ratio` and the targets `N->E/m exp`, `N->E/m rec` (entry per
+  non-employed woman with s < s_bar); the unemployed's job finding keeps the 20% recession fall from the UE cyclicality.
+  λ_n = 0 reproduces the earlier model exactly. The "acyclical job finding" counterfactual holds both rates at their
+  expansion values. Calibrations with this rate: tags v7cn, v4en, v9nn, v4nbn.
 * **King-Plosser-Rebelo option (2026-09-27).** `kpr = True`: the flow utility is U(x) with the
   composite x = log c − µ h^{1+η}/(1+η) − κ_τ and U(x) = exp((1−γ) x)/(1−γ) (U(x) = x at γ = 1), i.e.
   u = [c·exp(−v(h) − κ)]^{1−γ}/(1−γ): consistent with balanced growth for any γ, nesting the separable

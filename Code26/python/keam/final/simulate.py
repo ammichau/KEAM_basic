@@ -89,7 +89,7 @@ def simulate_final(p: FinalParams, sol: FinalSolution, cfg: SimConfigFinal | Non
     age = np.zeros(L, int); m0, m1, m2 = p.age_months
     age[m0: m0 + m1] = 1; age[m0 + m1:] = 2
     lamH = p.lamH(); yH = p.y_husband()
-    lam_u = np.asarray(p.lam_u); lam_f = np.asarray(p.lam_f)
+    lam_u = np.asarray(p.lam_u); lam_f = np.asarray(p.lam_f); lam_n = np.asarray(p.lam_n, float)
     phi = np.array([1.0, p.phi_rec])
     omega = sol.omega[ktype]
     zh = (sol.zh if getattr(sol, 'zh', None) is not None else np.ones(nK))[ktype]
@@ -148,7 +148,7 @@ def simulate_final(p: FinalParams, sol: FinalSolution, cfg: SimConfigFinal | Non
         e_next = np.where(work, np.minimum(p.e_max, (1 - p.delta_e) * e + p.theta_e * e * h ** p.psi_e),
                           (1 - p.delta_e) * e)
         lost = work & (uJ[:, it] < lam_u[z])
-        found = ~work & (uJ[:, it] < lam_f[z] * s ** p.nu)
+        found = ~work & (uJ[:, it] < np.minimum(1.0, lam_n[z] + lam_f[z] * s ** p.nu))
         # records
         emp[:, it] = work; quit[:, it] = q & ~found_prev; declined[:, it] = q & found_prev
         loss[:, it] = lost_prev
