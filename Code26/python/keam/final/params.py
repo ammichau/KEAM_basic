@@ -82,6 +82,10 @@ class FinalParams:
     a_max: float = 15.0
     liq: float = 1.0                     # share of the asset stock that can be drawn down within a month:
                                          # a' >= (1 - liq) a (1 = fully liquid, the baseline); retirement unrestricted
+    nAc: int = 0                         # savings choice grid: a' chosen on a finer quadratic grid of nAc points on
+                                         # [0, a_max] with the continuation value interpolated linearly in a'
+                                         # (0 = the state grid, the original solver). The discrete choice suppresses
+                                         # saving when beta (1 + r) is near one: a' can only move in grid-spacing lumps.
     nH: int = 20                         # hours grid on [h_min, 1]
     h_min: float = 0.05
     nS: int = 21                         # search grid on [0, 1]
@@ -101,6 +105,13 @@ class FinalParams:
     @property
     def agrid(self):
         return self.a_max * np.linspace(0.0, 1.0, self.nA) ** 2
+
+    @property
+    def agrid_c(self):
+        """Savings choice grid (the state grid unless nAc exceeds nA)."""
+        if self.nAc > self.nA:
+            return self.a_max * np.linspace(0.0, 1.0, self.nAc) ** 2
+        return self.agrid
 
     @property
     def hgrid(self):

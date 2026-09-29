@@ -86,6 +86,16 @@ the table at the end lists what is calibrated.
   year (0.99661 per month, in place of 0.99 per month) and r_a = 4% per year (0.00327 per month), with the asset grid
   widened to a_max = 30, nA = 25. `liq` (share of the asset stock that can be drawn down within a month, a′ ≥ (1 − liq) a;
   1 = fully liquid) exists but is inactive.
+* **Savings choice grid (2026-09-29).** The solver chooses a′ on a grid. Restricted to the state grid (nA quadratic points on
+  [0, a_max]) the choice is lumpy: a′ can only move by the local grid spacing (1.5 months of income near 6 months of assets,
+  3.7 at the top with nA = 25, a_max = 45), so when β(1 + r) is close to one, as under the macro calibration (0.99987 per
+  month), saving is suppressed and the asset moments depend on the grid: at the v7cmb parameters mean assets are 5.6 months
+  of household income with 25 points, 15 with 40 and 30 with 60 (`output/grid_check_v7cmb_coarse_*.out`,
+  `output/robustness_final_v7cmb.md`). `nAc` (default 0) puts the choice on a finer quadratic grid of nAc points with the
+  continuation value interpolated linearly in a′ (working ages and retirement; the state grid stays nA); nAc = 100 with
+  nA = 25 gives 33 months, the same as a golden-section continuous choice, at 3-4 times the solve time. nAc = 0
+  reproduces the original solver exactly (`grid_check_v7cmb_coarse_25_repro.out`). Every macro-calibration result before
+  this date (v4em.., v7cm.., v4nbm.., v9nm.. and their pipelines) was computed on the lumpy grid.
 * **King-Plosser-Rebelo option (2026-09-27).** `kpr = True`: the flow utility is U(x) with the
   composite x = log c − µ h^{1+η}/(1+η) − κ_τ and U(x) = exp((1−γ) x)/(1−γ) (U(x) = x at γ = 1), i.e.
   u = [c·exp(−v(h) − κ)]^{1−γ}/(1−γ): consistent with balanced growth for any γ, nesting the separable

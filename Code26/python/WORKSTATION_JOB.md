@@ -92,3 +92,34 @@ from the calibration file, so beta, r_a, a_max and nA carry through automaticall
    (add the step-4 tags as further columns as they exist); write the outcome (objectives, the 11 targets' fit, mean
    assets against the 6-month check, precaution/hoarding shares, the comparisons) into `CLAUDE.md` state item 9;
    commit and push.
+
+## Step 6 (2026-09-29, 07:40 UTC): INTERRUPT. Grid problem under the macro calibration; convergence checks
+
+Pull first (`git pull origin claude/hopeful-ride-vbnou4`; the solver gained the field `nAc`, see below). The solver chose
+a' on the state grid (nA quadratic points on [0, a_max]): a' could only move by the local grid spacing (1.5 months of
+income near 6 months of assets, 3.7 at the top with nA 25, a_max 45), and with beta (1 + r) = 0.99987 per month the
+saving incentive is too small to justify such lumps, so saving was suppressed and every macro-calibration asset moment is
+a grid artifact: at the v7cmb parameters mean assets are 5.6 months of household income with 25 points, 15 with 40, 30
+with 60 (your `robustness_final_v7cmb.md` and the cloud's `output/grid_check_v7cmb_coarse_*.out`). The fix is the new
+FinalParams field `nAc` (default 0 = the old solver, exact reproduction): a' is chosen on a finer quadratic grid of nAc
+points with the continuation value interpolated linearly in a' (working ages and retirement); `--fixed nAc=100` with
+nA 25 gives 33 months on the coarse type grid, the same as a golden-section continuous choice, at 3-4 times the solve
+time. So: **stop the v7cmbf and v7cmba calibrations** (they are being fitted on the lumpy grid; kill only those two
+`calibrate_ls.py` processes, by their `--tag`), let v7cq run to the end (beta 0.99 per month: the grid matters much
+less there), keep all finished outputs, and run these checks on the full 100-type grid at the v7cmb parameters (each
+`eval_point.py` call is one solve plus simulation; `.out` files are gitignored, `git add -f` them):
+
+```
+for c in 0 50 100 200; do python3 scripts/eval_point.py --calib output/final_calib_v7cmb_full.json --fixed nAc=$c > output/grid_check_v7cmb_full_c$c.out 2>&1; done
+python3 scripts/eval_point.py --calib output/final_calib_v7cmb_full.json --fixed a_max=90 --fixed nA=40 --fixed nAc=160 > output/grid_check_v7cmb_full_amax90.out 2>&1
+for b in 0.990 0.993 0.995; do python3 scripts/eval_point.py --calib output/final_calib_v7cmb_full.json --fixed nAc=100 --fixed beta=$b > output/grid_check_v7cmb_full_c100_beta$b.out 2>&1; done
+python3 -u scripts/asset_distribution.py --calib output/final_calib_v7cmb_full.json --fixed nAc=100 --tag v7cmb_c100
+python3 -u scripts/asset_distribution.py --calib output/final_calib_v7cmb_full.json --fixed nAc=100 --fixed beta=0.993 --tag v7cmb_c100_beta0.993
+```
+
+Commit and push after the first loop and again at the end, with a one-paragraph summary of the numbers (mean assets by
+nAc; the uncapped level at a_max 90; mean assets by beta at nAc 100; the asset distributions by age) in the commit
+message. Then stop: the author decides how the discount factor is set (calibrated to about 6 months of liquid assets at
+r = 4% per year, which the coarse-grid scan puts near beta 0.993 per month, or kept at 0.96 per year with wealth of
+about three years of income), and the quit-targeted calibrations, channels, pipelines and comparisons are rerun under
+that choice with `--fixed nAc=100` (the a_max needed depends on it).

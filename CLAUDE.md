@@ -349,6 +349,40 @@ labor supply has a role at least comparable to hoarding. The women's UE-rate cyc
    job-finding fall does (5% fall: precaution 22% / hoarding 29%, quit gap -0.33 pp i.e. a 14% recession fall, but
    the employment drop vanishes, -0.02). Hoarding is now the mechanism; the author's parity priority is further away
    than under beta 0.99 (v7c 16% / 47%). The comparison runs (job-finding fall free; acyclical quits) are next.
+   PIPELINES (workstation, 2026-09-29, lumpy grid, see the next paragraph): v7cmb (`final_results_v7cmb.md`): experiments
+   sized to employment 0.73 need RoE x1.35, compensated wage gap x1.10 or cost x0.61, and hardly change the recession
+   employment drop (-1.62 -> -1.67 / -1.67 / -1.52); cohort accounting with the cost residual needs the cost to RISE
+   (x1.25-1.41: tau_w and gamma_e alone overshoot the employment targets), quits 0.0235 -> 0.0131 by the 1980 cohort (a 44%
+   fall, data 39%), drop -1.62 -> -1.74; counterfactuals: acyclical husband risk -1.68 (no added-worker offset), acyclical
+   job finding +0.31 (the job-finding fall is the whole drop), no wage cut -0.42, acyclical own job loss -0.98; refined
+   cohorts with relative targets (`cohorts_refined_v7cmb_rel.md`): cost scale 1.00 -> 0.82 / 0.67 / 0.54 / 0.61, tau_w 0.75
+   -> 0.71, employment 0.66 -> 0.76, quits -34%, drop -1.62 -> -1.89, NiLF 0.24 -> 0.15, career 0.19 -> 0.35 (level
+   targets: cost 1.07 / 0.95 / 0.78 / 0.88, drop flat at -1.68); child-care cost x0.12 gives drop -2.48, all costs x0.69
+   -1.94 (`extra_experiments_v7cmb.md`). v4emb (`final_results_v4emb.md`): sized experiments RoE x1.07, wage gap x1.02,
+   cost x0.89 (its 1940 employment 0.717 is already near 0.73); cohort accounting cost x1.9-2.0, drop -1.65 -> -0.50 from
+   the 1950 cohort on; counterfactuals: acyclical husband risk -2.11 (offset 0.46), acyclical job finding +0.32, no wage cut
+   -0.55, acyclical own job loss -0.95. Robustness (`robustness_final_{v7cmb,v4emb}.md`): the quit gap is stable across
+   grids (v7cmb -0.63 / -0.59) but mean assets are not (5.7 -> 15.1 months with 40 asset points, 19.9 with 40 points and
+   a_max 30; v4emb 3.6 -> 9.0) and the employment drop moves (v7cmb -1.62 -> -1.58 / -1.09).
+   GRID PROBLEM (cloud, 2026-09-29): the solver chose a' on the state grid (nA quadratic points), so a' could only move
+   by the local spacing (1.5 months of income near 6 months of assets, 3.7 at the top with nA 25, a_max 45); with
+   beta (1 + r) = 0.99987 per month the saving incentive does not justify such lumps and saving was suppressed. Coarse
+   type grid at the v7cmb parameters (`output/grid_check_v7cmb_coarse_*.out`): mean assets 5.6 months with 25 points, 15.2
+   with 40, 30.0 with 60 (55% of household-months at a_max 45, at all ages: `asset_distribution_v7cmb_coarse_nA60.md`);
+   employment 0.673 / 0.657 / 0.633, quit exp 0.0225 / 0.0245 / 0.0273, NiLF 0.23 / 0.26 / 0.29. Fix: new FinalParams
+   field `nAc` (savings choice on a finer quadratic grid of nAc points, continuation interpolated linearly in a', working
+   ages and retirement; 0 = the old solver, exact reproduction verified, `grid_check_v7cmb_coarse_25_repro.out`; a
+   golden-section continuous choice gave the same answer, 32.8 months, but did not converge in the policy iteration and
+   was dropped). With nA 25, nAc 100 (3-4x the solve time): 32.7 months at beta 0.99661 (a_max 45 binds), 29.8 at 0.995,
+   14.4 at 0.993, 6.7 at 0.990 (`grid_check_v7cmb_coarse_25_c100*.out`): under r = 4% per year the data's 6 months of
+   liquid assets correspond to beta about 0.99 per month (0.89 per year), the ORIGINAL discount factor; beta 0.96 per
+   year implies wealth of about three years of income (retirement saving: with pension 1.0 the 60-point grid gives 10
+   months instead of 30). The pre-macro versions are affected too but less: v7c (beta 0.99, r 0) 1.56 -> 3.42 months
+   with nAc 100, quits 0.0358 -> 0.0345, drop -1.64 -> -1.54 (`grid_check_v7c_coarse_c{0,100}.out`). EVERY macro
+   calibration result (v4em.., v7cm.., v4nbm.., v9nm.., their channels, pipelines, robustness) is a lumpy-grid artifact and
+   must be redone with `--fixed nAc=100` once the author sets the discount factor; `WORKSTATION_JOB.md` step 6 stops the
+   v7cmbf / v7cmba comparisons (v7cq continues) and runs the full-grid convergence checks (nAc 0/50/100/200, a_max 90,
+   beta scan) at the v7cmb parameters. The cost of the fix: nAc 100 multiplies the solve time by 3-4.
 4. Report (RESULTS.md section 6 and the reply): a table of all versions (objective, the 13 targets'
    deviations, precaution and hoarding shares, recession employment drop with and without cyclical
    husband risk); whether log utility preserves the precautionary channel and what it does to the fit;

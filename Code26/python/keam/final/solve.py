@@ -3,8 +3,10 @@
 Per type the state is (age tau, experience e, assets a, husband y, aggregate z, cost-shock state j)
 and there are two value functions: employed V^E (chooses hours h and savings a', may quit) and
 non-employed V^N (chooses search s and savings a').  Choices are on grids; continuation values are
-linearly interpolated in e'.  Modified policy iteration (maximisation step followed by
-`howard_steps` evaluation steps) is used for speed.
+linearly interpolated in e', and in a' when the savings choice grid is finer than the state grid
+(`nAc`; with a' restricted to the state grid, saving is suppressed when beta (1 + r) is close to
+one because a' can only move in lumps of the grid spacing).  Modified policy iteration
+(maximisation step followed by `howard_steps` evaluation steps) is used for speed.
 
 The cost-of-work shock kappa_T is realised at the start of the period, before the quit decision:
 an employed woman (or a job finder) with shock node j' gets max{V^E_j' - kappa_j', V^N_j'}.  With an
@@ -49,16 +51,25 @@ def _bracket(grid, x):
     return k, w
 
 
+def _interp_choice(grid, choice):
+    """Brackets and weights to interpolate a function on `grid` at the choice points (identity when equal)."""
+    if choice.size == grid.size and np.array_equal(choice, grid):
+        return None, None
+    return _bracket(grid, choice)
+
+
 def solve_retirement(p: FinalParams):
-    a = p.agrid; nA = a.size
+    a = p.agrid; nA = a.size; ac = p.agrid_c
     yR = p.pension * p.yH_age[1]
-    c = yR + (1.0 + p.r_a) * a[:, None] - a[None, :]        # (a, a')
+    c = yR + (1.0 + p.r_a) * a[:, None] - ac[None, :]       # (a, a')
     flow = np.where(c > 1e-8, u(np.maximum(c, 1e-8), p.gamma), -1e10)
     V = flow.max(axis=1) / (1 - p.beta * (1 - p.death))
+    kc, wc = _interp_choice(a, ac)
     # mortality acts as extra discounting (no certainty equivalent over death: with log utility the
     # level of V is arbitrary, so a "death value" of 0 would not be innocuous under risk sensitivity)
     for _ in range(5000):
-        Vn = (flow + p.beta * (1 - p.death) * V[None, :]).max(axis=1)
+        Vc = V if kc is None else (1 - wc) * V[kc] + wc * V[kc + 1]     # continuation on the choice grid
+        Vn = (flow + p.beta * (1 - p.death) * Vc[None, :]).max(axis=1)
         if np.max(np.abs(Vn - V)) < 1e-9:
             V = Vn; break
         V = Vn
@@ -69,6 +80,16 @@ def solve_type(p: FinalParams, omega: float, kbar: float, km: float, VR: np.ndar
     nE, nA, nH, nS = p.nE, p.nA, p.nH, p.nS
     nY, nZ, nT = 3, 2, 3
     eg, ag, hg, sg = p.egrid, p.agrid, p.hgrid, p.sgrid
+    ac = p.agrid_c; nAc = ac.size                                                   # savings choice grid
+    kc, wc = _interp_choice(ag, ac)                                                 # None: choice on the state grid
+    if kc is not None:
+        wc1 = wc[None, None, None, :, None, None]
+
+    def on_choice(X):
+        """Continuation (j, e, h|s, a', y, z) on the state grid -> on the choice grid (axis 3)."""
+        if kc is None:
+            return X
+        return (1 - wc1) * X[:, :, :, kc] + wc1 * X[:, :, :, kc + 1]
     beta = p.beta
     phi = np.array([1.0, p.phi_rec])
     w = phi[None, :] * p.tau_w * omega * (1 + p.gam_e * eg[:, None] ** p.xi)      # (nE, nZ)
@@ -120,11 +141,11 @@ def solve_type(p: FinalParams, omega: float, kbar: float, km: float, VR: np.ndar
         Ra = 1.0 + p.r_a                                                            # gross return on assets
         cE = (w[:, None, None, :, None, None] * hg[None, None, None, None, :, None]
               + fh[None, None, None, None, :, None] + yH[tau][None, None, :, :, None, None]
-              + Ra * ag[None, :, None, None, None, None] - ag[None, None, None, None, None, :])
+              + Ra * ag[None, :, None, None, None, None] - ac[None, None, None, None, None, :])
         kap_h = kap * (hg / 0.4) ** p.kappa_h_power if p.kappa_h_power > 0 else np.full(nH, kap)
         vh = p.mu * hg[None, None, None, None, :, None] ** (1 + p.eta) / (1 + p.eta) + kap_h[None, None, None, None, :, None]
         cN = (fs[None, None, None, None, :, None] + yH[tau][None, None, :, :, None, None]
-              + Ra * ag[None, :, None, None, None, None] - ag[None, None, None, None, None, :])
+              + Ra * ag[None, :, None, None, None, None] - ac[None, None, None, None, None, :])
         if p.kpr and p.kT_mult:     # transitory shock inside the aggregator: flow by today's node j
             lcv = np.log(np.maximum(cE, 1e-8)) - vh
             flowE = np.stack([np.where(cE > 1e-8, U_kpr(lcv - kT[st_of_j[j]], p.gamma), -1e10) for j in range(nJ)])
@@ -136,10 +157,10 @@ def solve_type(p: FinalParams, omega: float, kbar: float, km: float, VR: np.ndar
             flowE = np.where(cE > 1e-8, u(np.maximum(cE, 1e-8), p.gamma), -1e10) - vh
             flowN = np.where(cN > 1e-8, u(np.maximum(cN, 1e-8), p.gamma), -1e10)
         if p.liq < 1.0:      # partial liquidity: a' below the illiquid remainder (1 - liq) a is infeasible
-            illiq = np.where(ag[None, :] < (1.0 - p.liq) * ag[:, None] - 1e-12, -1e10, 0.0)      # (a, a')
+            illiq = np.where(ac[None, :] < (1.0 - p.liq) * ag[:, None] - 1e-12, -1e10, 0.0)      # (a, a')
             flowE = flowE + (illiq[None, None, :, None, None, None, :] if flowE.ndim == 7 else illiq[:, None, None, None, :])
             flowN = flowN + illiq[:, None, None, None, :]
-        flowN = np.ascontiguousarray(np.broadcast_to(flowN, (nE, nA, nY, nZ, nS, nA)))
+        flowN = np.ascontiguousarray(np.broadcast_to(flowN, (nE, nA, nY, nZ, nS, nAc)))
         # next-age continuation (fixed during the iteration): start-of-period values at age tau+1 by
         # shock node j' (quit decision at node j'), then by today's shock state through PJ
         if tau == nT - 1:
@@ -177,7 +198,7 @@ def solve_type(p: FinalParams, omega: float, kbar: float, km: float, VR: np.ndar
             # (j, e, s, a', y, z)
             contN = ((1 - pi_f)[None, None, :, None, None, :] * WNs[:, :, None]
                      + pi_f[None, None, :, None, None, :] * WNf[:, :, None])
-            return Trinv(contE), Trinv(contN)                      # certainty equivalents (identity if theta = 0)
+            return on_choice(Trinv(contE)), on_choice(Trinv(contN))   # certainty equivalents (identity if theta = 0)
 
         ie, ia, iy, iz = np.ogrid[:nE, :nA, :nY, :nZ]
         for it in range(p.max_iter):
@@ -186,12 +207,12 @@ def solve_type(p: FinalParams, omega: float, kbar: float, km: float, VR: np.ndar
             totE = (flowE if flowE.ndim == 7 else flowE[None]) + beta * contE.transpose(0, 1, 4, 5, 2, 3)[:, :, None]   # (j, e, a, y, z, h, a')
             flatE = totE.reshape(nJ, nE, nA, nY, nZ, -1)
             idxE = flatE.argmax(axis=-1)
-            hE, aE = np.divmod(idxE, nA)
+            hE, aE = np.divmod(idxE, nAc)
             VEn = np.take_along_axis(flatE, idxE[..., None], axis=-1)[..., 0]
             totN = flowN[None] + beta * contN.transpose(0, 1, 4, 5, 2, 3)[:, :, None]   # (j, e, a, y, z, s, a')
             flatN = totN.reshape(nJc, nE, nA, nY, nZ, -1)
             idxN = flatN.argmax(axis=-1)
-            sN, aN = np.divmod(idxN, nA)
+            sN, aN = np.divmod(idxN, nAc)
             VNn = np.take_along_axis(flatN, idxN[..., None], axis=-1)[..., 0]
             err = max(np.max(np.abs(VEn - VEc)), np.max(np.abs(VNn - VNc)))
             VEc, VNc = VEn, VNn
@@ -239,8 +260,8 @@ def solve_all(p: FinalParams, verbose=False, n_jobs: int | None = None) -> Final
     for k, (ve, vn, h, aE, s, aN, its) in enumerate(results):
         # per-type arrays are (nT, nJ, nE, nA, nY, nZ); the shock state is stored last
         VE[k], VN[k], iters[k] = np.moveaxis(ve, 1, -1), np.moveaxis(vn, 1, -1), its
-        gH[k] = np.moveaxis(p.hgrid[h], 1, -1); gAE[k] = np.moveaxis(p.agrid[aE], 1, -1)
-        gS[k] = np.moveaxis(p.sgrid[s], 1, -1); gAN[k] = np.moveaxis(p.agrid[aN], 1, -1)
+        gH[k] = np.moveaxis(p.hgrid[h], 1, -1); gAE[k] = np.moveaxis(p.agrid_c[aE], 1, -1)
+        gS[k] = np.moveaxis(p.sgrid[s], 1, -1); gAN[k] = np.moveaxis(p.agrid_c[aN], 1, -1)
     if verbose:
         print(f"solved {nK} types in {time.time() - t0:.0f}s; max iterations {iters.max()}")
     return FinalSolution(params=p, omega=omega, kbar=kbar, km=km, zh=zh, VE=VE, VN=VN, gH=gH, gAE=gAE,
