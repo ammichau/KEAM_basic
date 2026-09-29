@@ -430,9 +430,19 @@ labor supply has a role at least comparable to hoarding. The women's UE-rate cyc
    9): with one job-finding efficiency for everyone, the 20% recession fall pinned by the UE cyclicality hits the quit
    margin too, so hoarding dominates and the model's recession quit fall is 25-34% against 7% in the data; married
    women's N->E rate is nearly acyclical in the CPS. Preview at fixed parameters: `scripts/ne_preview.py` ->
-   `output/ne_preview_v7cmb_beta0.993.md`. Re-estimation on the workstation (`WORKSTATION_JOB.md`, 17:00 UTC; the
-   15:00 UTC job, tags v7ck / v4ek, was stopped): tags **v7cn, v4en, v9nn, v4nbn** (13 targets, beta 0.993, nAc 100),
-   channels, pipelines for the best KPR and separable versions, `PAPER_RESULTS_quit.md`.
+   `output/ne_preview_v7cmb_beta0.993.md` (coarse types, v7cmb parameters, beta 0.993, nAc 100, a_max 60): at lam_n 0
+   the model's N->E rate is already 0.063 / 0.045 (a 28% recession fall against 1% in the data: the searching
+   non-participants, 0 < s < s_bar, carry the 20% job-finding fall), quits 0.031 / 0.025, precaution 1% / hoarding 82%;
+   lam_n 0.03 and 0.06 raise N->E to 0.081 / 0.063 and 0.096 / 0.077 and quits to 0.042 and 0.054 with the split
+   unchanged (-3% / 85%, 3% / 78%): at fixed parameters the extra offers raise quits and re-entry but the cyclicality
+   still comes from the searchers, so the calibration must make non-participants rely on lam_n (lower search or a lower
+   lam_f level) to hit the acyclical N->E target. Note also that at beta 0.993 with converged saving (15 months of
+   assets) the precautionary share at the v7cmb parameters is 1%.
+   AUTHOR DECISION (16:20 UTC): only the v7c family from now on (KPR, additive shock, wage cut); the separable and
+   proportional-shock versions are dropped. One-shot chain `scripts/run_v7cn.sh` (lock-protected; calibration v7cn from
+   v7cmb, second polish v7cnb, the better carried; channels; pipeline; relative cohorts; jacobian; `PAPER_RESULTS_quit.md`),
+   launched on the workstation with `nohup bash scripts/run_v7cn.sh > output/run_v7cn.out 2>&1 &` (`WORKSTATION_JOB.md`,
+   16:30 UTC; the 15:00 UTC k runs are stopped). The cloud merges its pushes hourly.
 4. Report (RESULTS.md section 6 and the reply): a table of all versions (objective, the 13 targets'
    deviations, precaution and hoarding shares, recession employment drop with and without cyclical
    husband risk); whether log utility preserves the precautionary channel and what it does to the fit;

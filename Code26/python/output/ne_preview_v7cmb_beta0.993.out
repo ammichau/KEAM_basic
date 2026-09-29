@@ -1,0 +1,4 @@
+lam_n0 0.000: N->E 0.0628/0.0450  quits 0.0311/0.0245  E 0.615  NiLF 0.316  gap -0.66  precaution 1%  hoarding 82%  dE -1.66 (324s)
+lam_n0 0.030: N->E 0.0812/0.0632  quits 0.0417/0.0355  E 0.614  NiLF 0.346  gap -0.62  precaution -3%  hoarding 85%  dE -1.73 (327s)
+lam_n0 0.060: N->E 0.0963/0.0770  quits 0.0535/0.0461  E 0.603  NiLF 0.375  gap -0.74  precaution 3%  hoarding 78%  dE -1.77 (326s)
+wrote /home/user/KEAM_basic/Code26/python/scripts/../output/ne_preview_v7cmb_beta0.993.md
