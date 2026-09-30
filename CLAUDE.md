@@ -443,6 +443,16 @@ labor supply has a role at least comparable to hoarding. The women's UE-rate cyc
    v7cmb, second polish v7cnb, the better carried; channels; pipeline; relative cohorts; jacobian; `PAPER_RESULTS_quit.md`),
    launched on the workstation with `nohup bash scripts/run_v7cn.sh > output/run_v7cn.out 2>&1 &` (`WORKSTATION_JOB.md`,
    16:30 UTC; the 15:00 UTC k runs are stopped). The cloud merges its pushes hourly.
+   v7cn FIRST PASS (workstation chain, launched 2026-09-29 20:05 UTC, calibration done 04:41 UTC; the commit carries only
+   the .log/.out files because `commit_push` in `run_v7cn.sh` passes a not-yet-existing `../../PAPER_RESULTS_quit.md` to
+   `git add`, which then stages nothing; the JSON/MD outputs arrive with the chain's last commit; fix the script only
+   after the chain has finished): objective 0.227 on 13 targets after 102 evaluations
+   (`output/calibrate_v7cn_full.out`, `final_calib_v7cn_full.log`): employment 0.664 (+7%), hours +8%, never-working
+   0.241 (+9%), PT and career -5%, quit exp 0.0256 (+13%), quit rec 0.0194 (-8%; a 24% recession fall against 7%),
+   employment drop -1.62, wage gap +5%, UE cyclicality +13%, N->E 0.0678 / 0.0464 (+28% / -11%: still a 32% recession fall
+   against 1% in the data); lam_n0 0.044, lam_n_ratio 0.994, lam_f0 0.428, sd_kT 0.12; mean assets 11.9 months of
+   household income (`asset_distribution_v7cn.out`). The non-participants' search-based re-entry (and the acceptance of
+   offers under the recession wage cut) still makes N->E cyclical; the second polish v7cnb is running.
 4. Report (RESULTS.md section 6 and the reply): a table of all versions (objective, the 13 targets'
    deviations, precaution and hoarding shares, recession employment drop with and without cyclical
    husband risk); whether log utility preserves the precautionary channel and what it does to the fit;
