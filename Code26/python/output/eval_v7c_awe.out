@@ -1,0 +1,19 @@
+output/final_calib_v7c_full.json: full grid, fixed [], objective 0.0759 (77s)
+  E/pop                        model   0.6763 target   0.6200 dev +0.091
+  hours|E                      model   0.4134 target   0.4000 dev +0.034
+  share Lifecycle              model   0.3056 target   0.3100 dev -0.014
+  share PT                     model   0.2727 target   0.2800 dev -0.026
+  share Career                 model   0.1748 target   0.1900 dev -0.080
+  share NiLF                   model   0.2469 target   0.2200 dev +0.122
+  quit/m exp                   model   0.0333 target   0.0340 dev -0.019
+  quit/m rec                   model   0.0253 target   0.0280 dev -0.096
+  E->nonE/m exp                model   0.0531 target   0.0500 dev +0.062
+  E->nonE/m rec                model   0.0457 target   0.0480 dev -0.049
+  dE/pop rec-exp (pts)         model  -1.6658 target  -1.7000 dev +0.034
+  wage gap (hourly ratio)      model   0.7118 target   0.7100 dev +0.003
+  sd log UE (women)            model   0.0682 target   0.0686 dev -0.006
+  U rate                       model   0.0397
+  wife share exp               model   0.3273
+  cons drop at H job loss exp (%) model  -7.0656
+  mean assets/monthly HH inc   model   1.6206
+saved

@@ -1,0 +1,25 @@
+best objective 3.623432239060325 after 160 evaluations
+  mu         0.9702
+  kbar_max   0.1186
+  km_max     2.3169
+  tau_w      0.8000
+  lam_f0     0.4001
+  lam_u0     0.0171
+  lam_u1     0.0198
+  ybar_h     0.1075
+  s_bar      0.2421
+  sd_kT      0.3000
+  E/pop                            model   0.5448  target   0.6200
+  hours|E                          model   0.4510  target   0.4000
+  share Lifecycle                  model   0.0240  target   0.3100
+  share PT                         model   0.1833  target   0.2800
+  share Career                     model   0.3994  target   0.1900
+  share NiLF                       model   0.3933  target   0.2200
+  quit/m exp                       model   0.0461  target   0.0340
+  quit/m rec                       model   0.0303  target   0.0280
+  E->nonE/m exp                    model   0.0636  target   0.0500
+  E->nonE/m rec                    model   0.0499  target   0.0480
+  dE/pop rec-exp (pts)             model  -1.9286  target  -1.7000
+  wage gap (FTE earnings ratio)    model   0.6966  target   0.7100
+  U rate                           model   0.0615  target   0.0500
+  wife share exp                   model   0.3464  target   0.2250

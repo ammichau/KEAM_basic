@@ -1,0 +1,14 @@
+{
+ "x": {
+  "mu": 0.9702497213807877,
+  "kbar_max": 0.06,
+  "km_max": 14.0,
+  "tau_w": 0.8,
+  "lam_f0": 0.40014764330893765,
+  "lam_u0": 0.017132662043855423,
+  "lam_u1": 0.019776076229852793,
+  "ybar_h": 0.10750076804941608,
+  "sd_kT": 0.29998945477685823
+ },
+ "note": "round-2 start with km_max=14 (best point in output/explore_experience.out)"
+}

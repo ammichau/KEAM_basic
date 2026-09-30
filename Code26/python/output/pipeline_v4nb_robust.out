@@ -1,0 +1,10 @@
+baseline: E 0.679 quit gap -1.11 | RoE E 0.729 gap -0.82 | acyclical H gap -0.92  [146s]
+no assets (a_max 0.01, 5 points): E 0.685 quit gap -1.23 | RoE E 0.732 gap -0.91 | acyclical H gap -0.94  [182s]
+asset grid 40 points: E 0.685 quit gap -1.10 | RoE E 0.734 gap -0.81 | acyclical H gap -0.92  [611s]
+asset grid 40 points, a_max 30: E 0.682 quit gap -1.11 | RoE E 0.732 gap -0.81 | acyclical H gap -0.93  [1033s]
+hours grid 40 points: E 0.679 quit gap -1.12 | RoE E 0.729 gap -0.82 | acyclical H gap -0.92  [1257s]
+hours grid 40, h_min 0.025: E 0.679 quit gap -1.10 | RoE E 0.728 gap -0.83 | acyclical H gap -0.94  [1493s]
+U threshold s_bar 0.10: E 0.679 quit gap -1.11 | RoE E 0.729 gap -0.82 | acyclical H gap -0.92  [1618s]
+U threshold s_bar 0.50: E 0.679 quit gap -1.11 | RoE E 0.729 gap -0.82 | acyclical H gap -0.92  [1785s]
+phi_rec_H = 1 (no recession cut in husband income): E 0.679 quit gap -1.11 | RoE E 0.729 gap -0.82 | acyclical H gap -0.92  [1912s]
+saved /home/amm/KEAM_basic/Code26/python/scripts/../output/robustness_final_v4nb.md

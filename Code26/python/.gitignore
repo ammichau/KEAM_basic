@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+solution_faithful_*.npz
+output/*.log
+.venv/
+output/*.out
+output/*.pid
+output/*.done

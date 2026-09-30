@@ -1,0 +1,26 @@
+baseline: gap -0.85 precaution 7% hoarding 62% both 70% dE -1.79 [64s]
+job finding falls 5% in recessions (ratio 0.95): gap -0.49 precaution 18% hoarding 34% both 49% dE +0.18 [129s]
+job finding falls 30% in recessions (ratio 0.70): gap -1.07 precaution 8% hoarding 70% both 77% dE -2.98 [194s]
+husband job loss x2.5 in recessions (data: x1.78): gap -0.88 precaution 11% hoarding 57% both 72% dE -1.74 [258s]
+husband job finding 0.20 in recessions (data: 0.28): gap -0.89 precaution 11% hoarding 57% both 72% dE -1.69 [323s]
+UI replacement 15% in recessions (ui_rec_mult 0.5): gap -0.85 precaution 7% hoarding 62% both 70% dE -1.79 [387s]
+UI replacement 15% always: gap -0.85 precaution 9% hoarding 62% both 72% dE -1.74 [452s]
+no assets: gap -0.87 precaution 9% hoarding 62% both 69% dE -1.65 [469s]
+risk aversion 3: gap -5.37 precaution 55% hoarding 48% both 89% dE -2.05 [534s]
+longer recessions (persistence 0.95): gap -0.99 precaution 5% hoarding 56% both 62% dE -2.83 [598s]
+# Precautionary labor supply versus job hoarding (`output/final_calib_v5b_full.json`, parameters held fixed across variants)
+
+Quit gap = recession minus expansion monthly quit rate, percentage points. Precaution share = fall in the gap when the husband's risk (job loss, job finding, recession UI cut) is made acyclical; hoarding share = fall when the wife's job-finding efficiency is made acyclical; both off = fall when both are; the remainder is the wage cut, the wife's own cyclical job loss and interactions.
+
+| variant | E/pop | quit exp | quit rec | gap | precaution | hoarding | both off | dE base | dE acyc. husband |
+|---|---|---|---|---|---|---|---|---|---|
+| baseline | 0.619 | 0.0316 | 0.0231 | -0.85 | 7% | 62% | 70% | -1.79 | -2.02 |
+| job finding falls 5% in recessions (ratio 0.95) | 0.623 | 0.0322 | 0.0272 | -0.49 | 18% | 34% | 49% | +0.18 | -0.06 |
+| job finding falls 30% in recessions (ratio 0.70) | 0.617 | 0.0312 | 0.0205 | -1.07 | 8% | 70% | 77% | -2.98 | -3.24 |
+| husband job loss x2.5 in recessions (data: x1.78) | 0.619 | 0.0314 | 0.0226 | -0.88 | 11% | 57% | 72% | -1.74 | -2.02 |
+| husband job finding 0.20 in recessions (data: 0.28) | 0.619 | 0.0315 | 0.0226 | -0.89 | 11% | 57% | 72% | -1.69 | -2.02 |
+| UI replacement 15% in recessions (ui_rec_mult 0.5) | 0.619 | 0.0316 | 0.0231 | -0.85 | 7% | 62% | 70% | -1.79 | -2.02 |
+| UI replacement 15% always | 0.624 | 0.0306 | 0.0221 | -0.85 | 9% | 62% | 72% | -1.74 | -2.00 |
+| no assets | 0.617 | 0.0316 | 0.0229 | -0.87 | 9% | 62% | 69% | -1.65 | -1.98 |
+| risk aversion 3 | 0.351 | 0.1873 | 0.1336 | -5.37 | 55% | 48% | 89% | -2.05 | -5.52 |
+| longer recessions (persistence 0.95) | 0.616 | 0.0320 | 0.0221 | -0.99 | 5% | 56% | 62% | -2.83 | -3.03 |

@@ -1,0 +1,63 @@
+{
+ "x": {
+  "mu": 1.399908339688876,
+  "kbar_max": 0.03995758479517733,
+  "km_max": 6.82514133938465,
+  "tau_w": 0.8839762094784998,
+  "lam_f0": 0.33523016556307883,
+  "lam_u0": 0.019758507096799886,
+  "lam_u1": 0.01968599241835243,
+  "ybar_h": 0.06437486275857988,
+  "sd_kT": 0.404547108997132,
+  "home_young_mult": 2.210434152905586,
+  "nu_h": 0.5987716144807024,
+  "z_h": 0.5065474617360118,
+  "alpha_h": 0.36131788468322856,
+  "e_max": 2.2161770706399553,
+  "kappa_h_power": 0.3912933167696144,
+  "lam_f_ratio": 0.800000001
+ },
+ "obj": 1.7181018613938763,
+ "moments": {},
+ "targets": {
+  "E/pop": 0.62,
+  "hours|E": 0.4,
+  "share Lifecycle": 0.31,
+  "share PT": 0.28,
+  "share Career": 0.19,
+  "share NiLF": 0.22,
+  "quit/m exp": 0.034,
+  "quit/m rec": 0.028,
+  "E->nonE/m exp": 0.05,
+  "E->nonE/m rec": 0.048,
+  "dE/pop rec-exp (pts)": -1.7,
+  "wage gap (hourly ratio)": 0.71,
+  "sd log UE (women)": 0.0686
+ },
+ "n_eval": 29,
+ "coarse": false,
+ "names": [
+  "mu",
+  "kbar_max",
+  "km_max",
+  "tau_w",
+  "lam_f0",
+  "lam_u0",
+  "lam_u1",
+  "ybar_h",
+  "sd_kT",
+  "home_young_mult",
+  "nu_h",
+  "z_h",
+  "alpha_h",
+  "e_max",
+  "kappa_h_power",
+  "lam_f_ratio"
+ ],
+ "fixed": {
+  "kpr": 1.0,
+  "gamma": 2.0,
+  "ui_rec_mult": 0.5
+ },
+ "note": "best of 29 evaluations in output/final_calib_v7_full.log (evaluation 22)"
+}

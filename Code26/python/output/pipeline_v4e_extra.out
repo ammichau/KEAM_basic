@@ -1,0 +1,25 @@
+### Supplementary experiments sized to the 1970s employment rate (0.73)
+
+| moment | baseline | child-care cost x0.56 | all costs x0.63 |
+|---|---|---|---|
+| E/pop | 0.6831 | 0.7318 | 0.7295 |
+| hours|E | 0.4116 | 0.4245 | 0.4155 |
+| U rate | 0.0456 | 0.0486 | 0.0458 |
+| quit/m exp | 0.0354 | 0.0271 | 0.0287 |
+| quit/m rec | 0.0235 | 0.0176 | 0.0187 |
+| E->nonE/m exp | 0.0533 | 0.0449 | 0.0467 |
+| E->nonE/m rec | 0.0449 | 0.0391 | 0.0402 |
+| dE/pop rec-exp (pts) | -1.7584 | -2.3631 | -2.3265 |
+| wife share exp | 0.3230 | 0.3553 | 0.3463 |
+| wife share rec | 0.3330 | 0.3648 | 0.3562 |
+| wage gap (hourly ratio) | 0.7299 | 0.7585 | 0.7489 |
+| share Lifecycle | 0.3025 | 0.1483 | 0.2213 |
+| share PT | 0.2550 | 0.2567 | 0.2767 |
+| share Career | 0.1873 | 0.3721 | 0.2844 |
+| share NiLF | 0.2552 | 0.2229 | 0.2177 |
+| cons drop at H job loss exp (%) | -6.7332 | -6.3294 | -6.5271 |
+| cons drop at H job loss rec (%) | -10.0754 | -9.8114 | -9.9130 |
+| mean assets/monthly HH inc | 1.8603 | 1.8891 | 1.8849 |
+
+Elapsed 491s.
+

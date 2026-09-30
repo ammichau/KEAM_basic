@@ -1,0 +1,63 @@
+1940 baseline: E 0.683 gap 0.730  [31s]
+  1950: cost x1.500 tau x1.042 -> E 0.6975 (target 0.67) gap 0.8043 (target 0.761)  [78s]
+  1950: cost x1.760 tau x1.042 -> E 0.6800 (target 0.67) gap 0.7999 (target 0.761)  [111s]
+  1950: cost x1.500 tau x1.223 -> E 0.8176 (target 0.67) gap 1.0455 (target 0.761)  [158s]
+  1950: cost x1.599 tau x1.011 -> E 0.6625 (target 0.67) gap 0.7646 (target 0.761)  [191s]
+  1950: cost x1.416 tau x1.005 -> E 0.6736 (target 0.67) gap 0.7601 (target 0.761)  [234s]
+  1950: cost x1.469 tau x1.006 -> E 0.6699 (target 0.67) gap 0.7607 (target 0.761)  [273s]
+  1950: cost x1.467 tau x1.006 -> E 0.6699 (target 0.67) gap 0.7607 (target 0.761)  [313s]
+  1950: cost x1.465 tau x1.006 -> E 0.6700 (target 0.67) gap 0.7607 (target 0.761)  [356s]
+  1950: cost x1.466 tau x1.006 -> E 0.6700 (target 0.67) gap 0.7607 (target 0.761)  [392s]
+1950: cost x1.466, tau_w 0.787, |resid| 0.0000 after 9 evaluations
+  1960: cost x1.500 tau x1.085 -> E 0.7399 (target 0.71) gap 0.8792 (target 0.792)  [438s]
+  1960: cost x1.760 tau x1.085 -> E 0.7217 (target 0.71) gap 0.8744 (target 0.792)  [474s]
+  1960: cost x1.500 tau x1.272 -> E 0.8423 (target 0.71) gap 1.1518 (target 0.792)  [523s]
+  1960: cost x1.451 tau x1.023 -> E 0.6974 (target 0.71) gap 0.8018 (target 0.792)  [553s]
+  1960: cost x1.133 tau x1.011 -> E 0.7111 (target 0.71) gap 0.7924 (target 0.792)  [600s]
+  1960: cost x1.142 tau x1.010 -> E 0.7100 (target 0.71) gap 0.7916 (target 0.792)  [632s]
+1960: cost x1.142, tau_w 0.790, |resid| 0.0001 after 6 evaluations
+  1970: cost x1.500 tau x1.070 -> E 0.7602 (target 0.73) gap 0.9333 (target 0.781)  [679s]
+  1970: cost x1.760 tau x1.070 -> E 0.7411 (target 0.73) gap 0.9289 (target 0.781)  [712s]
+  1970: cost x1.500 tau x1.256 -> E 0.8533 (target 0.73) gap 1.2239 (target 0.781)  [756s]
+  1970: cost x1.226 tau x0.970 -> E 0.7056 (target 0.73) gap 0.8042 (target 0.781)  [794s]
+  1970: cost x0.624 tau x0.945 -> E 0.7407 (target 0.73) gap 0.7906 (target 0.781)  [833s]
+  1970: cost x0.716 tau x0.939 -> E 0.7250 (target 0.73) gap 0.7802 (target 0.781)  [875s]
+  1970: cost x0.661 tau x0.939 -> E 0.7305 (target 0.73) gap 0.7815 (target 0.781)  [912s]
+  1970: cost x0.664 tau x0.939 -> E 0.7302 (target 0.73) gap 0.7813 (target 0.781)  [961s]
+  1970: cost x0.668 tau x0.939 -> E 0.7299 (target 0.73) gap 0.7812 (target 0.781)  [994s]
+  1970: cost x0.666 tau x0.939 -> E 0.7300 (target 0.73) gap 0.7813 (target 0.781)  [1042s]
+1970: cost x0.666, tau_w 0.734, |resid| 0.0000 after 10 evaluations
+  1980: cost x1.500 tau x1.085 -> E 0.7732 (target 0.72) gap 0.9615 (target 0.792)  [1072s]
+  1980: cost x1.760 tau x1.085 -> E 0.7542 (target 0.72) gap 0.9554 (target 0.792)  [1120s]
+  1980: cost x1.500 tau x1.272 -> E 0.8609 (target 0.72) gap 1.2629 (target 0.792)  [1151s]
+  1980: cost x1.555 tau x0.979 -> E 0.6899 (target 0.72) gap 0.8153 (target 0.792)  [1198s]
+  1980: cost x0.847 tau x0.950 -> E 0.7246 (target 0.72) gap 0.7963 (target 0.792)  [1232s]
+  1980: cost x0.881 tau x0.947 -> E 0.7195 (target 0.72) gap 0.7911 (target 0.792)  [1274s]
+  1980: cost x0.876 tau x0.948 -> E 0.7199 (target 0.72) gap 0.7916 (target 0.792)  [1311s]
+1980: cost x0.876, tau_w 0.741, |resid| 0.0001 after 7 evaluations
+### Cohort accounting, refined: cost scale and tau_w solved jointly for employment and the wage gap
+
+| cohort | 1940 | 1950 | 1960 | 1970 | 1980 |
+|---|---|---|---|---|---|
+| cost scale | 1.000 | 1.466 | 1.142 | 0.666 | 0.876 |
+| tau_w | 0.782 | 0.787 | 0.790 | 0.734 | 0.741 |
+| gamma_e | 0.500 | 0.550 | 0.580 | 0.680 | 0.690 |
+| E/pop | 0.6831 | 0.6700 | 0.7100 | 0.7300 | 0.7199 |
+| hours|E | 0.4116 | 0.4174 | 0.4271 | 0.4220 | 0.4252 |
+| quit/m exp | 0.0354 | 0.0362 | 0.0297 | 0.0285 | 0.0295 |
+| quit/m rec | 0.0235 | 0.0233 | 0.0195 | 0.0191 | 0.0196 |
+| E->nonE/m exp | 0.0533 | 0.0541 | 0.0476 | 0.0465 | 0.0474 |
+| E->nonE/m rec | 0.0449 | 0.0448 | 0.0410 | 0.0405 | 0.0411 |
+| dE/pop rec-exp (pts) | -1.7584 | -1.5016 | -1.8222 | -2.2880 | -2.1344 |
+| wife share exp | 0.3230 | 0.3300 | 0.3566 | 0.3604 | 0.3612 |
+| wife share rec | 0.3330 | 0.3416 | 0.3684 | 0.3717 | 0.3727 |
+| wage gap (hourly ratio) | 0.7299 | 0.7607 | 0.7916 | 0.7813 | 0.7916 |
+| share Lifecycle | 0.3025 | 0.3350 | 0.3194 | 0.2369 | 0.2650 |
+| share PT | 0.2550 | 0.2231 | 0.2181 | 0.2294 | 0.2196 |
+| share Career | 0.1873 | 0.1806 | 0.2481 | 0.3152 | 0.2925 |
+| share NiLF | 0.2552 | 0.2612 | 0.2144 | 0.2185 | 0.2229 |
+| cons drop at H job loss exp (%) | -6.7332 | -6.5986 | -6.2934 | -6.3641 | -6.3150 |
+| cons drop at H job loss rec (%) | -10.0754 | -9.9851 | -9.7368 | -9.8915 | -9.8056 |
+
+Elapsed 1311s.
+

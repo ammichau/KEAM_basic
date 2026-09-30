@@ -1,0 +1,344 @@
+{
+ "baseline": {
+  "m": {
+   "E/pop": 0.6640594270710435,
+   "E/pop exp": 0.6673273334855522,
+   "E/pop rec": 0.6504405443579473,
+   "dE/pop rec-exp (pts)": -1.6886789127604884,
+   "hours|E": 0.40966384780218773,
+   "U rate": 0.044730309284214495,
+   "quit/m exp": 0.033190193479715455,
+   "quit/m rec": 0.02495566786379776,
+   "E->nonE/m exp": 0.05048164082586737,
+   "E->nonE/m rec": 0.044719200076086714,
+   "wife share exp": 0.3319366295483606,
+   "wife share rec": 0.3382735971423689,
+   "HH income rec/exp - 1 (%)": -15.094651290083693,
+   "wage gap (hourly ratio)": 0.7381820418483123,
+   "wage gap (FTE earnings ratio)": 0.5905456334786497,
+   "share Lifecycle": 0.30854166666666666,
+   "share Career": 0.171875,
+   "share PT": 0.2502083333333333,
+   "share NiLF": 0.269375,
+   "n careers": 4800.0,
+   "cons drop at H job loss exp (%)": -5.074083060026169,
+   "cons drop at H job loss rec (%)": -7.2569288313388824,
+   "mean assets/monthly HH inc": 1.4073967981612259,
+   "share e at cap": 0.24478717026378896,
+   "share rec months": 0.1935185185185185
+  },
+  "roe": {
+   "E": 0.7306566121358176,
+   "quit_gap": -0.5741674202040258,
+   "dE_rec": -1.67956738296976
+  },
+  "acyc": {
+   "quit_gap": -0.6689079178830055,
+   "dE_rec": -2.227642540519559
+  }
+ },
+ "no assets (a_max 0.01, 5 points)": {
+  "m": {
+   "E/pop": 0.6667612505196757,
+   "E/pop exp": 0.6702759190745599,
+   "E/pop rec": 0.6521139954416666,
+   "dE/pop rec-exp (pts)": -1.8161923632893262,
+   "hours|E": 0.3996685954213991,
+   "U rate": 0.0480302794094482,
+   "quit/m exp": 0.03155498340906863,
+   "quit/m rec": 0.022997805901327047,
+   "E->nonE/m exp": 0.04887198587196209,
+   "E->nonE/m rec": 0.04281373042683202,
+   "wife share exp": 0.32426364877837893,
+   "wife share rec": 0.3362617902355428,
+   "HH income rec/exp - 1 (%)": -14.355468443426068,
+   "wage gap (hourly ratio)": 0.7315438227361643,
+   "wage gap (FTE earnings ratio)": 0.5852350581889315,
+   "share Lifecycle": 0.29604166666666665,
+   "share Career": 0.15979166666666667,
+   "share PT": 0.293125,
+   "share NiLF": 0.25104166666666666,
+   "n careers": 4800.0,
+   "cons drop at H job loss exp (%)": -5.635111406445503,
+   "cons drop at H job loss rec (%)": -7.331284880638123,
+   "mean assets/monthly HH inc": 0.007779891769142102,
+   "share e at cap": 0.23421163069544365,
+   "share rec months": 0.1935185185185185
+  },
+  "roe": {
+   "E": 0.7315973462503198,
+   "quit_gap": -0.5504461254157923,
+   "dE_rec": -2.080277397058572
+  },
+  "acyc": {
+   "quit_gap": -0.6496756050782821,
+   "dE_rec": -2.5033647844833418
+  }
+ },
+ "asset grid 40 points": {
+  "m": {
+   "E/pop": 0.6694672912659695,
+   "E/pop exp": 0.6727512406637978,
+   "E/pop rec": 0.6557815499955945,
+   "dE/pop rec-exp (pts)": -1.6969690668203308,
+   "hours|E": 0.4171429824060924,
+   "U rate": 0.04657621269132794,
+   "quit/m exp": 0.03232821139516832,
+   "quit/m rec": 0.02445770623492728,
+   "E->nonE/m exp": 0.04962704434485587,
+   "E->nonE/m rec": 0.044318540522557244,
+   "wife share exp": 0.33745750228141147,
+   "wife share rec": 0.3423813065108547,
+   "HH income rec/exp - 1 (%)": -15.225794000556625,
+   "wage gap (hourly ratio)": 0.7386081048377614,
+   "wage gap (FTE earnings ratio)": 0.5908864838702091,
+   "share Lifecycle": 0.316875,
+   "share Career": 0.17583333333333334,
+   "share PT": 0.24645833333333333,
+   "share NiLF": 0.2608333333333333,
+   "n careers": 4800.0,
+   "cons drop at H job loss exp (%)": -4.674665257334709,
+   "cons drop at H job loss rec (%)": -6.590747833251953,
+   "mean assets/monthly HH inc": 2.675869796504936,
+   "share e at cap": 0.25242705835331736,
+   "share rec months": 0.1935185185185185
+  },
+  "roe": {
+   "E": 0.7366294925047842,
+   "quit_gap": -0.529767840997062,
+   "dE_rec": -1.7383780061063225
+  },
+  "acyc": {
+   "quit_gap": -0.6641721809738498,
+   "dE_rec": -2.088537903385246
+  }
+ },
+ "asset grid 40 points, a_max 30": {
+  "m": {
+   "E/pop": 0.6676053676990301,
+   "E/pop exp": 0.6709419651271897,
+   "E/pop rec": 0.6537002176515324,
+   "dE/pop rec-exp (pts)": -1.724174747565732,
+   "hours|E": 0.41555249072461553,
+   "U rate": 0.045594298916903864,
+   "quit/m exp": 0.03264562815448667,
+   "quit/m rec": 0.024578821046212358,
+   "E->nonE/m exp": 0.04992468430004763,
+   "E->nonE/m rec": 0.04441820251008683,
+   "wife share exp": 0.336962294702299,
+   "wife share rec": 0.34086637671855874,
+   "HH income rec/exp - 1 (%)": -15.426627201378974,
+   "wage gap (hourly ratio)": 0.7388185694419368,
+   "wage gap (FTE earnings ratio)": 0.5910548555535494,
+   "share Lifecycle": 0.310625,
+   "share Career": 0.176875,
+   "share PT": 0.24833333333333332,
+   "share NiLF": 0.26416666666666666,
+   "n careers": 4800.0,
+   "cons drop at H job loss exp (%)": -4.87387478351593,
+   "cons drop at H job loss rec (%)": -6.987924128770828,
+   "mean assets/monthly HH inc": 2.3812004972135723,
+   "share e at cap": 0.25005945243804956,
+   "share rec months": 0.1935185185185185
+  },
+  "roe": {
+   "E": 0.733707280696223,
+   "quit_gap": -0.5674374131480517,
+   "dE_rec": -1.6520493870739061
+  },
+  "acyc": {
+   "quit_gap": -0.6933145953202703,
+   "dE_rec": -2.126963324608233
+  }
+ },
+ "hours grid 40 points": {
+  "m": {
+   "E/pop": 0.6648772702655438,
+   "E/pop exp": 0.6681862358155265,
+   "E/pop rec": 0.6510872750787734,
+   "dE/pop rec-exp (pts)": -1.70989607367531,
+   "hours|E": 0.4094500258357416,
+   "U rate": 0.044729501643325155,
+   "quit/m exp": 0.03301104537466042,
+   "quit/m rec": 0.024897097063777837,
+   "E->nonE/m exp": 0.050298412081667125,
+   "E->nonE/m rec": 0.04466216926671201,
+   "wife share exp": 0.33162508063402224,
+   "wife share rec": 0.3380109048488626,
+   "HH income rec/exp - 1 (%)": -15.119967851151872,
+   "wage gap (hourly ratio)": 0.7381563102010771,
+   "wage gap (FTE earnings ratio)": 0.5905250481608617,
+   "share Lifecycle": 0.3075,
+   "share Career": 0.17666666666666667,
+   "share PT": 0.24833333333333332,
+   "share NiLF": 0.2675,
+   "n careers": 4800.0,
+   "cons drop at H job loss exp (%)": -5.0550427287817,
+   "cons drop at H job loss rec (%)": -7.208334654569626,
+   "mean assets/monthly HH inc": 1.3986949174469314,
+   "share e at cap": 0.24539168665067945,
+   "share rec months": 0.1935185185185185
+  },
+  "roe": {
+   "E": 0.731000153348765,
+   "quit_gap": -0.573995752184912,
+   "dE_rec": -1.6886104983606653
+  },
+  "acyc": {
+   "quit_gap": -0.6728214383760127,
+   "dE_rec": -2.2015168535089336
+  }
+ },
+ "hours grid 40, h_min 0.025": {
+  "m": {
+   "E/pop": 0.6630227780429535,
+   "E/pop exp": 0.6662387833700159,
+   "E/pop rec": 0.6496201912493107,
+   "dE/pop rec-exp (pts)": -1.6618592120705156,
+   "hours|E": 0.4079426363632868,
+   "U rate": 0.0443209183067412,
+   "quit/m exp": 0.03363547547482287,
+   "quit/m rec": 0.025323685957141247,
+   "E->nonE/m exp": 0.050937778003445316,
+   "E->nonE/m rec": 0.04505731150802723,
+   "wife share exp": 0.32977355677388165,
+   "wife share rec": 0.3379586498128302,
+   "HH income rec/exp - 1 (%)": -14.850728953208836,
+   "wage gap (hourly ratio)": 0.7372049044641535,
+   "wage gap (FTE earnings ratio)": 0.5897639235713229,
+   "share Lifecycle": 0.303125,
+   "share Career": 0.17,
+   "share PT": 0.25166666666666665,
+   "share NiLF": 0.27520833333333333,
+   "n careers": 4800.0,
+   "cons drop at H job loss exp (%)": -5.06514348089695,
+   "cons drop at H job loss rec (%)": -7.220126688480377,
+   "mean assets/monthly HH inc": 1.3985575861367945,
+   "share e at cap": 0.24302707833733014,
+   "share rec months": 0.1935185185185185
+  },
+  "roe": {
+   "E": 0.7291935447445667,
+   "quit_gap": -0.5844163653546126,
+   "dE_rec": -1.7384141026709155
+  },
+  "acyc": {
+   "quit_gap": -0.6714255634324886,
+   "dE_rec": -2.333343394099874
+  }
+ },
+ "U threshold s_bar 0.10": {
+  "m": {
+   "E/pop": 0.6640594270710435,
+   "E/pop exp": 0.6673273334855522,
+   "E/pop rec": 0.6504405443579473,
+   "dE/pop rec-exp (pts)": -1.6886789127604884,
+   "hours|E": 0.40966384780218773,
+   "U rate": 0.15565906011593483,
+   "quit/m exp": 0.033190193479715455,
+   "quit/m rec": 0.02495566786379776,
+   "E->nonE/m exp": 0.05048164082586737,
+   "E->nonE/m rec": 0.044719200076086714,
+   "wife share exp": 0.3319366295483606,
+   "wife share rec": 0.3382735971423689,
+   "HH income rec/exp - 1 (%)": -15.094651290083693,
+   "wage gap (hourly ratio)": 0.7381820418483123,
+   "wage gap (FTE earnings ratio)": 0.5905456334786497,
+   "share Lifecycle": 0.30854166666666666,
+   "share Career": 0.171875,
+   "share PT": 0.2502083333333333,
+   "share NiLF": 0.269375,
+   "n careers": 4800.0,
+   "cons drop at H job loss exp (%)": -5.074083060026169,
+   "cons drop at H job loss rec (%)": -7.2569288313388824,
+   "mean assets/monthly HH inc": 1.4073967981612259,
+   "share e at cap": 0.24478717026378896,
+   "share rec months": 0.1935185185185185
+  },
+  "roe": {
+   "E": 0.7306566121358176,
+   "quit_gap": -0.5741674202040258,
+   "dE_rec": -1.67956738296976
+  },
+  "acyc": {
+   "quit_gap": -0.6689079178830055,
+   "dE_rec": -2.227642540519559
+  }
+ },
+ "U threshold s_bar 0.50": {
+  "m": {
+   "E/pop": 0.6640594270710435,
+   "E/pop exp": 0.6673273334855522,
+   "E/pop rec": 0.6504405443579473,
+   "dE/pop rec-exp (pts)": -1.6886789127604884,
+   "hours|E": 0.40966384780218773,
+   "U rate": 0.018235884931235968,
+   "quit/m exp": 0.033190193479715455,
+   "quit/m rec": 0.02495566786379776,
+   "E->nonE/m exp": 0.05048164082586737,
+   "E->nonE/m rec": 0.044719200076086714,
+   "wife share exp": 0.3319366295483606,
+   "wife share rec": 0.3382735971423689,
+   "HH income rec/exp - 1 (%)": -15.094651290083693,
+   "wage gap (hourly ratio)": 0.7381820418483123,
+   "wage gap (FTE earnings ratio)": 0.5905456334786497,
+   "share Lifecycle": 0.30854166666666666,
+   "share Career": 0.171875,
+   "share PT": 0.2502083333333333,
+   "share NiLF": 0.269375,
+   "n careers": 4800.0,
+   "cons drop at H job loss exp (%)": -5.074083060026169,
+   "cons drop at H job loss rec (%)": -7.2569288313388824,
+   "mean assets/monthly HH inc": 1.4073967981612259,
+   "share e at cap": 0.24478717026378896,
+   "share rec months": 0.1935185185185185
+  },
+  "roe": {
+   "E": 0.7306566121358176,
+   "quit_gap": -0.5741674202040258,
+   "dE_rec": -1.67956738296976
+  },
+  "acyc": {
+   "quit_gap": -0.6689079178830055,
+   "dE_rec": -2.227642540519559
+  }
+ },
+ "phi_rec_H = 1 (no recession cut in husband income)": {
+  "m": {
+   "E/pop": 0.6576737064101921,
+   "E/pop exp": 0.6613449604067473,
+   "E/pop rec": 0.6423738871231117,
+   "dE/pop rec-exp (pts)": -1.8971073283635564,
+   "hours|E": 0.4051010613818841,
+   "U rate": 0.04549844264623857,
+   "quit/m exp": 0.03428786940402716,
+   "quit/m rec": 0.027670201591623624,
+   "E->nonE/m exp": 0.05158833371890971,
+   "E->nonE/m rec": 0.04735062916279997,
+   "wife share exp": 0.3293442290955695,
+   "wife share rec": 0.2984153394268906,
+   "HH income rec/exp - 1 (%)": -8.93605024211187,
+   "wage gap (hourly ratio)": 0.7211689181302878,
+   "wage gap (FTE earnings ratio)": 0.5769351345042304,
+   "share Lifecycle": 0.299375,
+   "share Career": 0.164375,
+   "share PT": 0.2554166666666667,
+   "share NiLF": 0.2808333333333333,
+   "n careers": 4800.0,
+   "cons drop at H job loss exp (%)": -5.253972485661507,
+   "cons drop at H job loss rec (%)": -7.25773498415947,
+   "mean assets/monthly HH inc": 1.3969884024230566,
+   "share e at cap": 0.23891886490807354,
+   "share rec months": 0.1935185185185185
+  },
+  "roe": {
+   "E": 0.7230206311993822,
+   "quit_gap": -0.48668851355123216,
+   "dE_rec": -1.835417980936982
+  },
+  "acyc": {
+   "quit_gap": -0.5639634508505572,
+   "dE_rec": -2.2712033006725862
+  }
+ }
+}

@@ -1,0 +1,34 @@
+{
+ "scales": {
+  "childcare": 0.46875
+ },
+ "experiments": {
+  "child-care cost x0.47": {
+   "E/pop": 0.7312196379562091,
+   "E/pop exp": 0.7360916672869607,
+   "E/pop rec": 0.7109156305538904,
+   "dE/pop rec-exp (pts)": -2.517603673307034,
+   "hours|E": 0.42631002135456175,
+   "U rate": 0.048094947826061336,
+   "quit/m exp": 0.022498906689676378,
+   "quit/m rec": 0.016830913731944834,
+   "E->nonE/m exp": 0.03943972505933254,
+   "E->nonE/m rec": 0.038826197424795976,
+   "wife share exp": 0.3764774313175731,
+   "wife share rec": 0.39191530679217046,
+   "HH income rec/exp - 1 (%)": -16.91219525251092,
+   "wage gap (hourly ratio)": 0.7740082842049822,
+   "wage gap (FTE earnings ratio)": 0.6192066273639859,
+   "share Lifecycle": 0.08729166666666667,
+   "share Career": 0.4504166666666667,
+   "share PT": 0.22208333333333333,
+   "share NiLF": 0.24020833333333333,
+   "n careers": 4800.0,
+   "cons drop at H job loss exp (%)": -4.645891115069389,
+   "cons drop at H job loss rec (%)": -8.29305425286293,
+   "mean assets/monthly HH inc": 1.4227658761816495,
+   "share e at cap": 0.40655925259792164,
+   "share rec months": 0.1935185185185185
+  }
+ }
+}
