@@ -453,6 +453,17 @@ labor supply has a role at least comparable to hoarding. The women's UE-rate cyc
    against 1% in the data); lam_n0 0.044, lam_n_ratio 0.994, lam_f0 0.428, sd_kT 0.12; mean assets 11.9 months of
    household income (`asset_distribution_v7cn.out`). The non-participants' search-based re-entry (and the acceptance of
    offers under the recession wage cut) still makes N->E cyclical; the second polish v7cnb is running.
+   v7cnb SECOND POLISH (workstation, done 10:25 UTC, CARRIED by the chain; `calibrate_v7cnb_full.out`,
+   `final_calib_v7cnb_full.log`; the JSON/MD arrive with the chain's last commit): objective 0.182 on 13 targets after
+   68 evaluations (limit): employment 0.662 (+7%), hours +8%, lifecycle and PT on target, career -11%, never-working
+   0.239 (+9%), quit exp 0.0254 (+12%), quit rec 0.0195 (-7%; a 23% recession fall against 7%), employment drop -1.64,
+   wage gap +5%, UE cyclicality on target (0.0685), N->E 0.0673 / 0.0455 (+27% / -13%: a 32% recession fall against 1%,
+   unchanged from v7cn); lam_n0 0.049, lam_n_ratio 1.00, lam_f0 0.432, sd_kT 0.115, tau_w 0.80; mean assets 11.6 months
+   of household income, median 6.8, ages 25-39 mean 6.5 (`asset_distribution_v7cnb.out`). The least squares keeps
+   lam_n_ratio at 1 (the N->E level target pulls lam_n0 up, the cyclicality target cannot be met by the ratio): the
+   recession fall in N->E comes from the searching non-participants (lam_f falls 20%) and from offer acceptance under the
+   recession wage cut, neither of which lam_n reaches. Channels, pipeline, relative cohorts, jacobian and
+   PAPER_RESULTS_quit.md for v7cnb follow in the chain (each full-grid evaluation about 13 minutes at nAc 100).
 4. Report (RESULTS.md section 6 and the reply): a table of all versions (objective, the 13 targets'
    deviations, precaution and hoarding shares, recession employment drop with and without cyclical
    husband risk); whether log utility preserves the precautionary channel and what it does to the fit;
