@@ -90,6 +90,7 @@ def targets_of(calib: dict | None = None):
         t = dict(calib["targets"])
         w = dict(calib.get("weights") or {k: WEIGHT.get(k, 1.0) for k in t})
         s = {k: (1.0 if "pts" in k else v) for k, v in t.items()}
+        s.update({k: v for k, v in (calib.get("scales") or {}).items() if k in t})   # recorded scales (absolute ones)
         return t, w, s
     return TARGETS, WEIGHT, SCALE
 

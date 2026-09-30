@@ -18,8 +18,12 @@ for k, v in d["x"].items():
         print(f"| {k} | {v:.4f} |")
 print("\n| target | data | model | deviation |\n|---|---|---|---|")
 for k, tv in T.items():
-    mv = m.get(k, float("nan")); sc = 1.0 if "pts" in k else tv
-    print(f"| {k} | {tv:.4f} | {mv:.4f} | {100 * (mv - tv) / sc:+.1f}% |")
+    mv = m.get(k, float("nan")); sc = S.get(k, 1.0 if "pts" in k else tv)
+    print(f"| {k} | {tv:.4f} | {mv:.4f} | {100 * (mv - tv) / sc:+.1f}%{'*' if 'pts' not in k and sc != tv else ''} |")
+absl = [k for k in T if "pts" not in k and S.get(k, T[k]) != T[k]]
+if absl:
+    print("\n\\* deviation relative to an absolute scale (as in the objective): " +
+          ", ".join(f"{k} {S[k]:.4f}" for k in absl) + ".")
 print("\n| untargeted moment | model |\n|---|---|")
 for k in ["U rate", "wife share exp", "wife share rec", "HH income rec/exp - 1 (%)", "cons drop at H job loss exp (%)",
           "cons drop at H job loss rec (%)", "mean assets/monthly HH inc", "share e at cap", "wage gap (FTE earnings ratio)"]:

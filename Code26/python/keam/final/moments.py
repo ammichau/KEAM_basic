@@ -63,6 +63,12 @@ def moments_final(sim: FinalSim, window=None) -> dict:
     sdlog = lambda a, b: float(abs(np.log(max(a, 1e-12) / max(b, 1e-12))) * wz)
     out["sd log UE (women)"] = sdlog(out["UE/m rec"], out["UE/m exp"])
     out["sd log NE (women)"] = sdlog(out["NE/m rec"], out["NE/m exp"])
+    # the same statistic for married women's quits and N->E entry (data: output/quit_layoff.md, output/ne_nu_moments.md,
+    # early window, trend-adjusted, model stationary share: 0.0262 and 0.0045), and the recession / expansion ratios
+    out["sd log quit (women)"] = sdlog(out["quit/m rec"], out["quit/m exp"])
+    out["sd log N->E (women)"] = sdlog(out["N->E/m rec"], out["N->E/m exp"])
+    out["quit rec/exp"] = out["quit/m rec"] / max(out["quit/m exp"], 1e-12)
+    out["N->E rec/exp"] = out["N->E/m rec"] / max(out["N->E/m exp"], 1e-12)
     hprev = np.full_like(sim.hstat, 0); hprev[:, 1:] = sim.hstat[:, :-1]
     hU_prev = (hprev == 2); hU_prev[:, 0] = False
     HUE = _monthly_sums(sim, (sim.hstat == 1) & hU_prev); HU = _monthly_sums(sim, hU_prev)
