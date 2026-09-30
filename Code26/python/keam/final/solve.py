@@ -98,6 +98,8 @@ def solve_type(p: FinalParams, omega: float, kbar: float, km: float, VR: np.ndar
     lamH = p.lamH()                                                                 # (nZ, nY, nY)
     lam_u = np.asarray(p.lam_u); lam_f = np.asarray(p.lam_f); lam_n = np.asarray(p.lam_n, float)
     pi_f = np.minimum(1.0, lam_n[None, :] + lam_f[None, :] * sg[:, None] ** p.nu)  # (nS, nZ): offers without search + search
+    if p.lam_ue[0] > 0:                 # independent arrival rates: lam_ue in U (s >= s_bar), lam_n in N (s < s_bar)
+        pi_f = np.where(sg[:, None] >= p.s_bar, np.asarray(p.lam_ue, float)[None, :], lam_n[None, :])
     p_age = p.p_age
     kT, nJ, PJ = p.kT_chain()                                                       # nodes, states, (nJ, n_kT)
     st = np.arange(kT.size) if nJ > 1 else np.zeros(kT.size, int)                   # state reached at node j'

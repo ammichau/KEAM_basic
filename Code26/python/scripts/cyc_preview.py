@@ -41,7 +41,7 @@ VAR = {
     "fall10": ("job-finding fall 10% (ratio 0.90)", dict(lam_f=(p0.lam_f[0], 0.90 * p0.lam_f[0]))),
 }
 cfg = SimConfigFinal(N=60, n_cohorts=90)
-KEYS = ["E/pop", "share NiLF", "quit/m exp", "quit/m rec", "quit rec/exp", "sd log quit (women)", "N->E/m exp", "N->E/m rec",
+KEYS = ["E/pop", "share NiLF", "U rate", "UE/m rec", "quit/m exp", "quit/m rec", "quit rec/exp", "sd log quit (women)", "N->E/m exp", "N->E/m rec",
         "N->E rec/exp", "sd log N->E (women)", "UE/m exp", "sd log UE (women)", "dE/pop rec-exp (pts)"]
 res = []
 def parse(k):   # combined variant, e.g. "lamnr=1.4;lamfr=0.7;phi=1": recession ratios of lam_n and lam_f, wife's wage cut
@@ -52,6 +52,10 @@ def parse(k):   # combined variant, e.g. "lamnr=1.4;lamfr=0.7;phi=1": recession 
         kw["lam_f"] = (p0.lam_f[0], float(d["lamfr"]) * p0.lam_f[0]); lab.append(f"job-finding ratio {float(d['lamfr']):.2f}")
     if "phi" in d:
         kw["phi_rec"] = float(d["phi"]); lab.append(f"phi_rec {float(d['phi']):.2f}")
+    if "ue0" in d:
+        kw["lam_ue"] = (float(d["ue0"]), float(d["ue1"])); lab.append(f"arrival in U {float(d['ue0']):.3f}/{float(d['ue1']):.3f}")
+    if "ln0" in d:
+        kw["lam_n"] = (float(d["ln0"]), float(d["ln1"])); lab.append(f"arrival in N {float(d['ln0']):.3f}/{float(d['ln1']):.3f}")
     if "phiH" in d:
         kw["phi_rec_H"] = float(d["phiH"]); lab.append(f"phi_rec_H {float(d['phiH']):.2f}")
     return "; ".join(lab), kw

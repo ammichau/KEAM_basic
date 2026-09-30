@@ -148,7 +148,10 @@ def simulate_final(p: FinalParams, sol: FinalSolution, cfg: SimConfigFinal | Non
         e_next = np.where(work, np.minimum(p.e_max, (1 - p.delta_e) * e + p.theta_e * e * h ** p.psi_e),
                           (1 - p.delta_e) * e)
         lost = work & (uJ[:, it] < lam_u[z])
-        found = ~work & (uJ[:, it] < np.minimum(1.0, lam_n[z] + lam_f[z] * s ** p.nu))
+        if p.lam_ue[0] > 0:             # independent arrival rates: lam_ue in U (s >= s_bar), lam_n in N (s < s_bar)
+            found = ~work & (uJ[:, it] < np.where(s >= p.s_bar, np.asarray(p.lam_ue, float)[z], lam_n[z]))
+        else:
+            found = ~work & (uJ[:, it] < np.minimum(1.0, lam_n[z] + lam_f[z] * s ** p.nu))
         # records
         emp[:, it] = work; quit[:, it] = q & ~found_prev; declined[:, it] = q & found_prev
         loss[:, it] = lost_prev

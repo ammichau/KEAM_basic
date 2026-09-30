@@ -75,7 +75,8 @@ def acyclical_husband(p: FinalParams) -> FinalParams:
 
 def acyclical_finding(p: FinalParams) -> FinalParams:
     """The wife's job-finding efficiency at its expansion value in both states (job hoarding switched off)."""
-    return p.replace(lam_f=(p.lam_f[0], p.lam_f[0]), lam_n=(p.lam_n[0], p.lam_n[0]))   # search and non-search offers
+    return p.replace(lam_f=(p.lam_f[0], p.lam_f[0]), lam_n=(p.lam_n[0], p.lam_n[0]),   # search and non-search offers
+                     lam_ue=(p.lam_ue[0], p.lam_ue[0]))                                   # and arrival in U
 
 
 def counterfactuals(p: FinalParams, cfg: SimConfigFinal, n_jobs=None):

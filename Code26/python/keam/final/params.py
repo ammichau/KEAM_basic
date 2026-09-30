@@ -52,6 +52,9 @@ class FinalParams:
     lam_n: tuple = (0.0, 0.0)     # offer arrival rate without search (non-participants), expansion / recession:
                                   # job finding = lam_n(Z) + lam_f(Z) s^nu; 0 = the original model (author, 2026-09-29:
                                   # inferred from married women's N->E flow, which is nearly acyclical in the CPS)
+    lam_ue: tuple = (0.0, 0.0)    # job arrival rate to a woman in U (s >= s_bar), expansion / recession; when > 0 the
+                                  # arrival rates in U (lam_ue, = the data UE rate) and in N (lam_n, s < s_bar) are
+                                  # independent and search effort does not change them (author, 2026-09-30); 0 = lam_f s^nu
     lam_u: tuple = (0.017, 0.029)  # exogenous job loss, expansion / recession (1.7x)
     s_bar: float = 0.25          # search intensity above which a non-employed woman counts as unemployed
     # ---------------- husband (monthly) ----------------

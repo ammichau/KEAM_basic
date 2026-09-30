@@ -1,14 +1,16 @@
 #!/bin/bash
 # One-shot chain for the paper's model (author, 2026-09-30): KPR preferences, additive cost shock, NO recession wage
 # cut (wife and husband, phi_rec = phi_rec_H = 1), non-search offer arrival lam_n; beta 0.993 per month, r 4% per year,
-# nAc 100, a_max 60; the cyclicality of quits and N->E entry targeted as standard deviations of the log rate (the
-# convention of the UE target), not as recession levels; the recession job-finding fall stays fixed at 20%.
+# nAc 100, a_max 60; independent job arrival rates for a woman in U (lam_ue, set to the data UE rate, expansion /
+# recession, given as arguments) and in N (lam_n, calibrated to the N->E rate); the cyclicality of quits and N->E entry
+# targeted as standard deviations of the log rate (the convention of the UE target), not as recession levels.
 # Steps: stop the v7cn chain and commit its outputs; calibration v7ns and a second polish v7nsb (the better carried);
 # baseline precaution/hoarding split; full results pipeline; relative-target cohorts; jacobian of the split; the channel
 # variants; PAPER_RESULTS_quit.md. Commits and pushes after every step.
-# usage (workstation): cd Code26/python && nohup bash scripts/run_v7ns.sh > output/run_v7ns.out 2>&1 &
+# usage (workstation): cd Code26/python && nohup bash scripts/run_v7ns.sh <UE exp> <UE rec> > output/run_v7ns.out 2>&1 &
 set -u
 cd "$(dirname "$0")/.."
+UE0=${1:?"usage: run_v7ns.sh <UE rate expansion> <UE rate recession> (monthly, married women)"}; UE1=${2:?"UE rate in recessions"}
 export KEAM_NJOBS=${KEAM_NJOBS:-$(nproc)}
 mkdir output/.lock_v7ns 2>/dev/null || { echo "run_v7ns already running (output/.lock_v7ns exists)"; exit 0; }
 trap 'rmdir output/.lock_v7ns 2>/dev/null' EXIT
@@ -34,8 +36,8 @@ CAL=(python3 -u scripts/calibrate_ls.py --fixed kpr=1 --fixed gamma=2.0 --fixed 
      --drop-target "E->nonE/m exp" --drop-target "E->nonE/m rec" --drop-target "quit/m rec"
      --extra-target "quit/m exp=0.0226:2.0" --extra-target "sd log quit (women)=0.0262:2.0:0.0686"
      --extra-target "N->E/m exp=0.0530:1.0" --extra-target "sd log N->E (women)=0.0045:1.0:0.0686"
-     --set lam_f_ratio=0.80 --bound lam_f_ratio:0.8:0.8000001
-     --extra lam_n0,lam_n_ratio
+     --set lam_ue0=$UE0 --set lam_ue1=$UE1 --drop lam_ue0 --drop lam_ue1 --drop lam_f0 --drop lam_f_ratio
+     --drop-target "sd log UE (women)" --extra lam_n0,lam_n_ratio
      --diff-step 0.04)
 # 1. calibration from v7cnb, about 100 evaluations
 "${CAL[@]}" --x0 output/final_calib_v7cnb_full.json --max-nfev 6 --tag v7ns_full > output/calibrate_v7ns_full.out 2>&1
